@@ -1,0 +1,129 @@
+﻿Moving the change log outside of JLinq to keep the file as small as possible
+
+/*Version Info
+1.0 - Released 10/17/2013
+2.0 - Released 7/18/2014
+            -Rebuild the entire library using iterators. Has much lower memory usage and performance has drastically improved. Some methods like ToDictionary, GroupBy are loaded right away because of its nature but most methods are lazy loaded.
+2.1 - Released 7/29/2014 
+            -Modified Queryable to cache array collection length.
+            -For the number types (min,max, avg, sum) remove the generic type. No need to set one since it's always a number. Syntax Cleanup For Type Script
+2.2 - Released 8/12/2014
+            -Removed slice from queryable constructor. No need to clone the array. This will remove memory and increase performance
+            -Also just use direct calls for methods. No need to use Method.Call and pass in this.
+
+2.3 - Released 8/13/2014
+            -Queryable. Don't check for collection length with >=. Use === (Next Method)
+            -Remove collection source and other inherit properties from all the chainables. Also in typescript add private - public to all properties. This should cleanup the typescript namespace a bit
+            -Change return type of ToDictionary to TKey, T instead of T, TKey
+            -Changed the unit test to Typescript so I can test how the caller experience is in TypeScript
+
+2.3.1 - Released 8/16/2014
+            -Added select many functionality.
+            -On Select and distinct methods adjust the return value of the generic type so the inteli sense works in typescript. Was always being returned as any.  Iterator<any> now to the Iterator<TNewObject>
+
+2.4 - Released 8/18/2014
+            -Add count method
+            -Add count with predicate
+            -Distinct will use a Dictionary object instead of a object variable which implements the same logic
+            -Organize unit tests. Name variables better. Cleaned up the unit test a bit.
+            -SelectMany will use the queryable logic to loop through the sub collections. This way we can re-use as much logic as possible.
+
+2.4.1 - Released 9/2/2014
+            -Moving change log outside of library. This way we keep the file as small as possible
+            -Added paginate method. This way you can page data on the client side. Not really a .Net method but very useful.
+			-Group by will return IGrouping<TKey, T>[] instead of any now (Typescript change only)
+            -Added Dictionary.GetAllItems which will return an array of TKey and TValue (Key value pair)
+			-Dictionary contains key will now use hasOwnProperty. Is faster then what we were doing.
+            -Dictionary.Keys() will convert the key back to TKey. Dictionary in javascript will always be a string, so when being passed back convert it to the type it should be. Unit test have been created
+            -Dictionary put validation in add...this way we check when we build the dictionary and when we add keys manually
+            -Fix lowercase variables. Should be first letter uppercase.
+            -For the items that call .Next() to get the result we need to reset the iterator. Issue happens when you start with a base query, call something that uses next
+            Example:
+            var query = _Array.Where(x => x.id >= 1);
+
+            //grab the count value (count will hit next...so the next time we do anything on query it will have looped through the items). we need to reset the iterator when calling anything that uses Next()
+            equal(4, query.Count());
+
+            //if we looped through the result on this guy we would have 0 results.
+            var result = _Array.Where(x => x.id >= 1);
+            -Unit test's have been created
+                -Affected Methods
+                    Count, FirstOrDefault, All, Any, Last, Min, Max, Sum, Average, GroupBy
+
+2.5 - 9/29/2014
+		-Major Changes Breaking Changes	
+		  -If you materialize the query 1 by 1 then you will need to change the logic. we will now pass back IteratorResult from the Next() method. This way we pass back the iterator status and the current item.
+		   this gives us the ability to hold a variable which holds the current status of the iterator. Passing back null from Next() if we are done with the recordset is hacky and could be buggy once you start to introduce
+		   nulls into your dataset
+			
+		-Minor Changes
+		  -Added SingleOrDefault method. Will return the first item found or null if not found (but will raise an error if more then 1 item is returned).
+		  -Sum, Average, Max, and Min will use an else / else if statement to remove the != null check which is not needed.
+		  -In FirstOrDefault, All, Where, Take, and Skip just use a return statement. No need to break out of the loop and return the item
+		  -In Count, AnyWithNullCheck, Last - Throw the WherePredicate != null into a variable. This way when you are looping through the result you don't need to keep computing that result. The value will never change after the constructor. Speeds up the materialization of the data faster.
+		  -Next will return T in the abstract method. TypeScript only change. 
+		  -In GroupIterator it will change the generic type of Iterator to => <IGrouping<TKey, T>[]> instead of Iterator<IGrouping<TKey, T>>
+
+2.5.1 - 10/5/2014
+		-In ResetIterator don't check for Expression.PreviousExpression. Grabbing an undefined value will work with the null check. So if statement that is not needed.
+		-ToDictionary will now take an iterator instead of a collection. This way we don't need to materialize an array just to be passed into BuildDictionary. This way we can loop one at a time when building the dictionary and we never have to materialize that array.
+		-In Dictionary.Values cache the key's array length. This way we don't need to figure it out on each loop around.
+		-Few variable name changes and variable spelling changes.
+		-Add the CallbackIterator. Look in the source code for the callback iterator documentation. Currently not used in the source code, but it might be useful in the future if you need an iterator where you don't need to base it off of an array. This way the base collection is never materialized.
+		-Add Concat and ConcatQuery (can't use an overload so I had to split them up). Both are lazy loaded which is different then the native Array.concat. Take note the Concat is a JLinq method while the undercase concat is the native version which is eager loaded
+		-Add Union and UnionQuery (can't use an overload so I had to split them up). Both are lazy loaded which is different then the native Array.concat. Take note the Concat is a JLinq method while the undercase concat is the native version which is eager loaded
+		-LastItem and AnyItems is not off of the iterator. Need to add the methods. Found by user (Item 1101). Added unit test's to test for this
+
+2.5.2 -11/19/2014
+		-Depreciating LastItem and AnyItems. Just use Last() / Any(). Won't remove from API. No harm besides duplicate code. 
+				**be sure to update documentation to use use Last() / Any() instead under the LastItem() and AnyItem() documentation
+	    -Clean up the unit test method names.
+		-Add performance "unit tests". This will give us general timings for each method.
+		-Allow you to pass in a null where clause in FirstOrDefault and SingleOrDefault. FirstOrDefault will grab the first item or return null if no items exist. Single Or Default will grab the single item or null if not found, or throw an error if multiple are found.
+				**be sure to update the documentation for these 2 methods
+		-Added Methods: First, Single, SkipWhile, TakeWhile, Aggregate
+				**be sure to add documentation for these 4 methods. (Explain SkipWhile and TakeWhile vs Where)
+		-Group By Don't use stringify for numbers, strings, boolean. Should speed that scenario up.
+		-Dictionary supports multi key items. ie: new { Id: = x.Id, Id2: x.Id2 };
+		-Grouping will now use the Dictionary since we support multi key items. Sped things up a ton!!!
+		-Added HashSet / IHashSet.
+			    //tries to find the key / object in the hashset
+				-ContainsItem(ItemToRetrieve: TValue): boolean;
+
+				//add an item to the hashset. Will return true if it was added. Returns false if it already exists in the hashset
+				-Add(ValueToAdd: TValue): boolean;
+
+				-//gets all the values in the hashset
+				-Values(): Array<TValue>;
+
+				//removes an item
+				-Remove(KeyToRemove: TValue);
+
+				//Builds a hashset from a Iterator, so if we have an iterator we don't need to materialize that AND a hashset and a key selector
+				-BuildHashSet(HashSetDataSource: Iterator<TValue>);
+
+				//gets the count of items in the hashset
+				-Count(): number
+		-Updated QUnit to 1.15.0
+		-Remove uncessary code for the sort methods "Order By" & "Order By Desc"
+		-** Breaking Change --> "OrderBy" & OrderByDescending" now return an iterator instead of an array. This is needed to implement then "ThenBy" and "ThenByDescending" methods. Then By and ThenByDesc will be implemented next
+		-Added "Multiple Sorting" using the "ThenBy" & "ThenByDescending" which is only off of "OrderBy" & "OrderByDescending"
+
+2.5.3 -6/8/2015
+		-Added AsQueryable as an extension method. Had a scenario where I may have a filter to tack on. Or I might not. I don't want to add a dummy where(return true;). Don't need to create overhead for no reason
+
+		ie: var query = List.AsQueryable();
+
+		if (filter1 != null)
+		{
+			query = query.Where(function(x .....))
+		}
+
+		if (filter2 != null)
+		{
+			query = query.Where(function(x......))
+		}
+
+ 2.5.4 - 6/19/2015
+		-Moved to GitHub
+		-Removed Depreciated Items (LastItem & AnyItem)
