@@ -21,7 +21,7 @@ I wanted to learn TypeScript along with building a linq library which had method
        _Array.push({ id: i, txt: i.toString(), subArray: [1,2,3] });    
     }  
 
-//Let's run a sample where I filter any record where Id > 5. The return value will be a iterator.   
+Let's run a sample where I filter any record where Id > 5. The return value will be a iterator.   
 `var myQuery = _Array.Where(function (x) { return x.id > 5; });`
 
 How do I get my results from my query above?  
@@ -39,3 +39,7 @@ How do I get my results from my query above?
                    //do something with my result   
                    var myResultItem = CurrentResult.CurrentItem;     
              }
+
+
+
+View the full documentation at: https://github.com/dibiancoj/Linq4Javascript/wiki
