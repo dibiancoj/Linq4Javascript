@@ -1,7 +1,7 @@
 //********************************Torac Technologies***************************************
 //Description: Linq Style Methods In Javascript To Manipulate Collections                 *
 //Release Date: 10/17/2013                                                                *
-//Current Version: 2.5.3                                                                  *
+//Current Version: 2.5.4                                                                  *
 //Release History In JLinqChangeLog.txt                                                   *
 //*****************************************************************************************
 var __extends = this.__extends || function (d, b) {
@@ -2031,4 +2031,6 @@ Array.prototype.OrderBy = function (SortPropertySelector) {
 Array.prototype.OrderByDescending = function (SortPropertySelector) {
     return new ToracTechnologies.JLinq.Queryable(this).OrderByDescending(SortPropertySelector);
 };
+//#endregion
+//#endregion 
 //# sourceMappingURL=JLinq.js.map
