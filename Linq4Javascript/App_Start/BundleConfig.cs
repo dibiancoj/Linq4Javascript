@@ -19,9 +19,15 @@ namespace Linq4Javascript
 
             bundles.Add(new ScriptBundle("~/bundles/Linq4Javscript").Include("~/Scripts/JLinq.js"));
 
-            bundles.Add(new ScriptBundle("~/bundles/Linq4JavscriptMainUnitTests").Include("~/Scripts/qunit.js", "~/Scripts/Linq4JavascriptHelpersUnitTest.js"));
+            bundles.Add(new ScriptBundle("~/bundles/AsyncTester").Include("~/Scripts/AsyncTester.js"));
 
-            bundles.Add(new ScriptBundle("~/bundles/Linq4JavscriptPerformanceTests").Include("~/Scripts/qunit.js", "~/Scripts/Linq4JavascriptPerformanceUnitTest.js"));
+            bundles.Add(new ScriptBundle("~/bundles/Linq4JavscriptMainUnitTests").Include(
+                "~/Scripts/qunit.js", 
+                "~/Scripts/Linq4JavascriptHelpersUnitTest.js"));
+
+            bundles.Add(new ScriptBundle("~/bundles/Linq4JavscriptPerformanceTests").Include(
+                "~/Scripts/qunit.js", 
+                "~/Scripts/Linq4JavascriptPerformanceUnitTest.js"));
 
             bundles.Add(new StyleBundle("~/Content/css").Include("~/Content/bootstrap.css", "~/Content/site.css"));
 

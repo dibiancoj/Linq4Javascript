@@ -225,6 +225,7 @@
     <Content Include="Views\Home\AsyncTester.cshtml" />
   </ItemGroup>
   <ItemGroup>
+    <TypeScriptCompile Include="Scripts\AsyncTester.ts" />
     <TypeScriptCompile Include="Scripts\JLinq.ts" />
     <TypeScriptCompile Include="Scripts\Linq4JavascriptHelpersUnitTest.ts" />
     <TypeScriptCompile Include="Scripts\Linq4JavascriptPerformanceUnitTest.ts" />

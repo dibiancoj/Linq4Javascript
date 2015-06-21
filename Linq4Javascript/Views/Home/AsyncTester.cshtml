@@ -6,14 +6,14 @@
 }
 
 @section Scripts {
-    @* @Scripts.Render("~/bundles/Linq4JavscriptPerformanceTests")*@
+     @Scripts.Render("~/bundles/AsyncTester")
 }
 
 <div id="Clock" style="margin-top: 25px;"></div>
 
 <hr />
 
-<button id="RunQuery" value="RunQuery">Run Query</button>
+<button id="RunQuery" value="RunQuery" onclick="RunQuery()">Run Query</button>
 
 <hr />
 
