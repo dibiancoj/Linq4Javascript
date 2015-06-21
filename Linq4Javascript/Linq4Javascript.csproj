@@ -222,6 +222,7 @@
     <Content Include="Scripts\Linq4JavascriptHelpersUnitTest.js.map" />
     <Content Include="Views\Home\PerformanceUnitTests.cshtml" />
     <Content Include="Scripts\Linq4JavascriptPerformanceUnitTest.js.map" />
+    <Content Include="Views\Home\AsyncTester.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="Scripts\JLinq.ts" />

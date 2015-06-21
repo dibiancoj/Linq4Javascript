@@ -21,5 +21,11 @@ namespace Linq4Javascript.Controllers
             return View();
         }
 
+        [HttpGet]
+        public ActionResult AsyncTester()
+        {
+            return View();
+        }
+
     }
 }

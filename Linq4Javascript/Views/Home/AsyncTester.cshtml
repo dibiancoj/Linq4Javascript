@@ -1,0 +1,31 @@
+﻿@{
+    ViewBag.Title = "Performance Unit Tests";
+}
+@section css{
+    @*<link href="~/Content/qunit.css" rel="stylesheet">*@
+}
+
+@section Scripts {
+    @* @Scripts.Render("~/bundles/Linq4JavscriptPerformanceTests")*@
+}
+
+<div id="Clock" style="margin-top: 25px;"></div>
+
+<hr />
+
+<button id="RunQuery" value="RunQuery">Run Query</button>
+
+<hr />
+
+<div id="Results">
+</div>
+
+<script type="text/javascript">
+
+    setInterval(function () {
+        document.getElementById('Clock').innerHTML = new Date();
+    }, 1000);
+
+</script>
+
+

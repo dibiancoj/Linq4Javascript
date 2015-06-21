@@ -108,7 +108,7 @@ test('JLinq.SelectMany.PerformanceTest.Iterator', function () {
     var QueryToRun = _Array.SelectMany(function (x) { return x.lst; });
     //****Lazy Execution Test****
     var CurrentResult;
-    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== ToracTechnologies.JLinq.IteratorStatus.Completed) {
+    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== 2 /* Completed */) {
     }
     //need atleast 1 test 
     equal(1, 1);
@@ -125,7 +125,7 @@ test('JLinq.Where.PerformanceTest.Iterator', function () {
     var QueryToRun = _Array.Where(function (x) { return x.Id >= 15000 && x.Id < 30000; });
     //****Lazy Execution Test****
     var CurrentResult;
-    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== ToracTechnologies.JLinq.IteratorStatus.Completed) {
+    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== 2 /* Completed */) {
     }
     //need atleast 1 test 
     equal(1, 1);
@@ -141,7 +141,7 @@ test('JLinq.Concat.PerformanceTest.Iterator', function () {
     var QueryToRun = _Array.Concat(_SecondaryArray);
     //****Lazy Execution Test****
     var CurrentResult;
-    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== ToracTechnologies.JLinq.IteratorStatus.Completed) {
+    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== 2 /* Completed */) {
     }
     //need atleast 1 test 
     equal(1, 1);
@@ -158,7 +158,7 @@ test('JLinq.ConcatQuery.PerformanceTest.Iterator', function () {
     var QueryToRun = _Array.Where(function (x) { return true; }).ConcatQuery(_SecondaryArray.Where(function (x) { return true; }));
     //****Lazy Execution Test****
     var CurrentResult;
-    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== ToracTechnologies.JLinq.IteratorStatus.Completed) {
+    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== 2 /* Completed */) {
     }
     //need atleast 1 test 
     equal(1, 1);
@@ -174,7 +174,7 @@ test('JLinq.Union.PerformanceTest.Iterator', function () {
     var QueryToRun = _Array.Select(function (x) { return x.Id; }).ToArray().Union(_SecondaryArray.Select(function (x) { return x.Id; }).ToArray());
     //****Lazy Execution Test****
     var CurrentResult;
-    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== ToracTechnologies.JLinq.IteratorStatus.Completed) {
+    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== 2 /* Completed */) {
     }
     //need atleast 1 test 
     equal(1, 1);
@@ -190,7 +190,7 @@ test('JLinq.UnionQuery.PerformanceTest.Iterator', function () {
     var QueryToRun = _Array.Select(function (x) { return x.Id; }).ToArray().UnionQuery(_SecondaryArray.Where(function (x) { return true; }).Select(function (x) { return x.Id; }));
     //****Lazy Execution Test****
     var CurrentResult;
-    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== ToracTechnologies.JLinq.IteratorStatus.Completed) {
+    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== 2 /* Completed */) {
     }
     //need atleast 1 test 
     equal(1, 1);
@@ -206,7 +206,7 @@ test('JLinq.Take.PerformanceTest.Iterator', function () {
     var QueryToRun = _Array.Take(10000);
     //****Lazy Execution Test****
     var CurrentResult;
-    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== ToracTechnologies.JLinq.IteratorStatus.Completed) {
+    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== 2 /* Completed */) {
     }
     //need atleast 1 test 
     equal(1, 1);
@@ -222,7 +222,7 @@ test('JLinq.Skip.PerformanceTest.Iterator', function () {
     var QueryToRun = _Array.Skip(15000);
     //****Lazy Execution Test****
     var CurrentResult;
-    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== ToracTechnologies.JLinq.IteratorStatus.Completed) {
+    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== 2 /* Completed */) {
     }
     //need atleast 1 test 
     equal(1, 1);
@@ -239,7 +239,7 @@ test('JLinq.Paginate.PerformanceTest.Iterator', function () {
     var QueryToRun = _Array.Paginate(1, 3);
     //****Lazy Execution Test****
     var CurrentResult;
-    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== ToracTechnologies.JLinq.IteratorStatus.Completed) {
+    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== 2 /* Completed */) {
     }
     //need atleast 1 test 
     equal(1, 1);
@@ -307,7 +307,7 @@ test('JLinq.Select.PerformanceTest.Iterator', function () {
     });
     //****Lazy Execution Test****
     var CurrentResult;
-    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== ToracTechnologies.JLinq.IteratorStatus.Completed) {
+    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== 2 /* Completed */) {
     }
     //need atleast 1 test 
     equal(1, 1);
@@ -379,7 +379,7 @@ test('JLinq.Distinct.PerformanceTest.Iterator', function () {
     var QueryToRun = arrayToTestAgainst.Distinct(function (x) { return x.Id; });
     //****Lazy Execution Test****
     var CurrentResult;
-    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== ToracTechnologies.JLinq.IteratorStatus.Completed) {
+    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== 2 /* Completed */) {
     }
     //need atleast 1 test 
     equal(1, 1);
@@ -503,6 +503,4 @@ test('JLinq.Dictionary.MultiKeyObjectWithDate.PerformanceTest.ToDictionary', fun
     //need atleast 1 test 
     equal(1, 1);
 });
-//#endregion
-//#endregion 
 //# sourceMappingURL=Linq4JavascriptPerformanceUnitTest.js.map

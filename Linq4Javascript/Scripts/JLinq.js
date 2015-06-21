@@ -2031,6 +2031,4 @@ Array.prototype.OrderBy = function (SortPropertySelector) {
 Array.prototype.OrderByDescending = function (SortPropertySelector) {
     return new ToracTechnologies.JLinq.Queryable(this).OrderByDescending(SortPropertySelector);
 };
-//#endregion
-//#endregion 
 //# sourceMappingURL=JLinq.js.map
