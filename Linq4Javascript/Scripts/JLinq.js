@@ -302,7 +302,7 @@ var ToracTechnologies;
                     }, false);
                     //we need to go grab all the methods and push them to a string so we can rebuild it in the web worker. ie. Where => convert the Where method the dev passes in.
                     //go run the method (stringify the query)
-                    workerToRun.postMessage(JSON.stringify(Iterator.BuildAsyncTree(this)));
+                    workerToRun.postMessage(JSON.stringify(Iterator.SerializeAsyncFuncToStringTree(this)));
                 }
                 else {
                     // No Web Worker support.. just return the data
@@ -372,6 +372,20 @@ var ToracTechnologies;
                 }
                 //return the array now
                 return IChainablesToReturn;
+            };
+            //serialize the func 
+            Iterator.SerializeAsyncFuncToStringTree = function (Query) {
+                debugger;
+                //flatten the tree
+                var FlatTree = Iterator.ChainableTreeWalker(Query);
+                for (var i = 0, len = FlatTree.length; i < len; i++) {
+                    //grab the current item
+                    var CurrentLevelOfTree = FlatTree[i];
+                    //set the serialized info
+                    CurrentLevelOfTree.AsyncSerialized = CurrentLevelOfTree.AsyncSerializedFunc();
+                }
+                //we have a built up query with serialized methods, go return it
+                return Query;
             };
             return Iterator;
         })();
@@ -2151,4 +2165,4 @@ Array.prototype.OrderBy = function (SortPropertySelector) {
 Array.prototype.OrderByDescending = function (SortPropertySelector) {
     return new ToracTechnologies.JLinq.Queryable(this).OrderByDescending(SortPropertySelector);
 };
-//# sourceMappingURL=JLinq.js.map
+//# sourceMappingURL=jlinq.js.map
