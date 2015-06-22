@@ -93,3 +93,4 @@ C:\Workspace\GitHub\Linq4Javascript\Linq4Javascript\bin\System.Web.WebPages.Razo
 C:\Workspace\GitHub\Linq4Javascript\Linq4Javascript\bin\Antlr3.Runtime.pdb
 C:\Workspace\GitHub\Linq4Javascript\Linq4Javascript\obj\Debug\Linq4Javascript.dll
 C:\Workspace\GitHub\Linq4Javascript\Linq4Javascript\obj\Debug\Linq4Javascript.pdb
+C:\Workspace\GitHub\Linq4Javascript\Linq4Javascript\obj\Debug\Linq4Javascript.csprojResolveAssemblyReference.cache

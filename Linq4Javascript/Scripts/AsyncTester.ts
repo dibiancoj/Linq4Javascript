@@ -11,27 +11,11 @@ for (var i = 0; i < 10; i++) {
 
 function RunQuery() {
 
-    debugger;
-    var workerToRun = new Worker('../Scripts/AsyncWebWorkerForDebugging.js');
-
-    //workerToRun.onmessage = e => {
-    //    debugger;
-    //    DisplayResults(e.data);
-    //};
-
-    workerToRun.addEventListener('message', e => {
-        debugger;
-        DisplayResults(e.data);
-        //callback(e);
-    }, false);
-
-    //go run the method
-    workerToRun.postMessage(_ArrayToTest);
-
-
     document.getElementById('Results').innerHTML = 'Running Query...';
 
-    //inlineWorker.postMessage([_ArrayToTest[0], _ArrayToTest[1]]);
+    _ArrayToTest.Where(x => x.Id == 2 || x.Id == 4).ToArrayAsync(result => {
+        DisplayResults(result);
+    });
 
 }
 
@@ -41,6 +25,10 @@ function DisplayResults(Results: Array<TestData>) {
 
     for (var i = 0; i < Results.length; i++) {
         html += '<li>' + Results[i].Id + '</li>';
+    }
+
+    if (Results.length == 0) {
+        html += '<li>No Data</li>';
     }
 
     html += '</ul>';

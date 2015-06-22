@@ -36,6 +36,7 @@ var ToracTechnologies;
         var Iterator = (function () {
             function Iterator() {
             }
+            //#endregion
             //#region Linq Functionality Methods
             //selects the items that meet the predicate criteria
             Iterator.prototype.Where = function (WhereClauseSelector) {
@@ -287,6 +288,27 @@ var ToracTechnologies;
                 //return the array now
                 return ArrayToBeReturned;
             };
+            //materializes the expression to an array in a web worker so it doesn't feeze the ui. if a web worker is not available it will just call the ToArray()
+            Iterator.prototype.ToArrayAsync = function (CallbackWhenQueryIsComplete) {
+                if (typeof (Worker) !== "undefined") {
+                    // Yes! Web worker support!
+                    //go create the web worker
+                    var workerToRun = new Worker('../Scripts/AsyncWebWorkerForDebugging.js');
+                    //attach the event handler
+                    workerToRun.addEventListener('message', function (e) {
+                        debugger;
+                        CallbackWhenQueryIsComplete(e.data);
+                        //callback(e);
+                    }, false);
+                    //we need to go grab all the methods and push them to a string so we can rebuild it in the web worker. ie. Where => convert the Where method the dev passes in.
+                    //go run the method (stringify the query)
+                    workerToRun.postMessage(JSON.stringify(Iterator.BuildAsyncTree(this)));
+                }
+                else {
+                    // No Web Worker support.. just return the data
+                    CallbackWhenQueryIsComplete(this.ToArray());
+                }
+            };
             //this is an abstract method
             Iterator.prototype.Next = function () {
                 throw new Error('This method is abstract');
@@ -300,6 +322,32 @@ var ToracTechnologies;
             Iterator.prototype.ResetQuery = function () {
                 //go reset the iterator
                 ResetIterator(this);
+            };
+            //#endregion
+            //#region Private Static Methods
+            Iterator.BuildAsyncTree = function (Query) {
+                debugger;
+                //flatten the tree
+                var FlatTree = Iterator.ChainableTreeWalker(Query);
+                for (var i = 0, len = FlatTree.length; i < len; i++) {
+                    //grab the current item
+                    var CurrentLevelOfTree = FlatTree[i];
+                    //set the serialized info
+                    CurrentLevelOfTree.AsyncSerialized = CurrentLevelOfTree.AsyncSerializedFunc();
+                }
+                //we have a built up query with serialized methods, go return it
+                return Query;
+            };
+            Iterator.prototype.AsyncSerializedFunc = function () {
+                throw new Error('This method is abstract');
+            };
+            Iterator.prototype.SerializeMethod = function (MethodToSerialize) {
+                if (MethodToSerialize == null) {
+                    return '';
+                }
+                else {
+                    return MethodToSerialize.toString();
+                }
             };
             //#endregion
             //#region Public Static Methods
@@ -501,6 +549,9 @@ var ToracTechnologies;
                     }
                 }
             };
+            WhereIterator.prototype.AsyncSerializedFunc = function () {
+                return [new KeyValuePair('WhereClausePredicate', _super.prototype.SerializeMethod.call(this, WhereIterator))];
+            };
             return WhereIterator;
         })(Iterator);
         JLinq.WhereIterator = WhereIterator;
@@ -538,6 +589,9 @@ var ToracTechnologies;
                         return NextItem;
                     }
                 }
+            };
+            FirstOrDefaultIterator.prototype.AsyncSerializedFunc = function () {
+                return null;
             };
             return FirstOrDefaultIterator;
         })(Iterator);
@@ -589,6 +643,9 @@ var ToracTechnologies;
                 //we are done iterating through the previous expression, just return the result
                 return new IteratorResult(CurrentSelectedItem, 2 /* Completed */);
             };
+            SingleOrDefaultIterator.prototype.AsyncSerializedFunc = function () {
+                return null;
+            };
             return SingleOrDefaultIterator;
         })(Iterator);
         JLinq.SingleOrDefaultIterator = SingleOrDefaultIterator;
@@ -625,6 +682,9 @@ var ToracTechnologies;
                     //now create this guy and return it
                     return new IteratorResult(this.SelectPredicate(NextItem.CurrentItem), 1 /* Running */);
                 }
+            };
+            SelectIterator.prototype.AsyncSerializedFunc = function () {
+                return null;
             };
             return SelectIterator;
         })(Iterator);
@@ -696,6 +756,9 @@ var ToracTechnologies;
                     }
                 }
             };
+            SelectManyIterator.prototype.AsyncSerializedFunc = function () {
+                return null;
+            };
             return SelectManyIterator;
         })(Iterator);
         JLinq.SelectManyIterator = SelectManyIterator;
@@ -740,6 +803,9 @@ var ToracTechnologies;
                         return new IteratorResult(PropertyValue, 1 /* Running */);
                     }
                 }
+            };
+            DistinctIterator.prototype.AsyncSerializedFunc = function () {
+                return null;
             };
             return DistinctIterator;
         })(Iterator);
@@ -790,6 +856,9 @@ var ToracTechnologies;
                     }
                 }
             };
+            TakeIterator.prototype.AsyncSerializedFunc = function () {
+                return null;
+            };
             TakeIterator.prototype.WeReturnedWhatWeWantedAlready = function () {
                 return this.HowManyHaveWeReturned === this.HowManyToTake;
             };
@@ -828,6 +897,9 @@ var ToracTechnologies;
                     //if we get here then the predicate doesn't match...so at that point we don't want to take any more and we want to return the complete iterator
                     return new IteratorResult(null, 2 /* Completed */);
                 }
+            };
+            TakeWhileIterator.prototype.AsyncSerializedFunc = function () {
+                return null;
             };
             return TakeWhileIterator;
         })(Iterator);
@@ -876,6 +948,9 @@ var ToracTechnologies;
                     }
                 }
             };
+            SkipIterator.prototype.AsyncSerializedFunc = function () {
+                return null;
+            };
             return SkipIterator;
         })(Iterator);
         JLinq.SkipIterator = SkipIterator;
@@ -919,6 +994,9 @@ var ToracTechnologies;
                         return new IteratorResult(NextItem.CurrentItem, 1 /* Running */);
                     }
                 }
+            };
+            SkipWhileIterator.prototype.AsyncSerializedFunc = function () {
+                return null;
             };
             return SkipWhileIterator;
         })(Iterator);
@@ -966,6 +1044,9 @@ var ToracTechnologies;
                     }
                 }
             };
+            AggregateIterator.prototype.AsyncSerializedFunc = function () {
+                return null;
+            };
             return AggregateIterator;
         })(Iterator);
         JLinq.AggregateIterator = AggregateIterator;
@@ -1006,6 +1087,9 @@ var ToracTechnologies;
                         return new IteratorResult(false, 2 /* Completed */);
                     }
                 }
+            };
+            AllIterator.prototype.AsyncSerializedFunc = function () {
+                return null;
             };
             return AllIterator;
         })(Iterator);
@@ -1049,6 +1133,9 @@ var ToracTechnologies;
                         return new IteratorResult(true, 2 /* Completed */);
                     }
                 }
+            };
+            AnyIterator.prototype.AsyncSerializedFunc = function () {
+                return null;
             };
             return AnyIterator;
         })(Iterator);
@@ -1094,6 +1181,9 @@ var ToracTechnologies;
                     }
                 }
             };
+            LastIterator.prototype.AsyncSerializedFunc = function () {
+                return null;
+            };
             return LastIterator;
         })(Iterator);
         JLinq.LastIterator = LastIterator;
@@ -1135,6 +1225,9 @@ var ToracTechnologies;
                         }
                     }
                 }
+            };
+            ConcatIterator.prototype.AsyncSerializedFunc = function () {
+                return null;
             };
             return ConcatIterator;
         })(Iterator);
@@ -1191,6 +1284,9 @@ var ToracTechnologies;
                     }
                 }
             };
+            UnionIterator.prototype.AsyncSerializedFunc = function () {
+                return null;
+            };
             return UnionIterator;
         })(Iterator);
         JLinq.UnionIterator = UnionIterator;
@@ -1234,6 +1330,9 @@ var ToracTechnologies;
                     }
                 }
             };
+            CountIterator.prototype.AsyncSerializedFunc = function () {
+                return null;
+            };
             return CountIterator;
         })(Iterator);
         JLinq.CountIterator = CountIterator;
@@ -1274,6 +1373,9 @@ var ToracTechnologies;
                         this.CurrentLowestNumber = NextItem.CurrentItem;
                     }
                 }
+            };
+            MinIterator.prototype.AsyncSerializedFunc = function () {
+                return null;
             };
             return MinIterator;
         })(Iterator);
@@ -1316,6 +1418,9 @@ var ToracTechnologies;
                     }
                 }
             };
+            MaxIterator.prototype.AsyncSerializedFunc = function () {
+                return null;
+            };
             return MaxIterator;
         })(Iterator);
         JLinq.MaxIterator = MaxIterator;
@@ -1356,6 +1461,9 @@ var ToracTechnologies;
                         this.CurrentSumTally += NextItem.CurrentItem;
                     }
                 }
+            };
+            SumIterator.prototype.AsyncSerializedFunc = function () {
+                return null;
             };
             return SumIterator;
         })(Iterator);
@@ -1402,6 +1510,9 @@ var ToracTechnologies;
                         this.CurrentItemCountTally++;
                     }
                 }
+            };
+            AverageIterator.prototype.AsyncSerializedFunc = function () {
+                return null;
             };
             return AverageIterator;
         })(Iterator);
@@ -1455,6 +1566,9 @@ var ToracTechnologies;
                     }
                 }
             };
+            GroupIterator.prototype.AsyncSerializedFunc = function () {
+                return null;
+            };
             return GroupIterator;
         })(Iterator);
         JLinq.GroupIterator = GroupIterator;
@@ -1498,6 +1612,9 @@ var ToracTechnologies;
                 }
                 //just keep returning until the data source is completed
                 return this.DataSource.Next();
+            };
+            OrderByIterator.prototype.AsyncSerializedFunc = function () {
+                return null;
             };
             //#endregion
             //#region ThenBy and ThenByDescending Methods
@@ -1643,6 +1760,9 @@ var ToracTechnologies;
             OrderThenByIterator.prototype.Next = function () {
                 //just return the previous expression, because the "OrderBy" will sort the "ThenBy" items. So just loop until we are done because we are already sorted
                 return this.PreviousExpression.Next();
+            };
+            OrderThenByIterator.prototype.AsyncSerializedFunc = function () {
+                return null;
             };
             //#endregion
             //#region ThenBy and ThenByDescending Methods

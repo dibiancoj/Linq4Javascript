@@ -33,6 +33,19 @@ module ToracTechnologies {
         //Class is used to throw the methods on a common class that we can inherit from
         export class Iterator<T> {
 
+            //#region Properties
+
+            //this is an abstract proeprty
+            public TypeOfObject: string;
+
+            //this is an abstract property
+            public PreviousExpression: IChainable<any, any>;
+
+            //holds the methods we need to serialize when we run async
+            public AsyncSerialized: Array<KeyValuePair<string, string>>;
+
+            //#endregion
+
             //#region Linq Functionality Methods
 
             //selects the items that meet the predicate criteria
@@ -341,7 +354,7 @@ module ToracTechnologies {
                 }
 
                 //go skip x amount of pages and only take however amount of records you want on a page. 
-                return new SkipIterator<T>(this, ((CurrentPageNumber - 1) * HowManyRecordsPerPage)).Take(HowManyRecordsPerPage);
+                return new SkipIterator<T>(this,((CurrentPageNumber - 1) * HowManyRecordsPerPage)).Take(HowManyRecordsPerPage);
             }
 
             //order by from data source
@@ -388,16 +401,37 @@ module ToracTechnologies {
                 return ArrayToBeReturned;
             }
 
+            //materializes the expression to an array in a web worker so it doesn't feeze the ui. if a web worker is not available it will just call the ToArray()
+            public ToArrayAsync(CallbackWhenQueryIsComplete: (Result: Array<T>) => void): void {
+
+                if (typeof (Worker) !== "undefined") {
+                    // Yes! Web worker support!
+
+                    //go create the web worker
+                    var workerToRun = new Worker('../Scripts/AsyncWebWorkerForDebugging.js');
+
+                    //attach the event handler
+                    workerToRun.addEventListener('message', e => {
+                        debugger;
+                        CallbackWhenQueryIsComplete(e.data);
+                        //callback(e);
+                    }, false);
+
+                    //we need to go grab all the methods and push them to a string so we can rebuild it in the web worker. ie. Where => convert the Where method the dev passes in.
+
+                    //go run the method (stringify the query)
+                    workerToRun.postMessage(JSON.stringify(Iterator.BuildAsyncTree(this)));
+
+                } else {
+                    // No Web Worker support.. just return the data
+                    CallbackWhenQueryIsComplete(this.ToArray());
+                }
+            }
+
             //this is an abstract method
             public Next(): IteratorResult<T> {
                 throw new Error('This method is abstract');
             }
-
-            //this is an abstract proeprty
-            public TypeOfObject: string;
-
-            //this is an abstract property
-            public PreviousExpression: IChainable<any, any>;
 
             //this is an abstract method (this should be considered private)
             public ResetIterator() {
@@ -410,6 +444,41 @@ module ToracTechnologies {
 
                 //go reset the iterator
                 ResetIterator(this);
+            }
+
+            //#endregion
+
+            //#region Private Static Methods
+
+            public static BuildAsyncTree<T>(Query: Iterator<T>): Iterator<T> {
+                debugger;
+                //flatten the tree
+                var FlatTree = Iterator.ChainableTreeWalker(Query);
+
+                //loop through the tree
+                for (var i = 0, len = FlatTree.length; i < len; i++) {
+                    
+                    //grab the current item
+                    var CurrentLevelOfTree = FlatTree[i];
+
+                    //set the serialized info
+                    CurrentLevelOfTree.AsyncSerialized = CurrentLevelOfTree.AsyncSerializedFunc();
+                }
+
+                //we have a built up query with serialized methods, go return it
+                return Query;
+            }
+
+            public AsyncSerializedFunc(): Array<KeyValuePair<string, string>> {
+                throw new Error('This method is abstract');
+            }
+
+            public SerializeMethod(MethodToSerialize: any) {
+                if (MethodToSerialize == null) {
+                    return '';
+                } else {
+                    return MethodToSerialize.toString();
+                }
             }
 
             //#endregion
@@ -501,6 +570,10 @@ module ToracTechnologies {
             TypeOfObject: string;
             PreviousExpression: IChainable<any, T>;
             ResetIterator();
+            AsyncSerializedFunc(): Array<KeyValuePair<string, string>>;
+             
+            //holds the methods we need to serialize when we run async
+            AsyncSerialized: Array<KeyValuePair<string, string>>;
         }
 
         //used as a return object in the GroupBy Method
@@ -850,6 +923,10 @@ module ToracTechnologies {
                 }
             }
 
+            public AsyncSerializedFunc(): Array<KeyValuePair<string, string>> {
+                return [new KeyValuePair('WhereClausePredicate', super.SerializeMethod(WhereIterator))];
+            }
+
             //#endregion
 
         }
@@ -912,6 +989,10 @@ module ToracTechnologies {
                         return NextItem;
                     }
                 }
+            }
+
+            public AsyncSerializedFunc(): Array<KeyValuePair<string, string>> {
+                return null;
             }
 
             //#endregion
@@ -995,6 +1076,10 @@ module ToracTechnologies {
                 return new IteratorResult(CurrentSelectedItem, IteratorStatus.Completed);
             }
 
+            public AsyncSerializedFunc(): Array<KeyValuePair<string, string>> {
+                return null;
+            }
+
             //#endregion
 
         }
@@ -1054,6 +1139,10 @@ module ToracTechnologies {
                     //now create this guy and return it
                     return new IteratorResult(this.SelectPredicate(NextItem.CurrentItem), IteratorStatus.Running);
                 }
+            }
+
+            public AsyncSerializedFunc(): Array<KeyValuePair<string, string>> {
+                return null;
             }
 
             //#endregion
@@ -1167,6 +1256,10 @@ module ToracTechnologies {
                 }
             }
 
+            public AsyncSerializedFunc(): Array<KeyValuePair<string, string>> {
+                return null;
+            }
+
             //#endregion
 
         }
@@ -1240,6 +1333,10 @@ module ToracTechnologies {
                         return new IteratorResult(PropertyValue, IteratorStatus.Running);
                     }
                 }
+            }
+
+            public AsyncSerializedFunc(): Array<KeyValuePair<string, string>> {
+                return null;
             }
 
             //#endregion
@@ -1320,6 +1417,10 @@ module ToracTechnologies {
                 }
             }
 
+            public AsyncSerializedFunc(): Array<KeyValuePair<string, string>> {
+                return null;
+            }
+
             private WeReturnedWhatWeWantedAlready(): boolean {
                 return this.HowManyHaveWeReturned === this.HowManyToTake;
             }
@@ -1383,6 +1484,10 @@ module ToracTechnologies {
                     //if we get here then the predicate doesn't match...so at that point we don't want to take any more and we want to return the complete iterator
                     return new IteratorResult<T>(null, IteratorStatus.Completed);
                 }
+            }
+
+            public AsyncSerializedFunc(): Array<KeyValuePair<string, string>> {
+                return null;
             }
 
             //#endregion
@@ -1456,6 +1561,10 @@ module ToracTechnologies {
                         return NextItem;
                     }
                 }
+            }
+
+            public AsyncSerializedFunc(): Array<KeyValuePair<string, string>> {
+                return null;
             }
 
             //#endregion
@@ -1532,6 +1641,10 @@ module ToracTechnologies {
                 }
             }
 
+            public AsyncSerializedFunc(): Array<KeyValuePair<string, string>> {
+                return null;
+            }
+
             //#endregion
 
         }
@@ -1605,6 +1718,10 @@ module ToracTechnologies {
                 }
             }
 
+            public AsyncSerializedFunc(): Array<KeyValuePair<string, string>> {
+                return null;
+            }
+
             //#endregion
 
         }
@@ -1669,6 +1786,10 @@ module ToracTechnologies {
                         return new IteratorResult(false, IteratorStatus.Completed);
                     }
                 }
+            }
+
+            public AsyncSerializedFunc(): Array<KeyValuePair<string, string>> {
+                return null;
             }
 
             //#endregion
@@ -1738,6 +1859,10 @@ module ToracTechnologies {
                         return new IteratorResult(true, IteratorStatus.Completed);
                     }
                 }
+            }
+
+            public AsyncSerializedFunc(): Array<KeyValuePair<string, string>> {
+                return null;
             }
 
             //#endregion
@@ -1813,6 +1938,10 @@ module ToracTechnologies {
                 }
             }
 
+            public AsyncSerializedFunc(): Array<KeyValuePair<string, string>> {
+                return null;
+            }
+
             //#endregion
 
         }
@@ -1879,6 +2008,10 @@ module ToracTechnologies {
                         }
                     }
                 }
+            }
+
+            public AsyncSerializedFunc(): Array<KeyValuePair<string, string>> {
+                return null;
             }
 
             //#endregion
@@ -1970,6 +2103,10 @@ module ToracTechnologies {
                 }
             }
 
+            public AsyncSerializedFunc(): Array<KeyValuePair<string, string>> {
+                return null;
+            }
+
             //#endregion
 
         }
@@ -2041,6 +2178,10 @@ module ToracTechnologies {
                 }
             }
 
+            public AsyncSerializedFunc(): Array<KeyValuePair<string, string>> {
+                return null;
+            }
+
             //#endregion
 
         }
@@ -2105,6 +2246,10 @@ module ToracTechnologies {
                         this.CurrentLowestNumber = NextItem.CurrentItem;
                     }
                 }
+            }
+
+            public AsyncSerializedFunc(): Array<KeyValuePair<string, string>> {
+                return null;
             }
 
             //#endregion
@@ -2173,6 +2318,10 @@ module ToracTechnologies {
                 }
             }
 
+            public AsyncSerializedFunc(): Array<KeyValuePair<string, string>> {
+                return null;
+            }
+
             //#endregion
 
         }
@@ -2237,6 +2386,10 @@ module ToracTechnologies {
                         this.CurrentSumTally += NextItem.CurrentItem;
                     }
                 }
+            }
+
+            public AsyncSerializedFunc(): Array<KeyValuePair<string, string>> {
+                return null;
             }
 
             //#endregion
@@ -2310,6 +2463,10 @@ module ToracTechnologies {
                         this.CurrentItemCountTally++;
                     }
                 }
+            }
+
+            public AsyncSerializedFunc(): Array<KeyValuePair<string, string>> {
+                return null;
             }
 
             //#endregion
@@ -2393,6 +2550,10 @@ module ToracTechnologies {
                 }
             }
 
+            public AsyncSerializedFunc(): Array<KeyValuePair<string, string>> {
+                return null;
+            }
+
             //#endregion
 
         }
@@ -2473,6 +2634,10 @@ module ToracTechnologies {
 
                 //just keep returning until the data source is completed
                 return this.DataSource.Next();
+            }
+
+            public AsyncSerializedFunc(): Array<KeyValuePair<string, string>> {
+                return null;
             }
 
             //#endregion
@@ -2667,6 +2832,10 @@ module ToracTechnologies {
 
                 //just return the previous expression, because the "OrderBy" will sort the "ThenBy" items. So just loop until we are done because we are already sorted
                 return this.PreviousExpression.Next();
+            }
+
+            public AsyncSerializedFunc(): Array<KeyValuePair<string, string>> {
+                return null;
             }
 
             //#endregion
@@ -2940,7 +3109,7 @@ module ToracTechnologies {
                     //throw the dictionary into a variable so we have access to it in the 
 
                     //parse reviver needs to be in a closure so we can access the dictionary
-                    return <any>JSON.parse(KeyValue, (key, value) => {
+                    return <any>JSON.parse(KeyValue,(key, value) => {
 
                         //is this a date item
                         if (this.DatePropertiesForMultiKey != null && this.DatePropertiesForMultiKey.ContainsKey(key)) {
@@ -3131,7 +3300,7 @@ interface Array<T> {
 
 //#region Prototypes
 
-Array.prototype.AsQueryable = function<T>(): ToracTechnologies.JLinq.Queryable<T> {
+Array.prototype.AsQueryable = function <T>(): ToracTechnologies.JLinq.Queryable<T> {
     return new ToracTechnologies.JLinq.Queryable<T>(this);
 }
 
