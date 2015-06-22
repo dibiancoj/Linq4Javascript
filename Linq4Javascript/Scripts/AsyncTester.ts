@@ -26,7 +26,7 @@ function RunQuery() {
     }, false);
 
     //go run the method
-    workerToRun.postMessage([_ArrayToTest[0], _ArrayToTest[1]]);
+    workerToRun.postMessage(_ArrayToTest);
 
 
     document.getElementById('Results').innerHTML = 'Running Query...';
