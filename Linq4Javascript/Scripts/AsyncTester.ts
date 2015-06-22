@@ -11,10 +11,28 @@ for (var i = 0; i < 10; i++) {
 
 function RunQuery() {
 
+    debugger;
+    var workerToRun = new Worker('../Scripts/AsyncWebWorkerForDebugging.js');
+
+    //workerToRun.onmessage = e => {
+    //    debugger;
+    //    DisplayResults(e.data);
+    //};
+
+    workerToRun.addEventListener('message', e => {
+        debugger;
+        DisplayResults(e.data);
+        //callback(e);
+    }, false);
+
+    //go run the method
+    workerToRun.postMessage([_ArrayToTest[0], _ArrayToTest[1]]);
+
+
     document.getElementById('Results').innerHTML = 'Running Query...';
 
-    inlineWorker.postMessage([_ArrayToTest[0], _ArrayToTest[1]]);
-    //inlineWorker.postMessage(_ArrayToTest[1]);
+    //inlineWorker.postMessage([_ArrayToTest[0], _ArrayToTest[1]]);
+
 }
 
 function DisplayResults(Results: Array<TestData>) {
@@ -50,9 +68,9 @@ function MakeWorker(Script: String) {
 // Load a worker from a string, and manually initialize the worker (this does the work...and returns the data)
 var inlineWorkerText = "self.addEventListener('message', function(e) { setTimeout(function(){  postMessage(e.data); },5000)} ,false);";
 
-var inlineWorker = MakeWorker(inlineWorkerText);
+//var inlineWorker = MakeWorker(inlineWorkerText);
 
 //incase you want to troubleshoot
-inlineWorker.onmessage = e => {
-    DisplayResults(e.data);
-};
+//inlineWorker.onmessage = e => {
+//    DisplayResults(e.data);
+//};
