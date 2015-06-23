@@ -7,7 +7,6 @@ function RunQuery() {
     _ArrayToTest.Where(function (x) { return x.Id > 2; }).Take(2).OrderByDescending(function (x) { return x.Id; }).ToArrayAsync(function (result) {
         DisplayResults(result);
     }, function (errMsg) {
-        debugger;
         alert(errMsg.message);
     });
 }

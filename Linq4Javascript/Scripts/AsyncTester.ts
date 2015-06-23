@@ -16,7 +16,7 @@ function RunQuery() {
     _ArrayToTest.Where(x => x.Id > 2).Take(2).OrderByDescending(x => x.Id).ToArrayAsync(result => {
         DisplayResults(result);
     }, errMsg => {
-            debugger;
+     
             alert(errMsg.message);
         });
 

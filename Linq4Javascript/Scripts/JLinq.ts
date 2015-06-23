@@ -481,7 +481,7 @@ module ToracTechnologies {
             //#region Private Static Methods
 
             public static BuildAsyncTree<T>(Query: Iterator<T>): Iterator<T> {
-                debugger;
+    
                 //flatten the tree
                 var FlatTree = Iterator.ChainableTreeWalker(Query);
 

@@ -345,7 +345,6 @@ var ToracTechnologies;
             //#endregion
             //#region Private Static Methods
             Iterator.BuildAsyncTree = function (Query) {
-                debugger;
                 //flatten the tree
                 var FlatTree = Iterator.ChainableTreeWalker(Query);
                 for (var i = 0, len = FlatTree.length; i < len; i++) {
