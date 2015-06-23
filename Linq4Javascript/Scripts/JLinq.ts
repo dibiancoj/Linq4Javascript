@@ -57,7 +57,7 @@ module ToracTechnologies {
             public First(WhereClauseSelector?: (ItemToTest: T) => boolean): T {
 
                 //grab the result
-                var ResultOfQuery: T = new FirstOrDefaultIterator<T>(this, WhereClauseSelector).Next().CurrentItem;
+                var ResultOfQuery: T = new FirstOrDefaultIterator<T>(this, 'FirstIterator', WhereClauseSelector).Next().CurrentItem;
 
                 //if it's null then throw an error
                 if (ResultOfQuery == null) {
@@ -75,7 +75,7 @@ module ToracTechnologies {
             public FirstOrDefault(WhereClauseSelector?: (ItemToTest: T) => boolean): T {
 
                 //grab the result
-                var ResultOfQuery: T = new FirstOrDefaultIterator<T>(this, WhereClauseSelector).Next().CurrentItem;
+                var ResultOfQuery: T = new FirstOrDefaultIterator<T>(this, 'FirstOrDefaultIterator', WhereClauseSelector).Next().CurrentItem;
 
                 //reset the iterator
                 this.ResetQuery();
@@ -88,7 +88,7 @@ module ToracTechnologies {
             public Single(WhereClauseSelector?: (ItemToTest: T) => boolean): T {
 
                 //grab the result
-                var ResultOfQuery: T = new SingleOrDefaultIterator<T>(this, WhereClauseSelector).Next().CurrentItem;
+                var ResultOfQuery: T = new SingleOrDefaultIterator<T>(this, 'SingleIterator', WhereClauseSelector).Next().CurrentItem;
 
                 //if it's null then throw an error
                 if (ResultOfQuery == null) {
@@ -106,7 +106,7 @@ module ToracTechnologies {
             public SingleOrDefault(WhereClauseSelector?: (ItemToTest: T) => boolean): T {
 
                 //grab the result
-                var ResultOfQuery: T = new SingleOrDefaultIterator<T>(this, WhereClauseSelector).Next().CurrentItem;
+                var ResultOfQuery: T = new SingleOrDefaultIterator<T>(this, 'SingleOrDefaultIterator', WhereClauseSelector).Next().CurrentItem;
 
                 //reset the iterator
                 this.ResetQuery();
@@ -412,7 +412,7 @@ module ToracTechnologies {
 
                     //attach the event handler
                     workerToRun.addEventListener('message', e => {
-                        debugger;
+                        
                         CallbackWhenQueryIsComplete(e.data);
                         //callback(e);
                     }, false);
@@ -520,7 +520,7 @@ module ToracTechnologies {
 
             //serialize the func 
             public static SerializeAsyncFuncToStringTree<T>(Query: Iterator<T>): Iterator<T> {
-                debugger;
+       
                 //flatten the tree
                 var FlatTree = Iterator.ChainableTreeWalker(Query);
 
@@ -536,6 +536,16 @@ module ToracTechnologies {
 
                 //we have a built up query with serialized methods, go return it
                 return Query;
+            }
+
+            //make a function from a string
+            public static StringToCompiledMethod(MethodCode: string) {
+
+                if (MethodCode == null || MethodCode.length == 0) {
+                    return null;
+                }
+
+                return eval("(" + MethodCode + ")");
             }
 
             //#endregion
@@ -852,7 +862,7 @@ module ToracTechnologies {
             private CollectionLength: number;
 
             //holds the base collection source which we are iterating over
-            private CollectionSource: Array<T>;
+            public CollectionSource: Array<T>;
 
             //#endregion
 
@@ -957,7 +967,7 @@ module ToracTechnologies {
 
             //#region Constructor
 
-            constructor(PreviousLambdaExpression: IChainable<T, T>, WherePredicate?: (ItemToTest: T) => boolean) {
+            constructor(PreviousLambdaExpression: IChainable<T, T>, WhichTypeOfObject: string, WherePredicate?: (ItemToTest: T) => boolean) {
 
                 //set the queryable source
                 this.PreviousExpression = PreviousLambdaExpression;
@@ -969,7 +979,7 @@ module ToracTechnologies {
                 this.HasNullWhereClause = this.WhereClausePredicate == null;
 
                 //throw this into a variable so we can debug this thing when we go from CollectionSource To CollectionSource and check the type
-                this.TypeOfObject = "FirstOrDefaultIterator";
+                this.TypeOfObject = WhichTypeOfObject;
 
                 //because we inherit from Iterator we need to call the base class
                 super();
@@ -1025,7 +1035,7 @@ module ToracTechnologies {
 
             //#region Constructor
 
-            constructor(PreviousLambdaExpression: IChainable<T, T>, WherePredicate?: (ItemToTest: T) => boolean) {
+            constructor(PreviousLambdaExpression: IChainable<T, T>, WhichTypeOfObject: string, WherePredicate?: (ItemToTest: T) => boolean) {
 
                 //set the queryable source
                 this.PreviousExpression = PreviousLambdaExpression;
@@ -1037,7 +1047,7 @@ module ToracTechnologies {
                 this.HasNullWhereClause = this.WhereClausePredicate == null;
 
                 //throw this into a variable so we can debug this thing when we go from CollectionSource To CollectionSource and check the type
-                this.TypeOfObject = "SingleOrDefaultIterator";
+                this.TypeOfObject = WhichTypeOfObject;
 
                 //because we inherit from Iterator we need to call the base class
                 super();
@@ -1391,7 +1401,7 @@ module ToracTechnologies {
 
             //#region Properties
 
-            private HowManyToTake: number;
+            public HowManyToTake: number;
             private HowManyHaveWeReturned: number;
 
             //#endregion
@@ -1542,7 +1552,7 @@ module ToracTechnologies {
 
             //#region Properties
 
-            private HowManyToSkip: number;
+            public HowManyToSkip: number;
             private HowManyHaveWeSkipped: number;
 
             //#endregion

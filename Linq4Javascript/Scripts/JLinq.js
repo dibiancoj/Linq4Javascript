@@ -45,7 +45,7 @@ var ToracTechnologies;
             //grabs the first item (error if not found) that meet the predicate criteria
             Iterator.prototype.First = function (WhereClauseSelector) {
                 //grab the result
-                var ResultOfQuery = new FirstOrDefaultIterator(this, WhereClauseSelector).Next().CurrentItem;
+                var ResultOfQuery = new FirstOrDefaultIterator(this, 'FirstIterator', WhereClauseSelector).Next().CurrentItem;
                 //if it's null then throw an error
                 if (ResultOfQuery == null) {
                     throw "Can't Find First Item. Query Returned 0 Rows";
@@ -58,7 +58,7 @@ var ToracTechnologies;
             //grabs the first item (null if not found) that meet the predicate criteria
             Iterator.prototype.FirstOrDefault = function (WhereClauseSelector) {
                 //grab the result
-                var ResultOfQuery = new FirstOrDefaultIterator(this, WhereClauseSelector).Next().CurrentItem;
+                var ResultOfQuery = new FirstOrDefaultIterator(this, 'FirstOrDefaultIterator', WhereClauseSelector).Next().CurrentItem;
                 //reset the iterator
                 this.ResetQuery();
                 //now return the result
@@ -67,7 +67,7 @@ var ToracTechnologies;
             //grabs the only item (error if not found) that meet the predicate criteria
             Iterator.prototype.Single = function (WhereClauseSelector) {
                 //grab the result
-                var ResultOfQuery = new SingleOrDefaultIterator(this, WhereClauseSelector).Next().CurrentItem;
+                var ResultOfQuery = new SingleOrDefaultIterator(this, 'SingleIterator', WhereClauseSelector).Next().CurrentItem;
                 //if it's null then throw an error
                 if (ResultOfQuery == null) {
                     throw "Can't Find A Single Item. Query Returned 0 Rows";
@@ -80,7 +80,7 @@ var ToracTechnologies;
             //grabs the first item (null if not found) that meet the predicate criteria
             Iterator.prototype.SingleOrDefault = function (WhereClauseSelector) {
                 //grab the result
-                var ResultOfQuery = new SingleOrDefaultIterator(this, WhereClauseSelector).Next().CurrentItem;
+                var ResultOfQuery = new SingleOrDefaultIterator(this, 'SingleOrDefaultIterator', WhereClauseSelector).Next().CurrentItem;
                 //reset the iterator
                 this.ResetQuery();
                 //now return the result
@@ -296,7 +296,6 @@ var ToracTechnologies;
                     var workerToRun = new Worker('../Scripts/AsyncWebWorkerForDebugging.js');
                     //attach the event handler
                     workerToRun.addEventListener('message', function (e) {
-                        debugger;
                         CallbackWhenQueryIsComplete(e.data);
                         //callback(e);
                     }, false);
@@ -375,7 +374,6 @@ var ToracTechnologies;
             };
             //serialize the func 
             Iterator.SerializeAsyncFuncToStringTree = function (Query) {
-                debugger;
                 //flatten the tree
                 var FlatTree = Iterator.ChainableTreeWalker(Query);
                 for (var i = 0, len = FlatTree.length; i < len; i++) {
@@ -386,6 +384,13 @@ var ToracTechnologies;
                 }
                 //we have a built up query with serialized methods, go return it
                 return Query;
+            };
+            //make a function from a string
+            Iterator.StringToCompiledMethod = function (MethodCode) {
+                if (MethodCode == null || MethodCode.length == 0) {
+                    return null;
+                }
+                return eval("(" + MethodCode + ")");
             };
             return Iterator;
         })();
@@ -573,7 +578,7 @@ var ToracTechnologies;
         var FirstOrDefaultIterator = (function (_super) {
             __extends(FirstOrDefaultIterator, _super);
             //#region Constructor
-            function FirstOrDefaultIterator(PreviousLambdaExpression, WherePredicate) {
+            function FirstOrDefaultIterator(PreviousLambdaExpression, WhichTypeOfObject, WherePredicate) {
                 //set the queryable source
                 this.PreviousExpression = PreviousLambdaExpression;
                 //set the filter to run the where clause on
@@ -581,7 +586,7 @@ var ToracTechnologies;
                 //let's store if the where clause is null. This way we don't need to check it everytime we loop around. 
                 this.HasNullWhereClause = this.WhereClausePredicate == null;
                 //throw this into a variable so we can debug this thing when we go from CollectionSource To CollectionSource and check the type
-                this.TypeOfObject = "FirstOrDefaultIterator";
+                this.TypeOfObject = WhichTypeOfObject;
                 //because we inherit from Iterator we need to call the base class
                 _super.call(this);
             }
@@ -614,7 +619,7 @@ var ToracTechnologies;
         var SingleOrDefaultIterator = (function (_super) {
             __extends(SingleOrDefaultIterator, _super);
             //#region Constructor
-            function SingleOrDefaultIterator(PreviousLambdaExpression, WherePredicate) {
+            function SingleOrDefaultIterator(PreviousLambdaExpression, WhichTypeOfObject, WherePredicate) {
                 //set the queryable source
                 this.PreviousExpression = PreviousLambdaExpression;
                 //set the filter to run the where clause on
@@ -622,7 +627,7 @@ var ToracTechnologies;
                 //let's store if the where clause is null. This way we don't need to check it everytime we loop around. 
                 this.HasNullWhereClause = this.WhereClausePredicate == null;
                 //throw this into a variable so we can debug this thing when we go from CollectionSource To CollectionSource and check the type
-                this.TypeOfObject = "SingleOrDefaultIterator";
+                this.TypeOfObject = WhichTypeOfObject;
                 //because we inherit from Iterator we need to call the base class
                 _super.call(this);
             }

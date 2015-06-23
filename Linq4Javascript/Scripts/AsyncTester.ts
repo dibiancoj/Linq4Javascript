@@ -13,7 +13,7 @@ function RunQuery() {
 
     document.getElementById('Results').innerHTML = 'Running Query...';
 
-    _ArrayToTest.Where(x => x.Id == 2 || x.Id == 4).ToArrayAsync(result => {
+    _ArrayToTest.Where(x => x.Id > 2).Take(2).ToArrayAsync(result => {
         DisplayResults(result);
     });
 

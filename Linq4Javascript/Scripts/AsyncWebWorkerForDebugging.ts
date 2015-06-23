@@ -2,8 +2,7 @@
 /// <reference path="jlinq.ts" />
 
 self.addEventListener('message', e => {
-    debugger;
-
+  
     //let's import the jlinq library
     importScripts('jlinq.js');
 
@@ -15,22 +14,132 @@ self.addEventListener('message', e => {
     var FlatTree = ToracTechnologies.JLinq.Iterator.ChainableTreeWalker(Query);
 
     //grab the queryable
-    //var Queryable: any = <ToracTechnologies.JLinq.Queryable<any>>FlatTree[0].PreviousExpression;
+    var Queryable: ToracTechnologies.JLinq.Iterator<any> = new ToracTechnologies.JLinq.Queryable((<ToracTechnologies.JLinq.Queryable<any>>FlatTree[FlatTree.length - 1].PreviousExpression).CollectionSource);
 
-    ////loop through the tree (going backwards starting with queryable)
-    //for (var i = FlatTree.length - 1; i >= 0; i--) {
+    //loop through the tree (going backwards starting with queryable)
+    for (var i = FlatTree.length - 1; i >= 0; i--) {
                     
-    //    //grab the current item
-    //    var CurrentLevelOfTree = FlatTree[i];
+        //grab the current item
+        var CurrentLevelOfTree = FlatTree[i];
 
-    //    //go build this tree nodes
-    //    Queryable = new ToracTechnologies.JLinq.WhereIterator(Queryable, null);
-    //}
+        //go re-build this tree nodes
+        Queryable = RebuildTree(CurrentLevelOfTree, Queryable);
+    }
 
-    var results = new Array<TestData>();
-    //var results = (<TestData[]>e.data).Where(x => x.Id == 2 || x.Id == 4).ToArray();
-
-    //self.postMessage(ArrayToBeReturned, 'JLinq', null);
-    self.postMessage(results, null, null);
+    self.postMessage(Queryable.ToArray(), null, null);
 
 }, false);
+
+function RebuildTree(CurrentLevelOfTree, Queryable: ToracTechnologies.JLinq.Iterator<any>): any {
+
+    if (CurrentLevelOfTree.TypeOfObject == 'WhereIterator') {
+        return Queryable.Where(ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(x => x.Key == 'WhereClausePredicate').Value));
+    }
+
+    if (CurrentLevelOfTree.TypeOfObject == 'First') {
+        return Queryable.First(ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(x => x.Key == 'WhereClausePredicate').Value));
+    }
+
+    if (CurrentLevelOfTree.TypeOfObject == 'FirstOrDefaultIterator') {
+        return Queryable.FirstOrDefault(ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(x => x.Key == 'WhereClausePredicate').Value));
+    }
+
+    if (CurrentLevelOfTree.TypeOfObject == 'SingleIterator') {
+        return Queryable.Single(ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(x => x.Key == 'WhereClausePredicate').Value));
+    }
+
+    if (CurrentLevelOfTree.TypeOfObject == 'SingleOrDefaultIterator') {
+        return Queryable.Single(ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(x => x.Key == 'WhereClausePredicate').Value));
+    }
+
+    if (CurrentLevelOfTree.TypeOfObject == 'SelectIterator') {
+        return Queryable.Select(ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(x => x.Key == 'SelectPredicate').Value));
+    }
+
+    if (CurrentLevelOfTree.TypeOfObject == 'SelectManyIterator') {
+        return Queryable.SelectMany(ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(x => x.Key == 'CollectionPropertySelector').Value));
+    }
+
+    if (CurrentLevelOfTree.TypeOfObject == 'DistinctIterator') {
+        return Queryable.Distinct(ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(x => x.Key == 'PropertySelector').Value));
+    }
+
+    if (CurrentLevelOfTree.TypeOfObject == 'TakeIterator') {
+        return Queryable.Take((<ToracTechnologies.JLinq.TakeIterator<any>>CurrentLevelOfTree).HowManyToTake);
+    }
+
+    if (CurrentLevelOfTree.TypeOfObject == 'TakeWhileIterator') {
+        return Queryable.TakeWhile(ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(x => x.Key == 'PredicateToTakeWhile').Value));
+    }
+
+    if (CurrentLevelOfTree.TypeOfObject == 'SkipIterator') {
+        return Queryable.Skip((<ToracTechnologies.JLinq.SkipIterator<any>>CurrentLevelOfTree).HowManyToSkip);
+    }
+
+    if (CurrentLevelOfTree.TypeOfObject == 'SkipWhileIterator') {
+        return Queryable.SkipWhile(ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(x => x.Key == 'PredicateSkipUntil').Value));
+    }
+
+    if (CurrentLevelOfTree.TypeOfObject == 'AggregateIterator') {
+        return Queryable.Aggregate(ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(x => x.Key == 'PredicateAggregate').Value));
+    }
+
+    if (CurrentLevelOfTree.TypeOfObject == 'AllIterator') {
+        return Queryable.All(ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(x => x.Key == 'WhereClausePredicate').Value));
+    }
+
+    if (CurrentLevelOfTree.TypeOfObject == 'AnyIterator') {
+        return Queryable.Any(ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(x => x.Key == 'WhereClausePredicate').Value));
+    }
+
+    if (CurrentLevelOfTree.TypeOfObject == 'LastIterator') {
+        return Queryable.Last(ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(x => x.Key == 'WhereClausePredicate').Value));
+    }
+
+    if (CurrentLevelOfTree.TypeOfObject == 'CountIterator') {
+        return Queryable.Count(ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(x => x.Key == 'WhereClausePredicate').Value));
+    }
+
+    if (CurrentLevelOfTree.TypeOfObject == 'MinIterator') {
+        return Queryable.Min();
+    }
+
+    if (CurrentLevelOfTree.TypeOfObject == 'MaxIterator') {
+        return Queryable.Max();
+    }
+
+    if (CurrentLevelOfTree.TypeOfObject == 'SumIterator') {
+        return Queryable.Sum();
+    }
+
+    if (CurrentLevelOfTree.TypeOfObject == 'AverageIterator') {
+        return Queryable.Average();
+    }
+
+    if (CurrentLevelOfTree.TypeOfObject == 'GroupIterator') {
+        return Queryable.GroupBy(ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(x => x.Key == 'GroupBySelector').Value));
+    }
+
+    //if (CurrentLevelOfTree.TypeOfObject == 'OrderThenByIterator') {
+    //    return Queryable.OrderThenByIterator(ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(x => x.Key == 'SortPropertySelector').Value));
+    //}
+
+    //if (CurrentLevelOfTree.TypeOfObject == 'OrderByIterator') {
+    //    return new ToracTechnologies.JLinq.OrderByIterator(Queryable, Queryable(ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(x => x.Key == 'SortPropertySelector').Value));
+    //}
+
+    //if (CurrentLevelOfTree.TypeOfObject == 'OrderByIterator') {
+    //    return new ToracTechnologies.JLinq.OrderByIterator(Queryable, Queryable(ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(x => x.Key == 'SortPropertySelector').Value));
+    //}
+
+    //if (CurrentLevelOfTree.TypeOfObject == 'ConcatIterator') {
+    //    return Queryable.Concat(ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(x => x.Key == 'WhereClausePredicate').Value));
+    //}
+
+    //if (CurrentLevelOfTree.TypeOfObject == 'UnionIterator') {
+    //    return Queryable.Union(ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(x => x.Key == 'WhereClausePredicate').Value));
+    //}
+
+    alert('Level Not Implemented: ' + CurrentLevelOfTree.TypeOfObject);
+
+}
