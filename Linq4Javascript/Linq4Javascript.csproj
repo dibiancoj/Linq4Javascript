@@ -168,6 +168,8 @@
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
+    <Content Include="Scripts\AsyncTester.js" />
+    <Content Include="Scripts\AsyncWebWorkerForDebugging.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="Areas\HelpPage\Views\Web.config" />
@@ -191,6 +193,8 @@
     <Content Include="Areas\HelpPage\Views\Help\Api.cshtml" />
     <Content Include="Scripts\JLinq Change Log.txt" />
     <Content Include="Scripts\JLinq.js.map" />
+    <Content Include="Scripts\AsyncTester.js.map" />
+    <Content Include="Scripts\AsyncWebWorkerForDebugging.js.map" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\JLinq.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
