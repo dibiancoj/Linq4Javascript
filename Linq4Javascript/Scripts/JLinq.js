@@ -31,6 +31,13 @@ var ToracTechnologies;
 (function (ToracTechnologies) {
     var JLinq;
     (function (JLinq) {
+        //#region Utilities
+        function AsyncIsAvailable() {
+            //does this browser support web workers? (async)
+            return typeof (Worker) !== 'undefined';
+        }
+        JLinq.AsyncIsAvailable = AsyncIsAvailable;
+        //#endregion
         //#region Iterator Class
         //Class is used to throw the methods on a common class that we can inherit from
         var Iterator = (function () {
@@ -157,22 +164,22 @@ var ToracTechnologies;
             //go setup the iterator to concat a iterator and another query
             Iterator.prototype.ConcatQuery = function (QueryToConcat) {
                 //just return the concat iterator
-                return new ConcatIterator(this, QueryToConcat);
+                return new ConcatIterator(this, 'ConcatQueryIterator', QueryToConcat);
             };
             //go setup the iterator to concat a iterator and an array
             Iterator.prototype.Concat = function (ArrayToCombine) {
                 //just return the concat iterator
-                return new ConcatIterator(this, new Queryable(ArrayToCombine));
+                return new ConcatIterator(this, 'ConcatArrayIterator', new Queryable(ArrayToCombine));
             };
             //go setup the iterator to union a iterator and another query
             Iterator.prototype.UnionQuery = function (QueryToUnion) {
                 //just return the union iterator
-                return new UnionIterator(this, QueryToUnion);
+                return new UnionIterator(this, 'UnionQueryIterator', QueryToUnion);
             };
             //go setup the iterator to union a iterator and an array
             Iterator.prototype.Union = function (ArrayToCombine) {
                 //just return the union iterator
-                return new UnionIterator(this, new Queryable(ArrayToCombine));
+                return new UnionIterator(this, 'UnionArrayIterator', new Queryable(ArrayToCombine));
             };
             //counts the number of items that match the predicate
             Iterator.prototype.Count = function (WhereClauseSelector) {
@@ -289,8 +296,9 @@ var ToracTechnologies;
                 return ArrayToBeReturned;
             };
             //materializes the expression to an array in a web worker so it doesn't feeze the ui. if a web worker is not available it will just call the ToArray()
-            Iterator.prototype.ToArrayAsync = function (CallbackWhenQueryIsComplete) {
-                if (typeof (Worker) !== "undefined") {
+            Iterator.prototype.ToArrayAsync = function (CallbackWhenQueryIsComplete, OnErrorCallBack) {
+                //is the browser new enough to run web webworkers?
+                if (AsyncIsAvailable()) {
                     // Yes! Web worker support!
                     //go create the web worker
                     var workerToRun = new Worker('../Scripts/AsyncWebWorkerForDebugging.js');
@@ -299,8 +307,9 @@ var ToracTechnologies;
                         CallbackWhenQueryIsComplete(e.data);
                         //callback(e);
                     }, false);
+                    //add the on error event handler
+                    workerToRun.addEventListener("error", OnErrorCallBack, false);
                     //we need to go grab all the methods and push them to a string so we can rebuild it in the web worker. ie. Where => convert the Where method the dev passes in.
-                    //go run the method (stringify the query)
                     workerToRun.postMessage(JSON.stringify(Iterator.SerializeAsyncFuncToStringTree(this)));
                 }
                 else {
@@ -1210,13 +1219,13 @@ var ToracTechnologies;
         var ConcatIterator = (function (_super) {
             __extends(ConcatIterator, _super);
             //#region Constructor
-            function ConcatIterator(PreviousLambdaExpression, QueryToConcat) {
+            function ConcatIterator(PreviousLambdaExpression, WhichTypeOfObject, QueryToConcat) {
                 //set the queryable source
                 this.PreviousExpression = PreviousLambdaExpression;
                 //set query you want to concat together
                 this.ConcatThisQuery = QueryToConcat;
                 //throw this into a variable so we can debug this thing when we go from CollectionSource To CollectionSource and check the type
-                this.TypeOfObject = "ConcatIterator";
+                this.TypeOfObject = WhichTypeOfObject;
                 //because we inherit from Iterator we need to call the base class
                 _super.call(this);
             }
@@ -1246,6 +1255,11 @@ var ToracTechnologies;
                 }
             };
             ConcatIterator.prototype.AsyncSerializedFunc = function () {
+                //if we have a query, then we need to serialize all the parameters in the tree
+                if (this.TypeOfObject == 'ConcatQueryIterator') {
+                    //we dont have any parameters to serialize, but the query needs to be recursed and walked through to serialize the functions
+                    Iterator.SerializeAsyncFuncToStringTree(this.ConcatThisQuery);
+                }
                 return null;
             };
             return ConcatIterator;
@@ -1255,13 +1269,13 @@ var ToracTechnologies;
         var UnionIterator = (function (_super) {
             __extends(UnionIterator, _super);
             //#region Constructor
-            function UnionIterator(PreviousLambdaExpression, QueryToUnion) {
+            function UnionIterator(PreviousLambdaExpression, WhichTypeOfObject, QueryToUnion) {
                 //set the queryable source
                 this.PreviousExpression = PreviousLambdaExpression;
                 //set query you want to union together
                 this.UnionThisQuery = QueryToUnion;
                 //throw this into a variable so we can debug this thing when we go from CollectionSource To CollectionSource and check the type
-                this.TypeOfObject = "UnionIterator";
+                this.TypeOfObject = WhichTypeOfObject;
                 //create a new dictionary
                 this.HashSetStore = new HashSet();
                 //because we inherit from Iterator we need to call the base class
@@ -1304,6 +1318,11 @@ var ToracTechnologies;
                 }
             };
             UnionIterator.prototype.AsyncSerializedFunc = function () {
+                //if we have a query, then we need to serialize all the parameters in the tree
+                if (this.TypeOfObject == 'UnionQueryIterator') {
+                    //we dont have any parameters to serialize, but the query needs to be recursed and walked through to serialize the functions
+                    Iterator.SerializeAsyncFuncToStringTree(this.UnionThisQuery);
+                }
                 return null;
             };
             return UnionIterator;

@@ -28,6 +28,16 @@ module ToracTechnologies {
 
     export module JLinq {
 
+        //#region Utilities
+
+        export function AsyncIsAvailable(): boolean {
+
+            //does this browser support web workers? (async)
+            return typeof (Worker) !== 'undefined';
+        }
+
+        //#endregion
+
         //#region Iterator Class
 
         //Class is used to throw the methods on a common class that we can inherit from
@@ -213,25 +223,25 @@ module ToracTechnologies {
             //go setup the iterator to concat a iterator and another query
             public ConcatQuery(QueryToConcat: Iterator<T>): ConcatIterator<T> {
                 //just return the concat iterator
-                return new ConcatIterator(this, QueryToConcat);
+                return new ConcatIterator(this, 'ConcatQueryIterator', QueryToConcat);
             }
 
             //go setup the iterator to concat a iterator and an array
             public Concat(ArrayToCombine: Array<T>): ConcatIterator<T> {
                 //just return the concat iterator
-                return new ConcatIterator(this, new Queryable(ArrayToCombine));
+                return new ConcatIterator(this, 'ConcatArrayIterator', new Queryable(ArrayToCombine));
             }
 
             //go setup the iterator to union a iterator and another query
             public UnionQuery(QueryToUnion: Iterator<T>): UnionIterator<T> {
                 //just return the union iterator
-                return new UnionIterator(this, QueryToUnion);
+                return new UnionIterator(this, 'UnionQueryIterator', QueryToUnion);
             }
 
             //go setup the iterator to union a iterator and an array
             public Union(ArrayToCombine: Array<T>): UnionIterator<T> {
                 //just return the union iterator
-                return new UnionIterator(this, new Queryable(ArrayToCombine));
+                return new UnionIterator(this, 'UnionArrayIterator', new Queryable(ArrayToCombine));
             }
 
             //counts the number of items that match the predicate
@@ -402,9 +412,10 @@ module ToracTechnologies {
             }
 
             //materializes the expression to an array in a web worker so it doesn't feeze the ui. if a web worker is not available it will just call the ToArray()
-            public ToArrayAsync(CallbackWhenQueryIsComplete: (Result: Array<T>) => void): void {
+            public ToArrayAsync(CallbackWhenQueryIsComplete: (Result: Array<T>) => void, OnErrorCallBack: (ErrorMsg) => void): void {
 
-                if (typeof (Worker) !== "undefined") {
+                //is the browser new enough to run web webworkers?
+                if (AsyncIsAvailable()) {
                     // Yes! Web worker support!
 
                     //go create the web worker
@@ -412,14 +423,15 @@ module ToracTechnologies {
 
                     //attach the event handler
                     workerToRun.addEventListener('message', e => {
-                        
+
                         CallbackWhenQueryIsComplete(e.data);
                         //callback(e);
                     }, false);
 
-                    //we need to go grab all the methods and push them to a string so we can rebuild it in the web worker. ie. Where => convert the Where method the dev passes in.
+                    //add the on error event handler
+                    workerToRun.addEventListener("error", OnErrorCallBack, false);
 
-                    //go run the method (stringify the query)
+                    //we need to go grab all the methods and push them to a string so we can rebuild it in the web worker. ie. Where => convert the Where method the dev passes in.
                     workerToRun.postMessage(JSON.stringify(Iterator.SerializeAsyncFuncToStringTree(this)));
 
                 } else {
@@ -1982,7 +1994,7 @@ module ToracTechnologies {
 
             //#region Constructor
 
-            constructor(PreviousLambdaExpression: IChainable<T, T>, QueryToConcat: Iterator<T>) {
+            constructor(PreviousLambdaExpression: IChainable<T, T>, WhichTypeOfObject: string, QueryToConcat: Iterator<T>) {
 
                 //set the queryable source
                 this.PreviousExpression = PreviousLambdaExpression;
@@ -1991,7 +2003,7 @@ module ToracTechnologies {
                 this.ConcatThisQuery = QueryToConcat;
 
                 //throw this into a variable so we can debug this thing when we go from CollectionSource To CollectionSource and check the type
-                this.TypeOfObject = "ConcatIterator";
+                this.TypeOfObject = WhichTypeOfObject;
 
                 //because we inherit from Iterator we need to call the base class
                 super();
@@ -2001,7 +2013,7 @@ module ToracTechnologies {
 
             //#region Properties
 
-            private ConcatThisQuery: Iterator<T>;
+            public ConcatThisQuery: Iterator<T>;
 
             //#endregion
 
@@ -2041,6 +2053,14 @@ module ToracTechnologies {
             }
 
             public AsyncSerializedFunc(): Array<KeyValuePair<string, string>> {
+
+                //if we have a query, then we need to serialize all the parameters in the tree
+                if (this.TypeOfObject == 'ConcatQueryIterator') {
+
+                    //we dont have any parameters to serialize, but the query needs to be recursed and walked through to serialize the functions
+                    Iterator.SerializeAsyncFuncToStringTree(this.ConcatThisQuery);
+                }
+
                 return null;
             }
 
@@ -2054,7 +2074,7 @@ module ToracTechnologies {
 
             //#region Constructor
 
-            constructor(PreviousLambdaExpression: IChainable<T, T>, QueryToUnion: Iterator<T>) {
+            constructor(PreviousLambdaExpression: IChainable<T, T>, WhichTypeOfObject: string, QueryToUnion: Iterator<T>) {
 
                 //set the queryable source
                 this.PreviousExpression = PreviousLambdaExpression;
@@ -2063,7 +2083,7 @@ module ToracTechnologies {
                 this.UnionThisQuery = QueryToUnion;
 
                 //throw this into a variable so we can debug this thing when we go from CollectionSource To CollectionSource and check the type
-                this.TypeOfObject = "UnionIterator";
+                this.TypeOfObject = WhichTypeOfObject;
 
                 //create a new dictionary
                 this.HashSetStore = new HashSet<T>();
@@ -2076,7 +2096,7 @@ module ToracTechnologies {
 
             //#region Properties
 
-            private UnionThisQuery: Iterator<T>;
+            public UnionThisQuery: Iterator<T>;
             private HashSetStore: IHashSet<T>;
 
             //#endregion
@@ -2134,6 +2154,14 @@ module ToracTechnologies {
             }
 
             public AsyncSerializedFunc(): Array<KeyValuePair<string, string>> {
+
+                //if we have a query, then we need to serialize all the parameters in the tree
+                if (this.TypeOfObject == 'UnionQueryIterator') {
+
+                    //we dont have any parameters to serialize, but the query needs to be recursed and walked through to serialize the functions
+                    Iterator.SerializeAsyncFuncToStringTree(this.UnionThisQuery);
+                }
+
                 return null;
             }
 
@@ -2622,7 +2650,7 @@ module ToracTechnologies {
 
             //#region Properties
 
-            private SortDirection: SortOrder;
+            public SortDirection: SortOrder;
             private SortPropertySelector: (PropertyToSortOn: T) => any;
 
             //holds the additional sort properties (this gets set from OrderThenByIterator)
