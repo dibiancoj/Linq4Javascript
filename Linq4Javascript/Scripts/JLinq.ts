@@ -944,7 +944,7 @@ module ToracTechnologies {
             }
 
             public AsyncSerializedFunc(): Array<KeyValuePair<string, string>> {
-                return [new KeyValuePair('WhereClausePredicate', super.SerializeMethod(WhereIterator))];
+                return [new KeyValuePair('WhereClausePredicate', super.SerializeMethod(this.WhereClausePredicate))];
             }
 
             //#endregion
@@ -1012,7 +1012,7 @@ module ToracTechnologies {
             }
 
             public AsyncSerializedFunc(): Array<KeyValuePair<string, string>> {
-                return null;
+                return [new KeyValuePair('WhereClausePredicate', super.SerializeMethod(this.WhereClausePredicate))];
             }
 
             //#endregion
@@ -1097,7 +1097,7 @@ module ToracTechnologies {
             }
 
             public AsyncSerializedFunc(): Array<KeyValuePair<string, string>> {
-                return null;
+                return [new KeyValuePair('WhereClausePredicate', super.SerializeMethod(this.WhereClausePredicate))];
             }
 
             //#endregion
@@ -1162,7 +1162,7 @@ module ToracTechnologies {
             }
 
             public AsyncSerializedFunc(): Array<KeyValuePair<string, string>> {
-                return null;
+                return [new KeyValuePair('SelectPredicate', super.SerializeMethod(this.SelectPredicate))];
             }
 
             //#endregion
@@ -1277,7 +1277,7 @@ module ToracTechnologies {
             }
 
             public AsyncSerializedFunc(): Array<KeyValuePair<string, string>> {
-                return null;
+                return [new KeyValuePair('CollectionPropertySelector', super.SerializeMethod(this.CollectionPropertySelector))];
             }
 
             //#endregion
@@ -1356,7 +1356,7 @@ module ToracTechnologies {
             }
 
             public AsyncSerializedFunc(): Array<KeyValuePair<string, string>> {
-                return null;
+                return [new KeyValuePair('PropertySelector', super.SerializeMethod(this.PropertySelector))];
             }
 
             //#endregion
@@ -1507,7 +1507,7 @@ module ToracTechnologies {
             }
 
             public AsyncSerializedFunc(): Array<KeyValuePair<string, string>> {
-                return null;
+                return [new KeyValuePair('PredicateToTakeWhile', super.SerializeMethod(this.PredicateToTakeWhile))];
             }
 
             //#endregion
@@ -1662,7 +1662,7 @@ module ToracTechnologies {
             }
 
             public AsyncSerializedFunc(): Array<KeyValuePair<string, string>> {
-                return null;
+                return [new KeyValuePair('PredicateSkipUntil', super.SerializeMethod(this.PredicateSkipUntil))];
             }
 
             //#endregion
@@ -1739,7 +1739,7 @@ module ToracTechnologies {
             }
 
             public AsyncSerializedFunc(): Array<KeyValuePair<string, string>> {
-                return null;
+                return [new KeyValuePair('PredicateAggregate', super.SerializeMethod(this.PredicateAggregate))];
             }
 
             //#endregion
@@ -1809,7 +1809,7 @@ module ToracTechnologies {
             }
 
             public AsyncSerializedFunc(): Array<KeyValuePair<string, string>> {
-                return null;
+                return [new KeyValuePair('WhereClausePredicate', super.SerializeMethod(this.WhereClausePredicate))];
             }
 
             //#endregion
@@ -1882,7 +1882,7 @@ module ToracTechnologies {
             }
 
             public AsyncSerializedFunc(): Array<KeyValuePair<string, string>> {
-                return null;
+                return [new KeyValuePair('WhereClausePredicate', super.SerializeMethod(this.WhereClausePredicate))];
             }
 
             //#endregion
@@ -1959,7 +1959,7 @@ module ToracTechnologies {
             }
 
             public AsyncSerializedFunc(): Array<KeyValuePair<string, string>> {
-                return null;
+                return [new KeyValuePair('WhereClausePredicate', super.SerializeMethod(this.WhereClausePredicate))];
             }
 
             //#endregion
@@ -2199,7 +2199,7 @@ module ToracTechnologies {
             }
 
             public AsyncSerializedFunc(): Array<KeyValuePair<string, string>> {
-                return null;
+                return [new KeyValuePair('WhereClausePredicate', super.SerializeMethod(this.WhereClausePredicate))];
             }
 
             //#endregion
@@ -2571,7 +2571,7 @@ module ToracTechnologies {
             }
 
             public AsyncSerializedFunc(): Array<KeyValuePair<string, string>> {
-                return null;
+                return [new KeyValuePair('GroupBySelector', super.SerializeMethod(this.GroupBySelector))];
             }
 
             //#endregion
@@ -2657,7 +2657,7 @@ module ToracTechnologies {
             }
 
             public AsyncSerializedFunc(): Array<KeyValuePair<string, string>> {
-                return null;
+                return [new KeyValuePair('SortPropertySelector', super.SerializeMethod(this.SortPropertySelector))];
             }
 
             //#endregion

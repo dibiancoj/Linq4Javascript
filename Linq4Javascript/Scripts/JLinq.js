@@ -564,7 +564,7 @@ var ToracTechnologies;
                 }
             };
             WhereIterator.prototype.AsyncSerializedFunc = function () {
-                return [new KeyValuePair('WhereClausePredicate', _super.prototype.SerializeMethod.call(this, WhereIterator))];
+                return [new KeyValuePair('WhereClausePredicate', _super.prototype.SerializeMethod.call(this, this.WhereClausePredicate))];
             };
             return WhereIterator;
         })(Iterator);
@@ -605,7 +605,7 @@ var ToracTechnologies;
                 }
             };
             FirstOrDefaultIterator.prototype.AsyncSerializedFunc = function () {
-                return null;
+                return [new KeyValuePair('WhereClausePredicate', _super.prototype.SerializeMethod.call(this, this.WhereClausePredicate))];
             };
             return FirstOrDefaultIterator;
         })(Iterator);
@@ -658,7 +658,7 @@ var ToracTechnologies;
                 return new IteratorResult(CurrentSelectedItem, 2 /* Completed */);
             };
             SingleOrDefaultIterator.prototype.AsyncSerializedFunc = function () {
-                return null;
+                return [new KeyValuePair('WhereClausePredicate', _super.prototype.SerializeMethod.call(this, this.WhereClausePredicate))];
             };
             return SingleOrDefaultIterator;
         })(Iterator);
@@ -698,7 +698,7 @@ var ToracTechnologies;
                 }
             };
             SelectIterator.prototype.AsyncSerializedFunc = function () {
-                return null;
+                return [new KeyValuePair('SelectPredicate', _super.prototype.SerializeMethod.call(this, this.SelectPredicate))];
             };
             return SelectIterator;
         })(Iterator);
@@ -771,7 +771,7 @@ var ToracTechnologies;
                 }
             };
             SelectManyIterator.prototype.AsyncSerializedFunc = function () {
-                return null;
+                return [new KeyValuePair('CollectionPropertySelector', _super.prototype.SerializeMethod.call(this, this.CollectionPropertySelector))];
             };
             return SelectManyIterator;
         })(Iterator);
@@ -819,7 +819,7 @@ var ToracTechnologies;
                 }
             };
             DistinctIterator.prototype.AsyncSerializedFunc = function () {
-                return null;
+                return [new KeyValuePair('PropertySelector', _super.prototype.SerializeMethod.call(this, this.PropertySelector))];
             };
             return DistinctIterator;
         })(Iterator);
@@ -913,7 +913,7 @@ var ToracTechnologies;
                 }
             };
             TakeWhileIterator.prototype.AsyncSerializedFunc = function () {
-                return null;
+                return [new KeyValuePair('PredicateToTakeWhile', _super.prototype.SerializeMethod.call(this, this.PredicateToTakeWhile))];
             };
             return TakeWhileIterator;
         })(Iterator);
@@ -1010,7 +1010,7 @@ var ToracTechnologies;
                 }
             };
             SkipWhileIterator.prototype.AsyncSerializedFunc = function () {
-                return null;
+                return [new KeyValuePair('PredicateSkipUntil', _super.prototype.SerializeMethod.call(this, this.PredicateSkipUntil))];
             };
             return SkipWhileIterator;
         })(Iterator);
@@ -1059,7 +1059,7 @@ var ToracTechnologies;
                 }
             };
             AggregateIterator.prototype.AsyncSerializedFunc = function () {
-                return null;
+                return [new KeyValuePair('PredicateAggregate', _super.prototype.SerializeMethod.call(this, this.PredicateAggregate))];
             };
             return AggregateIterator;
         })(Iterator);
@@ -1103,7 +1103,7 @@ var ToracTechnologies;
                 }
             };
             AllIterator.prototype.AsyncSerializedFunc = function () {
-                return null;
+                return [new KeyValuePair('WhereClausePredicate', _super.prototype.SerializeMethod.call(this, this.WhereClausePredicate))];
             };
             return AllIterator;
         })(Iterator);
@@ -1149,7 +1149,7 @@ var ToracTechnologies;
                 }
             };
             AnyIterator.prototype.AsyncSerializedFunc = function () {
-                return null;
+                return [new KeyValuePair('WhereClausePredicate', _super.prototype.SerializeMethod.call(this, this.WhereClausePredicate))];
             };
             return AnyIterator;
         })(Iterator);
@@ -1196,7 +1196,7 @@ var ToracTechnologies;
                 }
             };
             LastIterator.prototype.AsyncSerializedFunc = function () {
-                return null;
+                return [new KeyValuePair('WhereClausePredicate', _super.prototype.SerializeMethod.call(this, this.WhereClausePredicate))];
             };
             return LastIterator;
         })(Iterator);
@@ -1345,7 +1345,7 @@ var ToracTechnologies;
                 }
             };
             CountIterator.prototype.AsyncSerializedFunc = function () {
-                return null;
+                return [new KeyValuePair('WhereClausePredicate', _super.prototype.SerializeMethod.call(this, this.WhereClausePredicate))];
             };
             return CountIterator;
         })(Iterator);
@@ -1581,7 +1581,7 @@ var ToracTechnologies;
                 }
             };
             GroupIterator.prototype.AsyncSerializedFunc = function () {
-                return null;
+                return [new KeyValuePair('GroupBySelector', _super.prototype.SerializeMethod.call(this, this.GroupBySelector))];
             };
             return GroupIterator;
         })(Iterator);
@@ -1628,7 +1628,7 @@ var ToracTechnologies;
                 return this.DataSource.Next();
             };
             OrderByIterator.prototype.AsyncSerializedFunc = function () {
-                return null;
+                return [new KeyValuePair('SortPropertySelector', _super.prototype.SerializeMethod.call(this, this.SortPropertySelector))];
             };
             //#endregion
             //#region ThenBy and ThenByDescending Methods
@@ -2165,4 +2165,6 @@ Array.prototype.OrderBy = function (SortPropertySelector) {
 Array.prototype.OrderByDescending = function (SortPropertySelector) {
     return new ToracTechnologies.JLinq.Queryable(this).OrderByDescending(SortPropertySelector);
 };
-//# sourceMappingURL=jlinq.js.map
+//#endregion
+//#endregion 
+//# sourceMappingURL=JLinq.js.map
