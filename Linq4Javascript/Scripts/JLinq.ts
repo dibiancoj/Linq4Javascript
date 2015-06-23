@@ -412,7 +412,7 @@ module ToracTechnologies {
             }
 
             //materializes the expression to an array in a web worker so it doesn't feeze the ui. if a web worker is not available it will just call the ToArray()
-            public ToArrayAsync(CallbackWhenQueryIsComplete: (Result: Array<T>) => void, OnErrorCallBack: (ErrorMsg) => void): void {
+            public ToArrayAsync(CallbackWhenQueryIsComplete: (Result: Array<T>) => void, OnErrorCallBack: (ErrorObject: ErrorEvent) => void): void {
 
                 //is the browser new enough to run web webworkers?
                 if (AsyncIsAvailable()) {
@@ -424,12 +424,30 @@ module ToracTechnologies {
                     //attach the event handler
                     workerToRun.addEventListener('message', e => {
 
+                        //we are all done. go tell the user that the data is done with the callback
                         CallbackWhenQueryIsComplete(e.data);
-                        //callback(e);
+                        
+                        //i'm going to cleanup after we run this call. I don't know how useful it is to keep it listening
+                        workerToRun.terminate();
+
+                        //going to null it out just for good sake
+                        workerToRun = null;
+
                     }, false);
 
                     //add the on error event handler
-                    workerToRun.addEventListener("error", OnErrorCallBack, false);
+                    workerToRun.addEventListener("error", e => {
+
+                        //we are going to grab the error and pass it along, so we can cleanup the web worker
+                        OnErrorCallBack(e);
+
+                        //i'm going to cleanup after we run this call. I don't know how useful it is to keep it listening
+                        workerToRun.terminate();
+
+                        //going to null it out just for good sake
+                        workerToRun = null;
+
+                    }, false);
 
                     //we need to go grab all the methods and push them to a string so we can rebuild it in the web worker. ie. Where => convert the Where method the dev passes in.
                     workerToRun.postMessage(JSON.stringify(Iterator.SerializeAsyncFuncToStringTree(this)));

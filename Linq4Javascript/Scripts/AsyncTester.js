@@ -36,4 +36,9 @@ function MakeWorker(Script) {
 }
 // Load a worker from a string, and manually initialize the worker (this does the work...and returns the data)
 var inlineWorkerText = "self.addEventListener('message', function(e) { setTimeout(function(){  postMessage(e.data); },5000)} ,false);";
+//var inlineWorker = MakeWorker(inlineWorkerText);
+//incase you want to troubleshoot
+//inlineWorker.onmessage = e => {
+//    DisplayResults(e.data);
+//}; 
 //# sourceMappingURL=AsyncTester.js.map

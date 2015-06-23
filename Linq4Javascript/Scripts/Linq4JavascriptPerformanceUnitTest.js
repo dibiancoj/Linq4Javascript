@@ -503,4 +503,6 @@ test('JLinq.Dictionary.MultiKeyObjectWithDate.PerformanceTest.ToDictionary', fun
     //need atleast 1 test 
     equal(1, 1);
 });
+//#endregion
+//#endregion 
 //# sourceMappingURL=Linq4JavascriptPerformanceUnitTest.js.map
