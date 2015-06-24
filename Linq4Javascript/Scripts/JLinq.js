@@ -549,6 +549,9 @@ var ToracTechnologies;
                     return new IteratorResult(this.CollectionSource[this.Index++], 1 /* Running */);
                 }
             };
+            Queryable.prototype.AsyncSerializedFunc = function () {
+                return null;
+            };
             return Queryable;
         })(Iterator);
         JLinq.Queryable = Queryable;
@@ -2346,4 +2349,4 @@ Array.prototype.OrderByDescending = function (SortPropertySelector) {
 };
 //#endregion
 //#endregion 
-//# sourceMappingURL=jlinq.js.map
+//# sourceMappingURL=JLinq.js.map
