@@ -13,19 +13,19 @@ namespace Linq4Javascript.Controllers
         public ActionResult Index()
         {
             //todo: remove when we merge the branches. this is only so we go directly to the async page
-            return RedirectToAction("AsyncTester");
+            //return RedirectToAction("AsyncWorkingEnvironment");
 
             return View();
         }
 
         [HttpGet]
-        public ActionResult PerformanceUnitTests()
+        public ActionResult AsyncUnitTests()
         {
             return View();
         }
 
         [HttpGet]
-        public ActionResult AsyncTester()
+        public ActionResult AsyncWorkingEnvironment()
         {
             return View();
         }

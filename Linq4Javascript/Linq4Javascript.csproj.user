@@ -3,6 +3,7 @@
   <PropertyGroup>
     <ToolsVersionPromptShown>1.4</ToolsVersionPromptShown>
     <ProjectView>ShowAllFiles</ProjectView>
+    <WebStackScaffolding_ViewDialogWidth>600</WebStackScaffolding_ViewDialogWidth>
   </PropertyGroup>
   <ProjectExtensions>
     <VisualStudio>

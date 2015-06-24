@@ -1,102 +1,5 @@
 ﻿/// <reference path="qunit.d.ts"/>
-
-//#region Configuration
-
-/****** Notes ******/
-//Every object is going to be immutable. This way we can't accIdentally add items
-
-/*******************/
-
-//holds the interface with the object type that is in the list that we will be querying
-interface ITestObject {
-    Id: number;
-    Txt: string;
-    IsActive: boolean;
-    GroupByKey: string;
-    GroupByKey2: string;
-    CreatedDate: Date;
-
-    lst: Array<number>;
-}
-
-//holds the interface for a simple object
-interface IObject {
-    Id: number;
-    Txt: string;
-    Txt2: string;
-}
-
-//method to build up the list of data
-function BuildArray(howManyItems): Array<ITestObject> {
-
-    //declare the array which we will populate
-    var lst: Array<ITestObject> = new Array<ITestObject>();
-
-    //loop through each of the items to add an object into the list
-    for (var i = 0; i < howManyItems; i++) {
-
-        //we will also test sub list's. so we will build a new number array insIde this object
-        var SubList: Array<number>;
-
-        //depending on which item we are up on we will populate the sub list differently
-        if (i === 0) {
-            SubList = null;
-        }
-        else if (i === 1) {
-            SubList = [];
-        } else {
-            SubList = [i, (i + 100)];
-        }
-
-        //finally push the object to the array
-        lst.push({
-            Id: i,
-            Txt: i.toString(),
-            IsActive: (i === 1 ? true : false),
-            GroupByKey: (i < 3 ? 'test' : 'test1'),
-            GroupByKey2: (i < 2 ? 'z1' : 'z2'),
-            CreatedDate: (i === 1 ? _FirstIndexDate : _DateOfTest),
-
-            lst: SubList
-        });
-    }
-
-    //return the list now
-    return lst;
-}
-
-//method to build up the "ThenBy" & "ThenByDesc" for the sort tests
-function BuildSortOrderArray(): Array<IObject> {
-
-    //array to test off of
-    var ArrayToTest: Array<IObject> = new Array<IObject>();
-
-    //now go add items
-    ArrayToTest.push({ Id: 1, Txt: 'abc', Txt2: 'abc' });
-    ArrayToTest.push({ Id: 2, Txt: 'abc', Txt2: 'zzz' });
-    ArrayToTest.push({ Id: 4, Txt: 'zzz', Txt2: 'zzz' });
-    ArrayToTest.push({ Id: 3, Txt: 'bcd', Txt2: 'bcd' });
-
-    //return the array to test
-    return ArrayToTest;
-}
-
-//default items to build
-var _DefaultItemsToBuild: number = 5;
-
-//store the date to set so we can compare it
-var _DateOfTest = Object.freeze(new Date());
-
-//holds the index == 1 date
-var _FirstIndexDate = Object.freeze(new Date('12/1/1980'));
-
-//holds the build _Array so we don't have to keep building it each method
-var _Array: Array<ITestObject> = Object.freeze(BuildArray(_DefaultItemsToBuild));
-
-//sort order array
-var _SortOrderArray: Array<IObject> = Object.freeze(BuildSortOrderArray());
-
-//#endregion
+/// <reference path="unittestframework.ts" />
 
 //#region Unit Tests
 
@@ -105,7 +8,7 @@ var _SortOrderArray: Array<IObject> = Object.freeze(BuildSortOrderArray());
 test('JLinq.AsQueryable.Test.1', function () {
 
     //grab only 2 items so it's easier to test
-    var shorterList = _Array.Where(x => x.Id == 1 || x.Id == 2).ToArray();
+    var shorterList = UnitTestFramework._Array.Where(x => x.Id == 1 || x.Id == 2).ToArray();
 
     //test as queryable
     var asQueryableResults = shorterList.AsQueryable();
@@ -130,15 +33,15 @@ test('JLinq.AsQueryable.Test.1', function () {
 test('JLinq.SelectMany.Test.1', function () {
 
     //how many items we should have
-    var howManyItemsShouldWeHave: number = (_Array.length - 2) * 2;
+    var howManyItemsShouldWeHave: number = (UnitTestFramework._Array.length - 2) * 2;
 
     //let's go grab the query and throw it into a variable
-    var QueryToRun = _Array.SelectMany(x => x.lst);
+    var QueryToRun = UnitTestFramework._Array.SelectMany(x => x.lst);
 
     //push the results to an array
     var QueryToRunResults = QueryToRun.ToArray();
 
-    //****To-_Array Test**** (we * 2 because we always set in our test...2 items per collection)
+    //****To-UnitTestFramework._Array Test**** (we * 2 because we always set in our test...2 items per collection)
     equal(QueryToRunResults.length, howManyItemsShouldWeHave);
 
     equal(QueryToRunResults[0], 2);
@@ -195,12 +98,12 @@ test('JLinq.SelectMany.Test.2', function () {
     //this is a select many with a where before it
 
     //go build the query
-    var QueryToRun = _Array.Where(x => x.Id === 4).SelectMany(x => x.lst);
+    var QueryToRun = UnitTestFramework._Array.Where(x => x.Id === 4).SelectMany(x => x.lst);
 
     //go materialize the results into an array
     var QueryToRunResults = QueryToRun.ToArray();
 
-    //****To-_Array Test**** (we * 2 because we always set in our test...2 items per collection)
+    //****To-UnitTestFramework._Array Test**** (we * 2 because we always set in our test...2 items per collection)
     equal(QueryToRunResults.length, 2);
 
     //check the actual values
@@ -232,12 +135,12 @@ test('JLinq.SelectMany.Test.3', function () {
     //this is a select many with a where before it and then a select after it
 
     //go build the query
-    var QueryToRun = _Array.Where(x => x.Id === 4).SelectMany(x => x.lst).Select(function (x) { return { mapId: x }; });
+    var QueryToRun = UnitTestFramework._Array.Where(x => x.Id === 4).SelectMany(x => x.lst).Select(function (x) { return { mapId: x }; });
 
     //go materialize the results into an array
     var QueryToRunResults = QueryToRun.ToArray();
 
-    //****To-_Array Test**** (we * 2 because we always set in our test...2 items per collection)
+    //****To-UnitTestFramework._Array Test**** (we * 2 because we always set in our test...2 items per collection)
     equal(QueryToRunResults.length, 2);
 
     equal(QueryToRunResults[0].mapId, 4);
@@ -272,7 +175,7 @@ test('JLinq.GroupBy.Test.1', function () {
     //*** Group by doesn't have a lazy iterator...so we don't need to check that
 
     //go build the query
-    var QueryToRun = _Array.GroupBy(x => x.GroupByKey);
+    var QueryToRun = UnitTestFramework._Array.GroupBy(x => x.GroupByKey);
 
     equal(QueryToRun.length, 2);
     equal(QueryToRun[0].Key, 'test');
@@ -300,7 +203,7 @@ test('JLinq.GroupBy.Test.2', function () {
 
     //*** Group by doesn't have a lazy iterator...so we don't need to check that
     //go build the query
-    var QueryToRun = _Array.GroupBy(function (x) { return { key1: x.GroupByKey, key2: x.GroupByKey2 }; });
+    var QueryToRun = UnitTestFramework._Array.GroupBy(function (x) { return { key1: x.GroupByKey, key2: x.GroupByKey2 }; });
 
     equal(QueryToRun.length, 3);
     equal(JSON.stringify(QueryToRun[0].Key), JSON.stringify({ key1: 'test', key2: 'z1' }));
@@ -333,7 +236,7 @@ test('JLinq.GroupBy.ChainTest.1', function () {
     //*** Group by doesn't have a lazy iterator...so we don't need to check that
 
     //go build the query
-    var QueryToRun = _Array.Where(x => x.Id > 2).GroupBy(function (x) { return { key1: x.GroupByKey, key2: x.GroupByKey2 }; });
+    var QueryToRun = UnitTestFramework._Array.Where(x => x.Id > 2).GroupBy(function (x) { return { key1: x.GroupByKey, key2: x.GroupByKey2 }; });
 
     equal(QueryToRun.length, 1);
 
@@ -356,18 +259,18 @@ test('JLinq.GroupBy.ChainTest.1', function () {
 test('JLinq.Where.Test.1', function () {
 
     //go build the query
-    var QueryToRun = _Array.Where(x => x.Id === 1);
+    var QueryToRun = UnitTestFramework._Array.Where(x => x.Id === 1);
 
     //go materialize the results into an array
     var QueryToRunResults = QueryToRun.ToArray();
 
-    //****To-_Array Test****
+    //****To-UnitTestFramework._Array Test****
     equal(QueryToRunResults[0].Id, 1);
     equal(QueryToRunResults[0].Txt, '1');
     equal(QueryToRunResults.length, 1);
 
     //****Lazy Execution Test****
-    var CurrentResult: ToracTechnologies.JLinq.IteratorResult<ITestObject>;
+    var CurrentResult: ToracTechnologies.JLinq.IteratorResult<UnitTestFramework.ITestObject>;
     var ItemCount = 0;
 
     //loop through the results 1 record at a time. this will never materialize an array
@@ -386,12 +289,12 @@ test('JLinq.Where.Test.1', function () {
 test('JLinq.Where.Test.2', function () {
 
     //go build the query
-    var QueryToRun = _Array.Where(x => x.Id === 1 || x.Id === 2);
+    var QueryToRun = UnitTestFramework._Array.Where(x => x.Id === 1 || x.Id === 2);
 
     //go materialize the results into an array
     var QueryToRunResults = QueryToRun.ToArray();
 
-    //****To-_Array Test****
+    //****To-UnitTestFramework._Array Test****
     equal(QueryToRunResults[0].Id, 1);
     equal(QueryToRunResults[0].Txt, '1');
 
@@ -401,7 +304,7 @@ test('JLinq.Where.Test.2', function () {
     equal(QueryToRunResults.length, 2);
 
     //****Lazy Execution Test****
-    var CurrentResult: ToracTechnologies.JLinq.IteratorResult<ITestObject>;
+    var CurrentResult: ToracTechnologies.JLinq.IteratorResult<UnitTestFramework.ITestObject>;
     var ItemCount = 0;
 
     //loop through the results 1 record at a time. this will never materialize an array
@@ -424,7 +327,7 @@ test('JLinq.Where.Test.2', function () {
 test('JLinq.Where.ChainTest.1', function () {
 
     //go build the query
-    var QueryToRunResults = _Array.Where(x => x.Id === 1 || x.Id === 2).Take(1).ToArray();
+    var QueryToRunResults = UnitTestFramework._Array.Where(x => x.Id === 1 || x.Id === 2).Take(1).ToArray();
 
     equal(QueryToRunResults.length, 1);
     equal(QueryToRunResults[0].Id, 1);
@@ -434,7 +337,7 @@ test('JLinq.Where.ChainTest.1', function () {
 test('JLinq.Where.ChainTest.2', function () {
 
     //test the where clause when it's somewhere in the chain after the first call off of array
-    var QueryToRunResults = _Array.Take(5).Where(x => x.Id === 1 || x.Id === 2).ToArray();
+    var QueryToRunResults = UnitTestFramework._Array.Take(5).Where(x => x.Id === 1 || x.Id === 2).ToArray();
 
     equal(QueryToRunResults.length, 2);
 
@@ -454,12 +357,12 @@ test('JLinq.Where.ChainTest.2', function () {
 test('JLinq.Concat.TestOffOfQueryWithArray.1', function () {
 
     //go build the query
-    var QueryToRun = _Array.Where(x => x.Id === 1).Concat(BuildArray(2));
+    var QueryToRun = UnitTestFramework._Array.Where(x => x.Id === 1).Concat(UnitTestFramework.BuildArray(2));
 
     //go materialize the results into an array
     var QueryToRunResults = QueryToRun.ToArray();
 
-    //****To-_Array Test****
+    //****To-UnitTestFramework._Array Test****
     equal(QueryToRunResults[0].Id, 1);
     equal(QueryToRunResults[0].Txt, '1');
     equal(QueryToRunResults[1].Id, 0);
@@ -469,7 +372,7 @@ test('JLinq.Concat.TestOffOfQueryWithArray.1', function () {
     equal(QueryToRunResults.length, 3);
 
     //****Lazy Execution Test****
-    var CurrentResult: ToracTechnologies.JLinq.IteratorResult<ITestObject>;
+    var CurrentResult: ToracTechnologies.JLinq.IteratorResult<UnitTestFramework.ITestObject>;
     var ItemCount = 0;
 
     //loop through the results 1 record at a time. this will never materialize an array
@@ -500,12 +403,12 @@ test('JLinq.Concat.TestOffOfQueryWithArray.1', function () {
 test('JLinq.Concat.TestOffOfArrayWithArray.1', function () {
 
     //go build the query
-    var QueryToRun = _Array.Concat(BuildArray(2));
+    var QueryToRun = UnitTestFramework._Array.Concat(UnitTestFramework.BuildArray(2));
 
     //go materialize the results into an array
     var QueryToRunResults = QueryToRun.ToArray();
 
-    //****To-_Array Test****
+    //****To-UnitTestFramework._Array Test****
     for (var i = 0; i < QueryToRunResults.length; i++) {
 
         //since we are mergeing 2 arrays...when we get to the 2nd array (i>=5...then we subtract 5 to get back to 0)
@@ -518,7 +421,7 @@ test('JLinq.Concat.TestOffOfArrayWithArray.1', function () {
     equal(QueryToRunResults.length, 7);
 
     //****Lazy Execution Test****
-    var CurrentResult: ToracTechnologies.JLinq.IteratorResult<ITestObject>;
+    var CurrentResult: ToracTechnologies.JLinq.IteratorResult<UnitTestFramework.ITestObject>;
     var ItemCount = 0;
 
     //loop through the results 1 record at a time. this will never materialize an array
@@ -546,12 +449,12 @@ test('JLinq.Concat.TestOffOfArrayWithArray.1', function () {
 test('JLinq.ConcatQuery.TestOffOfQueryWithQuery.1', function () {
 
     //go build the query
-    var QueryToRun = _Array.Where(x => x.Id === 1).ConcatQuery(BuildArray(2).Where(x => x.Id === 1));
+    var QueryToRun = UnitTestFramework._Array.Where(x => x.Id === 1).ConcatQuery(UnitTestFramework.BuildArray(2).Where(x => x.Id === 1));
 
     //go materialize the results into an array
     var QueryToRunResults = QueryToRun.ToArray();
 
-    //****To-_Array Test****
+    //****To-UnitTestFramework._Array Test****
     equal(QueryToRunResults[0].Id, 1);
     equal(QueryToRunResults[0].Txt, '1');
     equal(QueryToRunResults[1].Id, 1);
@@ -559,7 +462,7 @@ test('JLinq.ConcatQuery.TestOffOfQueryWithQuery.1', function () {
     equal(QueryToRunResults.length, 2);
 
     //****Lazy Execution Test****
-    var CurrentResult: ToracTechnologies.JLinq.IteratorResult<ITestObject>;
+    var CurrentResult: ToracTechnologies.JLinq.IteratorResult<UnitTestFramework.ITestObject>;
     var ItemCount = 0;
 
     //loop through the results 1 record at a time. this will never materialize an array
@@ -582,18 +485,18 @@ test('JLinq.ConcatQuery.TestOffOfQueryWithQuery.1', function () {
 test('JLinq.ConcatQuery.TestOffOfQueryWithQuery.2', function () {
 
     //go build the query
-    var QueryToRun = _Array.Where(x => x.Id > 1).ConcatQuery(BuildArray(2).Where(x => x.Id === 1)).Where(x=> x.Id === 4);
+    var QueryToRun = UnitTestFramework._Array.Where(x => x.Id > 1).ConcatQuery(UnitTestFramework.BuildArray(2).Where(x => x.Id === 1)).Where(x=> x.Id === 4);
 
     //go materialize the results into an array
     var QueryToRunResults = QueryToRun.ToArray();
 
-    //****To-_Array Test****
+    //****To-UnitTestFramework._Array Test****
     equal(QueryToRunResults[0].Id, 4);
     equal(QueryToRunResults[0].Txt, '4');
     equal(QueryToRunResults.length, 1);
 
     //****Lazy Execution Test****
-    var CurrentResult: ToracTechnologies.JLinq.IteratorResult<ITestObject>;
+    var CurrentResult: ToracTechnologies.JLinq.IteratorResult<UnitTestFramework.ITestObject>;
     var ItemCount = 0;
 
     //loop through the results 1 record at a time. this will never materialize an array
@@ -616,12 +519,12 @@ test('JLinq.ConcatQuery.TestOffOfQueryWithQuery.2', function () {
 test('JLinq.ConcatQuery.TestOffOfArrayWithQuery.1', function () {
 
     //go build the query
-    var QueryToRun = _Array.ConcatQuery(BuildArray(2).Where(x => x.Id === 1));
+    var QueryToRun = UnitTestFramework._Array.ConcatQuery(UnitTestFramework.BuildArray(2).Where(x => x.Id === 1));
 
     //go materialize the results into an array
     var QueryToRunResults = QueryToRun.ToArray();
 
-    //****To-_Array Test****
+    //****To-UnitTestFramework._Array Test****
     for (var i = 0; i < QueryToRunResults.length; i++) {
 
         if (i === 5) {
@@ -636,7 +539,7 @@ test('JLinq.ConcatQuery.TestOffOfArrayWithQuery.1', function () {
     equal(QueryToRunResults.length, 6);
 
     //****Lazy Execution Test****
-    var CurrentResult: ToracTechnologies.JLinq.IteratorResult<ITestObject>;
+    var CurrentResult: ToracTechnologies.JLinq.IteratorResult<UnitTestFramework.ITestObject>;
     var ItemCount = 0;
 
     //loop through the results 1 record at a time. this will never materialize an array
@@ -666,12 +569,12 @@ test('JLinq.ConcatQuery.TestOffOfArrayWithQuery.1', function () {
 test('JLinq.Union.TestOffOfQueryWithArray.1', function () {
 
     //go build the query
-    var QueryToRun = _Array.Where(x => x.Id === 1).Select(x => x.Id).Union(BuildArray(2).Select(x => x.Id).ToArray());
+    var QueryToRun = UnitTestFramework._Array.Where(x => x.Id === 1).Select(x => x.Id).Union(UnitTestFramework.BuildArray(2).Select(x => x.Id).ToArray());
 
     //go materialize the results into an array
     var QueryToRunResults = QueryToRun.ToArray();
 
-    //****To-_Array Test****
+    //****To-UnitTestFramework._Array Test****
     equal(QueryToRunResults[0], 1);
     equal(QueryToRunResults[0], '1');
     equal(QueryToRunResults[1], 0);
@@ -704,12 +607,12 @@ test('JLinq.Union.TestOffOfQueryWithArray.1', function () {
 test('JLinq.Union.TestOffOfArrayWithArray.1', function () {
 
     //go build the query
-    var QueryToRun = _Array.Select(x => x.Id).ToArray().Union(BuildArray(2).Select(x=> x.Id).ToArray());
+    var QueryToRun = UnitTestFramework._Array.Select(x => x.Id).ToArray().Union(UnitTestFramework.BuildArray(2).Select(x=> x.Id).ToArray());
 
     //go materialize the results into an array
     var QueryToRunResults = QueryToRun.ToArray();
 
-    //****To-_Array Test****
+    //****To-UnitTestFramework._Array Test****
     for (var i = 0; i < QueryToRunResults.length; i++) {
 
         equal(QueryToRunResults[i], i);
@@ -743,12 +646,12 @@ test('JLinq.Union.TestOffOfArrayWithArray.1', function () {
 test('JLinq.UnionQuery.TestOffOfQueryWithQuery.1', function () {
 
     //go build the query
-    var QueryToRun = _Array.Where(x => x.Id === 1).Select(x => x.Id).UnionQuery(BuildArray(2).Select(x => x.Id));
+    var QueryToRun = UnitTestFramework._Array.Where(x => x.Id === 1).Select(x => x.Id).UnionQuery(UnitTestFramework.BuildArray(2).Select(x => x.Id));
 
     //go materialize the results into an array
     var QueryToRunResults = QueryToRun.ToArray();
 
-    //****To-_Array Test****
+    //****To-UnitTestFramework._Array Test****
     equal(QueryToRunResults[0], 1);
     equal(QueryToRunResults[1], 0);
     equal(QueryToRunResults.length, 2);
@@ -779,12 +682,12 @@ test('JLinq.UnionQuery.TestOffOfQueryWithQuery.1', function () {
 test('JLinq.UnionQuery.TestOffOfArrayWithQuery.1', function () {
 
     //go build the query
-    var QueryToRun = _Array.Select(x => x.Id).ToArray().UnionQuery(BuildArray(2).Where(x => x.Id === 1).Select(x => x.Id));
+    var QueryToRun = UnitTestFramework._Array.Select(x => x.Id).ToArray().UnionQuery(UnitTestFramework.BuildArray(2).Where(x => x.Id === 1).Select(x => x.Id));
 
     //go materialize the results into an array
     var QueryToRunResults = QueryToRun.ToArray();
 
-    //****To-_Array Test****
+    //****To-UnitTestFramework._Array Test****
     for (var i = 0; i < QueryToRunResults.length; i++) {
 
         equal(QueryToRunResults[i], i);
@@ -815,12 +718,12 @@ test('JLinq.UnionQuery.TestOffOfArrayWithQuery.1', function () {
 test('JLinq.Take.Test.1', function () {
 
     //go build the query
-    var QueryToRun = _Array.Take(2);
+    var QueryToRun = UnitTestFramework._Array.Take(2);
 
     //go materialize the results into an array
     var QueryToRunResults = QueryToRun.ToArray();
 
-    //****To-_Array Test****
+    //****To-UnitTestFramework._Array Test****
     equal(QueryToRunResults.length, 2);
 
     equal(QueryToRunResults[0].Id, 0);
@@ -830,7 +733,7 @@ test('JLinq.Take.Test.1', function () {
     equal(QueryToRunResults[1].Txt, '1');
 
     //****Lazy Execution Test****
-    var CurrentResult: ToracTechnologies.JLinq.IteratorResult<ITestObject>;
+    var CurrentResult: ToracTechnologies.JLinq.IteratorResult<UnitTestFramework.ITestObject>;
     var ItemCount = 0;
 
     //loop through the results 1 record at a time. this will never materialize an array
@@ -854,7 +757,7 @@ test('JLinq.Take.Test.1', function () {
 test('JLinq.Take.ChainTest.1', function () {
 
     //go materialize the results into an array
-    var QueryToRun = _Array.Where(x => x.Id >= 2).Take(2);
+    var QueryToRun = UnitTestFramework._Array.Where(x => x.Id >= 2).Take(2);
 
     //go materialize the results into an array
     var QueryToRunResults = QueryToRun.ToArray();
@@ -868,7 +771,7 @@ test('JLinq.Take.ChainTest.1', function () {
     equal(QueryToRunResults[1].Txt, '3');
 
     //****Lazy Execution Test****
-    var CurrentResult: ToracTechnologies.JLinq.IteratorResult<ITestObject>;
+    var CurrentResult: ToracTechnologies.JLinq.IteratorResult<UnitTestFramework.ITestObject>;
     var ItemCount = 0;
 
     //loop through the results 1 record at a time. this will never materialize an array
@@ -903,7 +806,7 @@ test('JLinq.TakeWhile.Test.1', function () {
     //go materialize the results into an array
     var QueryToRunResults = QueryToRun.ToArray();
 
-    //****To-_Array Test****
+    //****To-UnitTestFramework._Array Test****
     equal(QueryToRunResults.length, 4);
 
     //check the results
@@ -949,7 +852,7 @@ test('JLinq.TakeWhile.ChainTest.1', function () {
     //go materialize the results into an array
     var QueryToRunResults = QueryToRun.ToArray();
 
-    //****To-_Array Test****
+    //****To-UnitTestFramework._Array Test****
     equal(QueryToRunResults.length, 4);
 
     //check the results
@@ -992,12 +895,12 @@ test('JLinq.TakeWhile.ChainTest.1', function () {
 test('JLinq.Skip.Test.1', function () {
 
     //go build the query
-    var QueryToRun = _Array.Skip(1);
+    var QueryToRun = UnitTestFramework._Array.Skip(1);
 
     //go materialize the results into an array
     var QueryToRunResults = QueryToRun.ToArray();
 
-    //****To-_Array Test****
+    //****To-UnitTestFramework._Array Test****
     equal(QueryToRunResults.length, 4);
 
     equal(QueryToRunResults[0].Id, 1);
@@ -1013,7 +916,7 @@ test('JLinq.Skip.Test.1', function () {
     equal(QueryToRunResults[3].Txt, '4');
 
     //****Lazy Execution Test****
-    var CurrentResult: ToracTechnologies.JLinq.IteratorResult<ITestObject>;
+    var CurrentResult: ToracTechnologies.JLinq.IteratorResult<UnitTestFramework.ITestObject>;
     var ItemCount = 0;
 
     //loop through the results 1 record at a time. this will never materialize an array
@@ -1031,7 +934,7 @@ test('JLinq.Skip.Test.1', function () {
 test('JLinq.Skip.ChainTest.1', function () {
 
     //go materialize the results into an array
-    var QueryToRun = _Array.Where(x => x.Id >= 2).Skip(1);
+    var QueryToRun = UnitTestFramework._Array.Where(x => x.Id >= 2).Skip(1);
 
     //go materialize the query 
     var QueryToRunResults = QueryToRun.ToArray();
@@ -1044,7 +947,7 @@ test('JLinq.Skip.ChainTest.1', function () {
     equal(QueryToRunResults[1].Id, 4);
     equal(QueryToRunResults[1].Txt, '4');
 
-    var CurrentResult: ToracTechnologies.JLinq.IteratorResult<ITestObject>;
+    var CurrentResult: ToracTechnologies.JLinq.IteratorResult<UnitTestFramework.ITestObject>;
     var ItemCount = 0;
 
     //loop through the results 1 record at a time. this will never materialize an array
@@ -1071,7 +974,7 @@ test('JLinq.SkipWhile.Test.1', function () {
     //go materialize the results into an array
     var QueryToRunResults = QueryToRun.ToArray();
 
-    //****To-_Array Test****
+    //****To-UnitTestFramework._Array Test****
     equal(QueryToRunResults.length, 4);
 
     //check the results
@@ -1117,7 +1020,7 @@ test('JLinq.SkipWhile.ChainTest.1', function () {
     //go materialize the results into an array
     var QueryToRunResults = QueryToRun.ToArray();
 
-    //****To-_Array Test****
+    //****To-UnitTestFramework._Array Test****
     equal(QueryToRunResults.length, 4);
 
     //check the results
@@ -1200,13 +1103,13 @@ test('JLinq.Aggregate.ChainTest.1', function () {
 test('JLinq.Paginate.Test.1', function () {
 
     //go build the query make sure we have all the records
-    var QueryToRun = _Array.Paginate(1, 100);
+    var QueryToRun = UnitTestFramework._Array.Paginate(1, 100);
 
     //go materialize the array
     var QueryToRunResults = QueryToRun.ToArray();
 
     //check the count
-    equal(QueryToRunResults.Count(), _DefaultItemsToBuild);
+    equal(QueryToRunResults.Count(), UnitTestFramework._DefaultItemsToBuild);
 
     equal(QueryToRunResults[0].Id, 0);
     equal(QueryToRunResults[0].Txt, '0');
@@ -1224,7 +1127,7 @@ test('JLinq.Paginate.Test.1', function () {
     equal(QueryToRunResults[4].Txt, '4');
 
     //****Lazy Execution Test****
-    var CurrentResult: ToracTechnologies.JLinq.IteratorResult<ITestObject>;
+    var CurrentResult: ToracTechnologies.JLinq.IteratorResult<UnitTestFramework.ITestObject>;
     var ItemCount = 0;
 
     //loop through the results 1 record at a time. this will never materialize an array
@@ -1236,7 +1139,7 @@ test('JLinq.Paginate.Test.1', function () {
         ItemCount++;
     }
 
-    equal(ItemCount, _DefaultItemsToBuild);
+    equal(ItemCount, UnitTestFramework._DefaultItemsToBuild);
 });
 
 test('JLinq.Paginate.Test.1', function () {
@@ -1247,7 +1150,7 @@ test('JLinq.Paginate.Test.1', function () {
     var howManyRecordsPerPage = 3;
 
     //go build the query make sure we have all the records
-    var QueryToRun = _Array.Paginate(1, howManyRecordsPerPage);
+    var QueryToRun = UnitTestFramework._Array.Paginate(1, howManyRecordsPerPage);
 
     //materialize the array
     var results = QueryToRun.ToArray();
@@ -1266,7 +1169,7 @@ test('JLinq.Paginate.Test.1', function () {
     equal(results.Count(), howManyRecordsPerPage);
 
     //****Lazy Execution Test****
-    var CurrentResult: ToracTechnologies.JLinq.IteratorResult<ITestObject>;
+    var CurrentResult: ToracTechnologies.JLinq.IteratorResult<UnitTestFramework.ITestObject>;
     var ItemCount = 0;
 
     //loop through the results 1 record at a time. this will never materialize an array
@@ -1289,7 +1192,7 @@ test('JLinq.Paginate.Test.3', function () {
     var howManyRecordsPerPage = 3;
 
     //go build the query make sure we have all the records
-    var QueryToRun = _Array.Paginate(2, howManyRecordsPerPage);
+    var QueryToRun = UnitTestFramework._Array.Paginate(2, howManyRecordsPerPage);
 
     //materialize the array
     var results = QueryToRun.ToArray();
@@ -1302,7 +1205,7 @@ test('JLinq.Paginate.Test.3', function () {
     equal(results.Count(), 2);
 
     //****Lazy Execution Test****
-    var CurrentResult: ToracTechnologies.JLinq.IteratorResult<ITestObject>;
+    var CurrentResult: ToracTechnologies.JLinq.IteratorResult<UnitTestFramework.ITestObject>;
     var ItemCount = 0;
 
     //loop through the results 1 record at a time. this will never materialize an array
@@ -1320,13 +1223,13 @@ test('JLinq.Paginate.Test.3', function () {
 test('JLinq.Paginate.ChainTest.1', function () {
 
     //go build the query make sure we have all the records
-    var QueryToRun = _Array.Where(x => x.Id > 1).Paginate(1, 100);
+    var QueryToRun = UnitTestFramework._Array.Where(x => x.Id > 1).Paginate(1, 100);
 
     //go materialize the array
     var QueryToRunResults = QueryToRun.ToArray();
 
     //check the count
-    equal(QueryToRunResults.Count(), _DefaultItemsToBuild - 2);
+    equal(QueryToRunResults.Count(), UnitTestFramework._DefaultItemsToBuild - 2);
 
     equal(QueryToRunResults[0].Id, 2);
     equal(QueryToRunResults[0].Txt, '2');
@@ -1338,7 +1241,7 @@ test('JLinq.Paginate.ChainTest.1', function () {
     equal(QueryToRunResults[2].Txt, '4');
 
     //****Lazy Execution Test****
-    var CurrentResult: ToracTechnologies.JLinq.IteratorResult<ITestObject>;
+    var CurrentResult: ToracTechnologies.JLinq.IteratorResult<UnitTestFramework.ITestObject>;
     var ItemCount = 0;
 
     //loop through the results 1 record at a time. this will never materialize an array
@@ -1350,7 +1253,7 @@ test('JLinq.Paginate.ChainTest.1', function () {
         ItemCount++;
     }
 
-    equal(ItemCount, _DefaultItemsToBuild - 2);
+    equal(ItemCount, UnitTestFramework._DefaultItemsToBuild - 2);
 });
 
 //#endregion
@@ -1362,7 +1265,7 @@ test('JLinq.First.Test.1', function () {
     //***First doesn't have a lazy iterator. It returns the first item right away
 
     //go materialize the results.
-    var QueryToRunResults = _Array.First(x => x.Id === 1);
+    var QueryToRunResults = UnitTestFramework._Array.First(x => x.Id === 1);
 
     equal(QueryToRunResults.Id, 1);
     equal(QueryToRunResults.Txt, '1');
@@ -1373,7 +1276,7 @@ test('JLinq.First.Test.2', function () {
     //***First doesn't have a lazy iterator. It returns the first item right away
 
     //go materialize the results.
-    var QueryToRunResults = _Array.First(x => x.Id === 2);
+    var QueryToRunResults = UnitTestFramework._Array.First(x => x.Id === 2);
 
     equal(QueryToRunResults.Id, 2);
     equal(QueryToRunResults.Txt, '2');
@@ -1383,14 +1286,14 @@ test('JLinq.First.Test.3', function () {
 
     throws(function () {
         //go run the method that should blow up
-        _Array.First(function (x) { return <any>x.Id === 'test'; });
+        UnitTestFramework._Array.First(function (x) { return <any>x.Id === 'test'; });
     }, "Can't Find First Item. Query Returned 0 Rows");
 });
 
 test('JLinq.First.TestWithNoPredicate.1', function () {
 
     //run it with no predicate
-    equal(true, _Array.First() != null);
+    equal(true, UnitTestFramework._Array.First() != null);
 });
 
 test('JLinq.First.TestWithNoPredicate.2', function () {
@@ -1398,7 +1301,7 @@ test('JLinq.First.TestWithNoPredicate.2', function () {
     //run it with no predicate (should blowup)
     throws(function () {
         //go run the method that should blow up
-        _Array.Where(x => x.Id === -9999).First();
+        UnitTestFramework._Array.Where(x => x.Id === -9999).First();
     }, "Can't Find First Item. Query Returned 0 Rows");
 });
 
@@ -1413,7 +1316,7 @@ test('JLinq.First.ChainTest.1', function () {
     //***First doesn't have a lazy iterator. It returns the first item right away
 
     //go materialize the results.
-    var QueryToRunResults = _Array.Where(x => x.Id >= 2).First(x => x.Id === 3);
+    var QueryToRunResults = UnitTestFramework._Array.Where(x => x.Id >= 2).First(x => x.Id === 3);
 
     equal(QueryToRunResults.Id, 3);
 });
@@ -1425,7 +1328,7 @@ test('JLinq.First.ResetIteratorTest.1', function () {
     //Testing to make sure the iterator reset's after we call FirstOrDefault
 
     //build the base query
-    var baseQuery = _Array.Where(x => x.Id >= 1);
+    var baseQuery = UnitTestFramework._Array.Where(x => x.Id >= 1);
 
     //go materialize the results.
     var QueryToRunResults = baseQuery.First(x => x.Id === 3);
@@ -1449,7 +1352,7 @@ test('JLinq.FirstOrDefault.Test.1', function () {
     //***First or default doesn't have a lazy iterator. It returns the first item right away
 
     //go materialize the results.
-    var QueryToRunResults = _Array.FirstOrDefault(x => x.Id === 1);
+    var QueryToRunResults = UnitTestFramework._Array.FirstOrDefault(x => x.Id === 1);
 
     equal(QueryToRunResults.Id, 1);
     equal(QueryToRunResults.Txt, '1');
@@ -1460,7 +1363,7 @@ test('JLinq.FirstOrDefault.Test.2', function () {
     //***First or default doesn't have a lazy iterator. It returns the first item right away
 
     //go materialize the results.
-    var QueryToRunResults = _Array.FirstOrDefault(x => x.Id === 2);
+    var QueryToRunResults = UnitTestFramework._Array.FirstOrDefault(x => x.Id === 2);
 
     equal(QueryToRunResults.Id, 2);
     equal(QueryToRunResults.Txt, '2');
@@ -1471,7 +1374,7 @@ test('JLinq.FirstOrDefault.Test.3', function () {
     //***First or default doesn't have a lazy iterator. It returns the first item right away
 
     //go materialize the results.
-    var QueryToRunResults = _Array.FirstOrDefault(function (x) { return <any>x.Id === 'test'; });
+    var QueryToRunResults = UnitTestFramework._Array.FirstOrDefault(function (x) { return <any>x.Id === 'test'; });
 
     equal(QueryToRunResults, null);
 });
@@ -1479,13 +1382,13 @@ test('JLinq.FirstOrDefault.Test.3', function () {
 test('JLinq.FirstOrDefault.TestWithNoPredicate.1', function () {
 
     //run it with no predicate
-    equal(true, _Array.FirstOrDefault() != null);
+    equal(true, UnitTestFramework._Array.FirstOrDefault() != null);
 });
 
 test('JLinq.FirstOrDefault.TestWithNoPredicate.2', function () {
 
     //run it with no predicate
-    equal(true, _Array.Where(x => x.Id === -9999).FirstOrDefault() == null);
+    equal(true, UnitTestFramework._Array.Where(x => x.Id === -9999).FirstOrDefault() == null);
 });
 
 test('JLinq.FirstOrDefault.TestWithNoPredicate.3', function () {
@@ -1499,7 +1402,7 @@ test('JLinq.FirstOrDefault.ChainTest.1', function () {
     //***First or default doesn't have a lazy iterator. It returns the first item right away
 
     //go materialize the results.
-    var QueryToRunResults = _Array.Where(x => x.Id >= 2).FirstOrDefault(x => x.Id === 3);
+    var QueryToRunResults = UnitTestFramework._Array.Where(x => x.Id >= 2).FirstOrDefault(x => x.Id === 3);
 
     equal(QueryToRunResults.Id, 3);
 });
@@ -1511,7 +1414,7 @@ test('JLinq.FirstOrDefault.ResetIteratorTest.1', function () {
     //Testing to make sure the iterator reset's after we call FirstOrDefault
 
     //build the base query
-    var baseQuery = _Array.Where(x => x.Id >= 1);
+    var baseQuery = UnitTestFramework._Array.Where(x => x.Id >= 1);
 
     //go materialize the results.
     var QueryToRunResults = baseQuery.FirstOrDefault(x => x.Id === 3);
@@ -1535,7 +1438,7 @@ test('JLinq.Single.Test.1', function () {
     //***Single doesn't have a lazy iterator. It returns the first item right away
 
     //go materialize the results.
-    var QueryToRunResults = _Array.Single(x => x.Id === 1);
+    var QueryToRunResults = UnitTestFramework._Array.Single(x => x.Id === 1);
 
     equal(QueryToRunResults.Id, 1);
     equal(QueryToRunResults.Txt, '1');
@@ -1549,7 +1452,7 @@ test('JLinq.Single.Test.2', function () {
 
     throws(function () {
         //go run the method that should blow up
-        _Array.Single(x => x.Id === 200);
+        UnitTestFramework._Array.Single(x => x.Id === 200);
     }, "Can't Find A Single Item.Query Returned 0 Rows");
 });
 
@@ -1561,7 +1464,7 @@ test('JLinq.Single.Test.3', function () {
 
     throws(function () {
         //go run the method that should blow up
-        _Array.Single(x => x.Id === 2 || x.Id === 3);
+        UnitTestFramework._Array.Single(x => x.Id === 2 || x.Id === 3);
     }, "Can't Find A Single Item.Query Returned 0 Rows");
 
 });
@@ -1571,7 +1474,7 @@ test('JLinq.Single.Test.4', function () {
     //***Single doesn't have a lazy iterator. It returns the first item right away
 
     //check that it chains correctly
-    var QueryToRunResults = _Array.Where(x => x.Id > 2).Single(x => x.Id === 3);
+    var QueryToRunResults = UnitTestFramework._Array.Where(x => x.Id > 2).Single(x => x.Id === 3);
 
     equal(QueryToRunResults.Id, 3);
     equal(QueryToRunResults.Txt, '3');
@@ -1584,14 +1487,14 @@ test('JLinq.Single.Test.5', function () {
     //check that it chains correctly while having more then 1 item which should throw an error
     throws(function () {
         //go run the method that should blow up
-        _Array.Where(x => x.Id > 2).Single(x => x.Id === 3 || x.Id === 4);
+        UnitTestFramework._Array.Where(x => x.Id > 2).Single(x => x.Id === 3 || x.Id === 4);
     }, 'We Already Have A Match. Single Must Only Have 1 or 0 Items Returned. Use FirstOrDefault If You Are Expecting Multiple Items And Just Want To Grab The First Item');
 });
 
 test('JLinq.Single.TestWithNoPredicate.1', function () {
 
     //run it with no predicate
-    equal(true, _Array.Take(1).Single() != null);
+    equal(true, UnitTestFramework._Array.Take(1).Single() != null);
 });
 
 test('JLinq.Single.TestWithNoPredicate.2', function () {
@@ -1608,7 +1511,7 @@ test('JLinq.Single.TestWithNoPredicate.3', function () {
     //run it with no predicate
     throws(function () {
         //go run the method that should blow up
-        _Array.Where(x => x.Id === -9999).Single();
+        UnitTestFramework._Array.Where(x => x.Id === -9999).Single();
     }, 'We Already Have A Match. Single Must Only Have 1 or 0 Items Returned. Use FirstOrDefault If You Are Expecting Multiple Items And Just Want To Grab The First Item');
 });
 
@@ -1621,7 +1524,7 @@ test('JLinq.SingleOrDefault.Test.1', function () {
     //***Single or default doesn't have a lazy iterator. It returns the first item right away
 
     //go materialize the results.
-    var QueryToRunResults = _Array.SingleOrDefault(x => x.Id === 1);
+    var QueryToRunResults = UnitTestFramework._Array.SingleOrDefault(x => x.Id === 1);
 
     equal(QueryToRunResults.Id, 1);
     equal(QueryToRunResults.Txt, '1');
@@ -1634,7 +1537,7 @@ test('JLinq.SingleOrDefault.Test.2', function () {
     //this test will make sure it returns null if we have 0 items that meet the predicate
 
     //go materialize the results.
-    var QueryToRunResults = _Array.SingleOrDefault(x => x.Id === 200);
+    var QueryToRunResults = UnitTestFramework._Array.SingleOrDefault(x => x.Id === 200);
 
     equal(QueryToRunResults, null);
 });
@@ -1647,7 +1550,7 @@ test('JLinq.SingleOrDefault.Test.3', function () {
 
     throws(function () {
         //go run the method that should blow up
-        _Array.SingleOrDefault(x => x.Id === 2 || x.Id === 3);
+        UnitTestFramework._Array.SingleOrDefault(x => x.Id === 2 || x.Id === 3);
     }, 'We Already Have A Match. SingleOrDefault Must Only Have 1 or 0 Items Returned. Use FirstOrDefault If You Are Expecting Multiple Items And Just Want To Grab The First Item');
 
 });
@@ -1657,7 +1560,7 @@ test('JLinq.SingleOrDefault.Test.4', function () {
     //***Single or default doesn't have a lazy iterator. It returns the first item right away
 
     //check that it chains correctly
-    var QueryToRunResults = _Array.Where(x => x.Id > 2).SingleOrDefault(x => x.Id === 3);
+    var QueryToRunResults = UnitTestFramework._Array.Where(x => x.Id > 2).SingleOrDefault(x => x.Id === 3);
 
     equal(QueryToRunResults.Id, 3);
     equal(QueryToRunResults.Txt, '3');
@@ -1670,14 +1573,14 @@ test('JLinq.SingleOrDefault.Test.5', function () {
     //check that it chains correctly while having more then 1 item which should throw an error
     throws(function () {
         //go run the method that should blow up
-        _Array.Where(x => x.Id > 2).SingleOrDefault(x => x.Id === 3 || x.Id === 4);
+        UnitTestFramework._Array.Where(x => x.Id > 2).SingleOrDefault(x => x.Id === 3 || x.Id === 4);
     }, 'We Already Have A Match. SingleOrDefault Must Only Have 1 or 0 Items Returned. Use FirstOrDefault If You Are Expecting Multiple Items And Just Want To Grab The First Item');
 });
 
 test('JLinq.SingleOrDefault.TestWithNoPredicate.1', function () {
 
     //run it with no predicate
-    equal(true, _Array.Take(1).SingleOrDefault() != null);
+    equal(true, UnitTestFramework._Array.Take(1).SingleOrDefault() != null);
 });
 
 test('JLinq.SingleOrDefault.TestWithNoPredicate.2', function () {
@@ -1689,7 +1592,7 @@ test('JLinq.SingleOrDefault.TestWithNoPredicate.2', function () {
 test('JLinq.SingleOrDefault.TestWithNoPredicate.3', function () {
 
     //run it with no predicate
-    equal(true, _Array.Where(x => x.Id === -9999).SingleOrDefault() == null);
+    equal(true, UnitTestFramework._Array.Where(x => x.Id === -9999).SingleOrDefault() == null);
 });
 
 //#endregion
@@ -1699,12 +1602,12 @@ test('JLinq.SingleOrDefault.TestWithNoPredicate.3', function () {
 test('JLinq.Select.Test.1', function () {
 
     //go build the query
-    var QueryToRun = _Array.Select(function (x) { return { newId: x.Id, newTxt: x.Id + 1 }; });
+    var QueryToRun = UnitTestFramework._Array.Select(function (x) { return { newId: x.Id, newTxt: x.Id + 1 }; });
 
     //go materialize the results into an array
     var QueryToRunResults = QueryToRun.ToArray();
 
-    //****To-_Array Test****
+    //****To-UnitTestFramework._Array Test****
     equal(1, QueryToRunResults[1].newId);
     equal(2, QueryToRunResults[1].newTxt);
 
@@ -1737,12 +1640,12 @@ test('JLinq.Select.Test.1', function () {
 test('JLinq.SingleOrDefault.ChainTest.1', function () {
 
     //go build the query
-    var QueryToRun = _Array.Where(x => x.Id >= 2).Select(x => x.Id);
+    var QueryToRun = UnitTestFramework._Array.Where(x => x.Id >= 2).Select(x => x.Id);
 
     //go materialize the results into an array
     var QueryToRunResults = QueryToRun.ToArray();
 
-    //****To-_Array Test****
+    //****To-UnitTestFramework._Array Test****
     equal(3, QueryToRunResults.length);
     equal(2, QueryToRunResults[0]);
     equal(3, QueryToRunResults[1]);
@@ -1780,7 +1683,7 @@ test('JLinq.All.Test.1', function () {
     //*** all just returns a boolean, there is no lazy iterator
 
     //go materialize the results into an array
-    equal(_Array.All(x => x.Id < 100), true);
+    equal(UnitTestFramework._Array.All(x => x.Id < 100), true);
 });
 
 test('JLinq.All.Test.1', function () {
@@ -1788,7 +1691,7 @@ test('JLinq.All.Test.1', function () {
     //*** all just returns a boolean, there is no lazy iterator
 
     //go materialize the results into an array
-    equal(_Array.All(x => x.Id === 2), false);
+    equal(UnitTestFramework._Array.All(x => x.Id === 2), false);
 });
 
 test('JLinq.All.ChainTest.1', function () {
@@ -1796,8 +1699,8 @@ test('JLinq.All.ChainTest.1', function () {
     //*** all just returns a boolean, there is no lazy iterator
 
     //go materialize the results into an array
-    equal(_Array.Where(x => x.Id === 2).All(x => x.Id === 2), true);
-    equal(_Array.Where(x => x.Id > 2).All(x => x.Id === 2), false);
+    equal(UnitTestFramework._Array.Where(x => x.Id === 2).All(x => x.Id === 2), true);
+    equal(UnitTestFramework._Array.Where(x => x.Id > 2).All(x => x.Id === 2), false);
 });
 
 //#endregion
@@ -1809,7 +1712,7 @@ test('JLinq.AnyWithNullPredicate.Test.1', function () {
     //*** all just returns a boolean, there is no lazy iterator
 
     //go materialize the results into an array
-    equal(_Array.Any(), true);
+    equal(UnitTestFramework._Array.Any(), true);
 });
 
 test('JLinq.AnyWithNullPredicate.Test.2', function () {
@@ -1827,7 +1730,7 @@ test('JLinq.AnyWithNullPredicate.ResetIteratorTest.1', function () {
     //Testing to make sure the iterator reset's after we call FirstOrDefault
 
     //we need to reset the iterator after we call this method. This test method does that.
-    var query = _Array.Where(x => x.Id >= 1);
+    var query = UnitTestFramework._Array.Where(x => x.Id >= 1);
 
     //grab the count value
     equal(true, query.Any());
@@ -1841,8 +1744,8 @@ test('JLinq.AnyWithNullPredicate.ChainTest.1', function () {
     //*** all just returns a boolean, there is no lazy iterator
 
     //build this off of a query then run any items(found by user)
-    equal(_Array.Where(x => x.Id === 2).Any(), true);
-    equal(_Array.Where(x => x.Id === 100).Any(), false);
+    equal(UnitTestFramework._Array.Where(x => x.Id === 2).Any(), true);
+    equal(UnitTestFramework._Array.Where(x => x.Id === 100).Any(), false);
 });
 
 //#endregion
@@ -1854,7 +1757,7 @@ test('JLinq.Any.Test.1', function () {
     //*** all just returns a boolean, there is no lazy iterator
 
     //go materialize the results into an array
-    equal(_Array.Any(x => x.Id > 100), false);
+    equal(UnitTestFramework._Array.Any(x => x.Id > 100), false);
 });
 
 test('JLinq.Any.Test.2', function () {
@@ -1862,7 +1765,7 @@ test('JLinq.Any.Test.2', function () {
     //*** all just returns a boolean, there is no lazy iterator
 
     //go materialize the results into an array
-    equal(_Array.Any(x => x.Id === 2), true);
+    equal(UnitTestFramework._Array.Any(x => x.Id === 2), true);
 });
 
 test('JLinq.Any.ChainTest.1', function () {
@@ -1870,8 +1773,8 @@ test('JLinq.Any.ChainTest.1', function () {
     //*** all just returns a boolean, there is no lazy iterator
 
     //go materialize the results into an array
-    equal(_Array.Where(x=> x.Id > 1).Any(x => x.Id === 2), true);
-    equal(_Array.Where(x=> x.Id === 1).Any(x => x.Id === 2), false);
+    equal(UnitTestFramework._Array.Where(x=> x.Id > 1).Any(x => x.Id === 2), true);
+    equal(UnitTestFramework._Array.Where(x=> x.Id === 1).Any(x => x.Id === 2), false);
 });
 
 //#endregion
@@ -1883,7 +1786,7 @@ test('JLinq.LastWithNullPredicate.Test.1', function () {
     //*** all just returns a boolean, there is no lazy iterator
 
     //go materialize the results into an array
-    var QueryToRunResults = _Array.Last();
+    var QueryToRunResults = UnitTestFramework._Array.Last();
 
     equal(4, QueryToRunResults.Id);
     equal('4', QueryToRunResults.Txt);
@@ -1902,13 +1805,13 @@ test('JLinq.LastWithNullPredicate.ChainTest.1', function () {
     //*** all just returns a boolean, there is no lazy iterator
 
     //build this off of a query then run any items(found by user)
-    var LastItemResult = _Array.Where(x => x.Id > 1).Last();
+    var LastItemResult = UnitTestFramework._Array.Where(x => x.Id > 1).Last();
 
     equal(LastItemResult.Id, 4);
     equal(LastItemResult.Txt, '4');
 
     //test something where we can't find any result
-    LastItemResult = _Array.Where(x => x.Id > 1000).Last();
+    LastItemResult = UnitTestFramework._Array.Where(x => x.Id > 1000).Last();
 
     equal(LastItemResult, null);
 });
@@ -1922,7 +1825,7 @@ test('JLinq.Last.Test.1', function () {
     //*** all just returns a boolean, there is no lazy iterator
 
     //go materialize the results into an array
-    var QueryToRunResults = _Array.Last(x => x.Id === 2);
+    var QueryToRunResults = UnitTestFramework._Array.Last(x => x.Id === 2);
 
     equal(2, QueryToRunResults.Id);
     equal('2', QueryToRunResults.Txt);
@@ -1933,7 +1836,7 @@ test('JLinq.Last.Test.2', function () {
     //*** all just returns a boolean, there is no lazy iterator
 
     //go materialize the results into an array
-    equal(_Array.Last(x => x.Id === 100), null);
+    equal(UnitTestFramework._Array.Last(x => x.Id === 100), null);
 });
 
 test('JLinq.Last.Test.3', function () {
@@ -1942,7 +1845,7 @@ test('JLinq.Last.Test.3', function () {
     //*** all just returns a boolean, there is no lazy iterator
 
     //go materialize the results into an array
-    var QueryToRunResults = _Array.Last(x => x.Id === 4);
+    var QueryToRunResults = UnitTestFramework._Array.Last(x => x.Id === 4);
 
 
     equal(4, QueryToRunResults.Id);
@@ -1955,7 +1858,7 @@ test('JLinq.Last.ChainTest.1', function () {
     //*** all just returns a boolean, there is no lazy iterator
 
     //go materialize the results into an array
-    var QueryToRunResults = _Array.Where(x => x.Id > 1).Last(x => x.Id === 4);
+    var QueryToRunResults = UnitTestFramework._Array.Where(x => x.Id > 1).Last(x => x.Id === 4);
 
     equal(4, QueryToRunResults.Id);
     equal('4', QueryToRunResults.Txt);
@@ -1968,11 +1871,11 @@ test('JLinq.Last.ChainTest.1', function () {
 test('JLinq.Distinct.Number.Test.1', function () {
 
     //let's build on to the default array
-    var arrayToTestAgainst: ITestObject[] = BuildArray(_DefaultItemsToBuild);
+    var arrayToTestAgainst: UnitTestFramework.ITestObject[] = UnitTestFramework.BuildArray(UnitTestFramework._DefaultItemsToBuild);
 
     //push the new values into the array
-    arrayToTestAgainst.push({ Id: 1, Txt: "100", IsActive: true, GroupByKey: "1", GroupByKey2: "1", lst: null, CreatedDate: _DateOfTest });
-    arrayToTestAgainst.push({ Id: 1, Txt: "100", IsActive: true, GroupByKey: "1", GroupByKey2: "1", lst: null, CreatedDate: _DateOfTest });
+    arrayToTestAgainst.push({ Id: 1, Txt: "100", IsActive: true, GroupByKey: "1", GroupByKey2: "1", lst: null, CreatedDate: UnitTestFramework._DateOfTest });
+    arrayToTestAgainst.push({ Id: 1, Txt: "100", IsActive: true, GroupByKey: "1", GroupByKey2: "1", lst: null, CreatedDate: UnitTestFramework._DateOfTest });
 
     //go build the query
     var QueryToRun = arrayToTestAgainst.Distinct(x => x.Id);
@@ -1980,7 +1883,7 @@ test('JLinq.Distinct.Number.Test.1', function () {
     //go materialize the results into an array
     var QueryToRunResults = QueryToRun.ToArray();
 
-    //****To-_Array Test****
+    //****To-UnitTestFramework._Array Test****
     equal(QueryToRunResults.length, 5);
     equal(QueryToRunResults[0], 0);
 
@@ -2005,11 +1908,11 @@ test('JLinq.Distinct.Number.Test.1', function () {
 test('JLinq.Distinct.Number.Test.2', function () {
 
     //let's build on to the default array
-    var arrayToTestAgainst: ITestObject[] = BuildArray(_DefaultItemsToBuild);
+    var arrayToTestAgainst: UnitTestFramework.ITestObject[] = UnitTestFramework.BuildArray(UnitTestFramework._DefaultItemsToBuild);
 
     //push the new values into the array
-    arrayToTestAgainst.push({ Id: 1, Txt: "100", IsActive: true, GroupByKey: "1", GroupByKey2: "1", lst: null, CreatedDate: _DateOfTest });
-    arrayToTestAgainst.push({ Id: 1, Txt: "100", IsActive: true, GroupByKey: "1", GroupByKey2: "1", lst: null, CreatedDate: _DateOfTest });
+    arrayToTestAgainst.push({ Id: 1, Txt: "100", IsActive: true, GroupByKey: "1", GroupByKey2: "1", lst: null, CreatedDate: UnitTestFramework._DateOfTest });
+    arrayToTestAgainst.push({ Id: 1, Txt: "100", IsActive: true, GroupByKey: "1", GroupByKey2: "1", lst: null, CreatedDate: UnitTestFramework._DateOfTest });
 
     //go build the query
     var QueryToRun = arrayToTestAgainst.Distinct(x => x.Id);
@@ -2017,7 +1920,7 @@ test('JLinq.Distinct.Number.Test.2', function () {
     //go materialize the results into an array
     var QueryToRunResults = QueryToRun.ToArray();
 
-    //****To-_Array Test****
+    //****To-UnitTestFramework._Array Test****
     equal(QueryToRunResults.length, 5);
     equal(QueryToRunResults[0], 0);
 
@@ -2046,7 +1949,7 @@ test('JLinq.Distinct.Date.Test.3', function () {
     var dtToAdd: Date = new Date(2014, 0, 1);
 
     //let's build on to the default array
-    var arrayToTestAgainst: ITestObject[] = BuildArray(_DefaultItemsToBuild);
+    var arrayToTestAgainst: UnitTestFramework.ITestObject[] = UnitTestFramework.BuildArray(UnitTestFramework._DefaultItemsToBuild);
 
     //push the new values into the array
     arrayToTestAgainst.push({ Id: 1, Txt: "1", IsActive: true, GroupByKey: "1", GroupByKey2: "1", lst: null, CreatedDate: dtToAdd });
@@ -2058,11 +1961,11 @@ test('JLinq.Distinct.Date.Test.3', function () {
     //go sort the iterator and return the results (no need to call ToArray() on the sort method, it has no lazy iterator)
     var sortedResults = QueryToRun.OrderBy(x => x).ToArray();
 
-    //****To-_Array Test****
+    //****To-UnitTestFramework._Array Test****
     equal(sortedResults.length, 3);
-    equal(sortedResults[0], _FirstIndexDate);
+    equal(sortedResults[0], UnitTestFramework._FirstIndexDate);
     equal(sortedResults[1], dtToAdd);
-    equal(sortedResults[2], _DateOfTest);
+    equal(sortedResults[2], UnitTestFramework._DateOfTest);
 
 
     //****Lazy Execution Test****
@@ -2075,10 +1978,10 @@ test('JLinq.Distinct.Date.Test.3', function () {
     while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== ToracTechnologies.JLinq.IteratorStatus.Completed) {
 
         if (ItemCount === 0) {
-            equal(CurrentResult.CurrentItem, _DateOfTest);
+            equal(CurrentResult.CurrentItem, UnitTestFramework._DateOfTest);
         }
         else if (ItemCount === 1) {
-            equal(CurrentResult.CurrentItem, _FirstIndexDate);
+            equal(CurrentResult.CurrentItem, UnitTestFramework._FirstIndexDate);
         }
         else if (ItemCount === 2) {
             equal(CurrentResult.CurrentItem, dtToAdd);
@@ -2093,11 +1996,11 @@ test('JLinq.Distinct.Date.Test.3', function () {
 test('JLinq.Distinct.String.Test.2', function () {
 
     //let's build on to the default array
-    var arrayToTestAgainst: ITestObject[] = BuildArray(_DefaultItemsToBuild);
+    var arrayToTestAgainst: UnitTestFramework.ITestObject[] = UnitTestFramework.BuildArray(UnitTestFramework._DefaultItemsToBuild);
 
     //push the new values into the array
-    arrayToTestAgainst.push({ Id: 0, Txt: "0", IsActive: true, GroupByKey: "0", GroupByKey2: "0", lst: null, CreatedDate: _DateOfTest });
-    arrayToTestAgainst.push({ Id: 1, Txt: "100", IsActive: true, GroupByKey: "1", GroupByKey2: "1", lst: null, CreatedDate: _DateOfTest });
+    arrayToTestAgainst.push({ Id: 0, Txt: "0", IsActive: true, GroupByKey: "0", GroupByKey2: "0", lst: null, CreatedDate: UnitTestFramework._DateOfTest });
+    arrayToTestAgainst.push({ Id: 1, Txt: "100", IsActive: true, GroupByKey: "1", GroupByKey2: "1", lst: null, CreatedDate: UnitTestFramework._DateOfTest });
 
     //go build the query
     var QueryToRun = arrayToTestAgainst.Distinct(x => x.Txt);
@@ -2105,7 +2008,7 @@ test('JLinq.Distinct.String.Test.2', function () {
     //go materialize the results into an array
     var QueryToRunResults = QueryToRun.ToArray();
 
-    //****To-_Array Test****
+    //****To-UnitTestFramework._Array Test****
     equal(QueryToRunResults.length, 6);
     equal(QueryToRunResults[0], 0);
     equal(QueryToRunResults[1], 1);
@@ -2137,11 +2040,11 @@ test('JLinq.Distinct.String.Test.2', function () {
 test('JLinq.Distinct.ChainTest.1', function () {
 
     //let's build on to the default array
-    var arrayToTestAgainst: ITestObject[] = BuildArray(_DefaultItemsToBuild);
+    var arrayToTestAgainst: UnitTestFramework.ITestObject[] = UnitTestFramework.BuildArray(UnitTestFramework._DefaultItemsToBuild);
 
     //push the new values into the array
-    arrayToTestAgainst.push({ Id: 1, Txt: "100", IsActive: true, GroupByKey: "1", GroupByKey2: "1", lst: null, CreatedDate: _DateOfTest });
-    arrayToTestAgainst.push({ Id: 1, Txt: "100", IsActive: true, GroupByKey: "1", GroupByKey2: "1", lst: null, CreatedDate: _DateOfTest });
+    arrayToTestAgainst.push({ Id: 1, Txt: "100", IsActive: true, GroupByKey: "1", GroupByKey2: "1", lst: null, CreatedDate: UnitTestFramework._DateOfTest });
+    arrayToTestAgainst.push({ Id: 1, Txt: "100", IsActive: true, GroupByKey: "1", GroupByKey2: "1", lst: null, CreatedDate: UnitTestFramework._DateOfTest });
 
     //go build the query
     var QueryToRun = arrayToTestAgainst.Where(x => x.Id >= 0).Distinct(x=> x.Id);
@@ -2149,7 +2052,7 @@ test('JLinq.Distinct.ChainTest.1', function () {
     //go materialize the results into an array
     var QueryToRunResults = QueryToRun.ToArray();
 
-    //****To-_Array Test****
+    //****To-UnitTestFramework._Array Test****
     equal(QueryToRunResults.length, 5);
     equal(QueryToRunResults[0], 0);
 
@@ -2179,7 +2082,7 @@ test('JLinq.Min.Test.1', function () {
     //*** Min doesn't have a lazy iterator...it just returns the min value.
 
     //go materialize the results into the result
-    equal(_Array.Select(x => x.Id).Min(), 0);
+    equal(UnitTestFramework._Array.Select(x => x.Id).Min(), 0);
 });
 
 test('JLinq.Min.Test.2', function () {
@@ -2194,7 +2097,7 @@ test('JLinq.Min.ChainTest.1', function () {
     //*** Min doens't have a lazy iterator...it just returns the min.
 
     //go build the query
-    var QueryToRunResults = _Array.Where(x => x.Id > 1).Select(x => x.Id);
+    var QueryToRunResults = UnitTestFramework._Array.Where(x => x.Id > 1).Select(x => x.Id);
 
     //check the min
     equal(QueryToRunResults.Min(), 2);
@@ -2212,7 +2115,7 @@ test('JLinq.Max.Test.1', function () {
     //*** Max doesn't have a lazy iterator...it just returns the max value.
 
     //go materialize the results into the result
-    equal(_Array.Select(x => x.Id).Max(), 4);
+    equal(UnitTestFramework._Array.Select(x => x.Id).Max(), 4);
 });
 
 test('JLinq.Max.Test.2', function () {
@@ -2227,7 +2130,7 @@ test('JLinq.Max.ResetIteratorTest.1', function () {
     //*** Max doens't have a lazy iterator...it just returns the max.
 
     //go build the query
-    var QueryToRunResults = _Array.Where(x => x.Id > 1).Select(x => x.Id);
+    var QueryToRunResults = UnitTestFramework._Array.Where(x => x.Id > 1).Select(x => x.Id);
 
     //check the max
     equal(QueryToRunResults.Max(), 4);
@@ -2245,7 +2148,7 @@ test('JLinq.Sum.Test.1', function () {
     //*** Sum doens't have a lazy iterator...it just returns the sum.
 
     //go materialize the sum
-    equal(_Array.Select(x => x.Id).Sum(), 10);
+    equal(UnitTestFramework._Array.Select(x => x.Id).Sum(), 10);
 });
 
 test('JLinq.Sum.ChainTest.1', function () {
@@ -2261,7 +2164,7 @@ test('JLinq.Sum.ResetIteratorTest.1', function () {
     //*** Sum doens't have a lazy iterator...it just returns the sum.
 
     //go build the query
-    var QueryToRunResults = _Array.Where(x => x.Id > 1).Select(x => x.Id);
+    var QueryToRunResults = UnitTestFramework._Array.Where(x => x.Id > 1).Select(x => x.Id);
 
     //check the sum
     equal(QueryToRunResults.Sum(), 9);
@@ -2281,7 +2184,7 @@ test('JLinq.Count.Test.1', function () {
     //this is a where with a count off of a chain
 
     //go materialize the count
-    equal(_Array.Where(x => x.Id >= 3).Count(), 2);
+    equal(UnitTestFramework._Array.Where(x => x.Id >= 3).Count(), 2);
 });
 
 test('JLinq.Count.Test.2', function () {
@@ -2293,7 +2196,7 @@ test('JLinq.Count.Test.2', function () {
     //this is 2 where's with a count
 
     //go materialize the count
-    equal(_Array.Where(x => x.Id >= 1).Where(x => x.Id >= 3).Count(), 2);
+    equal(UnitTestFramework._Array.Where(x => x.Id >= 1).Where(x => x.Id >= 3).Count(), 2);
 });
 
 test('JLinq.Count.Test.3', function () {
@@ -2303,7 +2206,7 @@ test('JLinq.Count.Test.3', function () {
     //go materialize the count
 
     //this is a count with a predicate off of an array
-    equal(_Array.Count(x => x.Id >= 3), 2);
+    equal(UnitTestFramework._Array.Count(x => x.Id >= 3), 2);
 });
 
 test('JLinq.Count.Test.4', function () {
@@ -2311,7 +2214,7 @@ test('JLinq.Count.Test.4', function () {
     //*** Count doens't have a lazy iterator...it just returns the count
 
     //run count off of an array with no predicate (just a shorthand call to array.length)
-    equal(_Array.Count(), _Array.length);
+    equal(UnitTestFramework._Array.Count(), UnitTestFramework._Array.length);
 });
 
 test('JLinq.Count.ResetIteratorTest.1', function () {
@@ -2321,7 +2224,7 @@ test('JLinq.Count.ResetIteratorTest.1', function () {
     //Testing to make sure the iterator reset's after we call Count
 
     //we need to reset the iterator after we call this method. This test method does that.
-    var QueryToRun = _Array.Where(x => x.Id > 0);
+    var QueryToRun = UnitTestFramework._Array.Where(x => x.Id > 0);
 
     //what should the count be
     var CountShouldBe: number = 4;
@@ -2330,7 +2233,7 @@ test('JLinq.Count.ResetIteratorTest.1', function () {
     equal(QueryToRun.Count(), CountShouldBe);
 
     //now run through the query
-    var CurrentResult: ToracTechnologies.JLinq.IteratorResult<ITestObject>;
+    var CurrentResult: ToracTechnologies.JLinq.IteratorResult<UnitTestFramework.ITestObject>;
 
     //declare the item count
     var ItemCount = 0;
@@ -2355,7 +2258,7 @@ test('JLinq.Average.Test.1', function () {
     //*** Avg doens't have a lazy iterator...it just returns the average.
 
     //go materialize the average
-    equal(_Array.Select(x => x.Id).Average(), 2);
+    equal(UnitTestFramework._Array.Select(x => x.Id).Average(), 2);
 });
 
 test('JLinq.Average.Test.2', function () {
@@ -2372,7 +2275,7 @@ test('JLinq.Average.ResetIteratorTest.1', function () {
     //*** Average doens't have a lazy iterator...it just returns the average.
 
     //go build the query
-    var QueryToRunResults = _Array.Where(x => x.Id > 1).Select(x => x.Id);
+    var QueryToRunResults = UnitTestFramework._Array.Where(x => x.Id > 1).Select(x => x.Id);
 
     //check the average
     equal(QueryToRunResults.Average(), 3);
@@ -2388,7 +2291,7 @@ test('JLinq.Average.ResetIteratorTest.1', function () {
 test('JLinq.Dictionary.Number.Test.1', function () {
 
     //push the list to a dictionary
-    var DictionaryResult = _Array.ToDictionary(x => x.Id);
+    var DictionaryResult = UnitTestFramework._Array.ToDictionary(x => x.Id);
 
     //going to add another dictionary so we know its instance safe
     var InstanceSafeDictionary = new ToracTechnologies.JLinq.Dictionary();
@@ -2476,7 +2379,7 @@ test('JLinq.Dictionary.Number.Test.1', function () {
 test('JLinq.Dictionary.Date.Test.1', function () {
 
     //push the list to a dictionary
-    var DictionaryResult = _Array.Where(x => x.CreatedDate === _FirstIndexDate).ToDictionary(x => x.CreatedDate);
+    var DictionaryResult = UnitTestFramework._Array.Where(x => x.CreatedDate === UnitTestFramework._FirstIndexDate).ToDictionary(x => x.CreatedDate);
 
     //going to add another dictionary so we know its instance safe
     var InstanceSafeDictionary = new ToracTechnologies.JLinq.Dictionary();
@@ -2491,8 +2394,8 @@ test('JLinq.Dictionary.Date.Test.1', function () {
     equal(InstanceSafeDictionary.Count(), 1);
 
     //check the keys of the original dictionary
-    equal(DictionaryResult.ContainsKey(_FirstIndexDate), true);
-    equal(DictionaryResult.ContainsKey(_DateOfTest), false);
+    equal(DictionaryResult.ContainsKey(UnitTestFramework._FirstIndexDate), true);
+    equal(DictionaryResult.ContainsKey(UnitTestFramework._DateOfTest), false);
     equal(DictionaryResult.ContainsKey(new Date()), false);
 
     //grab the keys of the dictionary so we can test it
@@ -2502,7 +2405,7 @@ test('JLinq.Dictionary.Date.Test.1', function () {
     equal(KeysResult.Count(), 1);
 
     //check the first key value
-    equal(KeysResult[0], _FirstIndexDate);
+    equal(KeysResult[0], UnitTestFramework._FirstIndexDate);
 
     //grab the values so we can test that
     var ValuesResult = DictionaryResult.Values();
@@ -2523,7 +2426,7 @@ test('JLinq.Dictionary.Date.Test.1', function () {
     for (var i = 0; i < GetAllItemsResult.length; i++) {
 
         //check the key
-        equal(GetAllItemsResult[i].Key, _FirstIndexDate);
+        equal(GetAllItemsResult[i].Key, UnitTestFramework._FirstIndexDate);
 
         //check the value
         equal(GetAllItemsResult[i].Value.Txt, "1");
@@ -2533,7 +2436,7 @@ test('JLinq.Dictionary.Date.Test.1', function () {
 test('JLinq.Dictionary.Boolean.Test.1', function () {
 
     //push the list to a dictionary
-    var DictionaryResult = _Array.Where(x => x.CreatedDate === _FirstIndexDate).ToDictionary(x => x.IsActive);
+    var DictionaryResult = UnitTestFramework._Array.Where(x => x.CreatedDate === UnitTestFramework._FirstIndexDate).ToDictionary(x => x.IsActive);
 
     //going to add another dictionary so we know its instance safe
     var InstanceSafeDictionary = new ToracTechnologies.JLinq.Dictionary();
@@ -2589,7 +2492,7 @@ test('JLinq.Dictionary.Boolean.Test.1', function () {
 test('JLinq.Dictionary.MultiKeyObject.Test.1', function () {
 
     //push the list to a dictionary
-    var DictionaryResult = _Array.Where(x => x.CreatedDate === _FirstIndexDate).ToDictionary(x => { return { Id: x.Id, Active: x.IsActive }; });
+    var DictionaryResult = UnitTestFramework._Array.Where(x => x.CreatedDate === UnitTestFramework._FirstIndexDate).ToDictionary(x => { return { Id: x.Id, Active: x.IsActive }; });
 
     //let's check to make sure we can find these guys in the dictionary
     equal(DictionaryResult.ContainsKey({ Id: 1, Active: true }), true);
@@ -2639,11 +2542,11 @@ test('JLinq.Dictionary.MultiKeyObject.Test.1', function () {
 test('JLinq.Dictionary.MultiKeyObjectWithDatePartialKey.Test.1', function () {
 
     //push the list to a dictionary
-    var DictionaryResult = _Array.Take(2).ToDictionary(x => { return { Id: x.Id, Dt: x.CreatedDate }; });
+    var DictionaryResult = UnitTestFramework._Array.Take(2).ToDictionary(x => { return { Id: x.Id, Dt: x.CreatedDate }; });
 
     //check to make sure the keys are found in the dictionary
-    equal(DictionaryResult.ContainsKey({ Id: 0, Dt: _DateOfTest }), true);
-    equal(DictionaryResult.ContainsKey({ Id: 1, Dt: _FirstIndexDate }), true);
+    equal(DictionaryResult.ContainsKey({ Id: 0, Dt: UnitTestFramework._DateOfTest }), true);
+    equal(DictionaryResult.ContainsKey({ Id: 1, Dt: UnitTestFramework._FirstIndexDate }), true);
     equal(DictionaryResult.ContainsKey({ Id: 1, Dt: new Date() }), false);
 
     //grab the keys so we can check them
@@ -2653,8 +2556,8 @@ test('JLinq.Dictionary.MultiKeyObjectWithDatePartialKey.Test.1', function () {
     equal(KeysResult.Count(), 2);
 
     //check the key Dt property values now
-    equal(KeysResult[0].Dt.toString(), _DateOfTest.toString());
-    equal(KeysResult[1].Dt.toString(), _FirstIndexDate.toString());
+    equal(KeysResult[0].Dt.toString(), UnitTestFramework._DateOfTest.toString());
+    equal(KeysResult[1].Dt.toString(), UnitTestFramework._FirstIndexDate.toString());
 
     //grab the values so we can check them
     var ValuesResult = DictionaryResult.Values();
@@ -2679,7 +2582,7 @@ test('JLinq.Dictionary.MultiKeyObjectWithDatePartialKey.Test.1', function () {
         if (i === 0) {
 
             //check the key
-            equal(GetAllItemsResult[i].Key.Dt.toString(), _DateOfTest.toString());
+            equal(GetAllItemsResult[i].Key.Dt.toString(), UnitTestFramework._DateOfTest.toString());
 
             //check the value
             equal(GetAllItemsResult[i].Value.Txt, "0");
@@ -2687,7 +2590,7 @@ test('JLinq.Dictionary.MultiKeyObjectWithDatePartialKey.Test.1', function () {
         } else {
 
             //check the key
-            equal(GetAllItemsResult[i].Key.Dt.toString(), _FirstIndexDate.toString());
+            equal(GetAllItemsResult[i].Key.Dt.toString(), UnitTestFramework._FirstIndexDate.toString());
 
             //check the value
             equal(GetAllItemsResult[i].Value.Txt, "1");
@@ -2695,7 +2598,7 @@ test('JLinq.Dictionary.MultiKeyObjectWithDatePartialKey.Test.1', function () {
     }
 
     //let's test the remove now
-    DictionaryResult.Remove({ Id: 0, Dt: _DateOfTest });
+    DictionaryResult.Remove({ Id: 0, Dt: UnitTestFramework._DateOfTest });
 
     //now make sure we have 4 items
     equal(DictionaryResult.Count(), 1);
@@ -2707,7 +2610,7 @@ test('JLinq.Dictionary.MultiKeyObjectWithDatePartialKey.Test.1', function () {
     equal(OnlyRecordLeft.Key.Id, 1);
 
     //check the .Dt property off of the key
-    equal(OnlyRecordLeft.Key.Dt.toString(), _FirstIndexDate.toString());
+    equal(OnlyRecordLeft.Key.Dt.toString(), UnitTestFramework._FirstIndexDate.toString());
 });
 
 //#endregion
@@ -2717,7 +2620,7 @@ test('JLinq.Dictionary.MultiKeyObjectWithDatePartialKey.Test.1', function () {
 test('JLinq.HashSet.Number.Test.1', function () {
 
     //just grab the ids
-    var HashSetToTest = _Array.Select(x => x.Id).ToHashSet();
+    var HashSetToTest = UnitTestFramework._Array.Select(x => x.Id).ToHashSet();
 
     //going to add another hashset so we know its instance safe
     var InstanceSafeHashSet = new ToracTechnologies.JLinq.HashSet();
@@ -2783,16 +2686,16 @@ test('JLinq.HashSet.Number.Test.1', function () {
 test('JLinq.HashSet.Date.Test.1', function () {
 
     //declare the hashset
-    var HashSetToTest = _Array.Where(x => x.CreatedDate === _FirstIndexDate).Select(x => x.CreatedDate).ToHashSet();
+    var HashSetToTest = UnitTestFramework._Array.Where(x => x.CreatedDate === UnitTestFramework._FirstIndexDate).Select(x => x.CreatedDate).ToHashSet();
 
     //make sure we only have 1 item
     equal(HashSetToTest.Count(), 1);
 
     //make sure we have the only item we want
-    equal(HashSetToTest.ContainsItem(_FirstIndexDate), true);
+    equal(HashSetToTest.ContainsItem(UnitTestFramework._FirstIndexDate), true);
 
     //make sure we don't have another item
-    equal(HashSetToTest.ContainsItem(_DateOfTest), false);
+    equal(HashSetToTest.ContainsItem(UnitTestFramework._DateOfTest), false);
 
     //make sure the current date is not in the hashset
     equal(HashSetToTest.ContainsItem(new Date()), false);
@@ -2804,45 +2707,45 @@ test('JLinq.HashSet.Date.Test.1', function () {
     equal(ValuesResult.Count(), 1);
 
     //make sure it's the correct item
-    equal(ValuesResult[0], _FirstIndexDate);
+    equal(ValuesResult[0], UnitTestFramework._FirstIndexDate);
 
     //try to add the same item now
-    equal(false, HashSetToTest.Add(_FirstIndexDate));
+    equal(false, HashSetToTest.Add(UnitTestFramework._FirstIndexDate));
 
     //try to add another item and make sure it was added
-    equal(true, HashSetToTest.Add(_DateOfTest));
+    equal(true, HashSetToTest.Add(UnitTestFramework._DateOfTest));
 
     //make sure we have 2 items now
     equal(HashSetToTest.Count(), 2);
 
     //make sure we have the 2nd item in the hashset
-    equal(HashSetToTest.ContainsItem(_DateOfTest), true);
+    equal(HashSetToTest.ContainsItem(UnitTestFramework._DateOfTest), true);
 
     //now remove the first item
-    HashSetToTest.Remove(_FirstIndexDate);
+    HashSetToTest.Remove(UnitTestFramework._FirstIndexDate);
 
-    //make sure we only have 1 item (the _DateOfTest)
+    //make sure we only have 1 item (the UnitTestFramework._DateOfTest)
     equal(HashSetToTest.Count(), 1);
 
-    //now make sure we have the _DateOfTest
-    equal(HashSetToTest.ContainsItem(_DateOfTest), true);
+    //now make sure we have the UnitTestFramework._DateOfTest
+    equal(HashSetToTest.ContainsItem(UnitTestFramework._DateOfTest), true);
 
     //make sure we don't have first index date
-    equal(HashSetToTest.ContainsItem(_FirstIndexDate), false);
+    equal(HashSetToTest.ContainsItem(UnitTestFramework._FirstIndexDate), false);
 });
 
 test('JLinq.HashSet.MultiKeyObject.Test.1', function () {
 
     //we will grab id == 2 and id == 3 to grab the specific item
-    var SecondIdToTest = _Array.First(x => x.Id === 2);
-    var ThirdIdToTest = _Array.First(x => x.Id === 3);
-    var FourthIdToTest = _Array.First(x => x.Id === 4);
+    var SecondIdToTest = UnitTestFramework._Array.First(x => x.Id === 2);
+    var ThirdIdToTest = UnitTestFramework._Array.First(x => x.Id === 3);
+    var FourthIdToTest = UnitTestFramework._Array.First(x => x.Id === 4);
 
     //declare the hashset
-    var HashSetToTest = new ToracTechnologies.JLinq.HashSet<ITestObject>();
+    var HashSetToTest = new ToracTechnologies.JLinq.HashSet<UnitTestFramework.ITestObject>();
 
     //go build the hashset
-    HashSetToTest.BuildHashSet(_Array.Where(x => x.Id === 2 || x.Id === 3));
+    HashSetToTest.BuildHashSet(UnitTestFramework._Array.Where(x => x.Id === 2 || x.Id === 3));
 
     //make sure we only have 2 items
     equal(HashSetToTest.Count(), 2);
@@ -2854,7 +2757,7 @@ test('JLinq.HashSet.MultiKeyObject.Test.1', function () {
     equal(HashSetToTest.ContainsItem(ThirdIdToTest), true);
 
     //make sure we don't have another item
-    equal(HashSetToTest.ContainsItem(_Array.First(x => x.Id === 4)), false);
+    equal(HashSetToTest.ContainsItem(UnitTestFramework._Array.First(x => x.Id === 4)), false);
 
     //go grab all the items
     var ValuesResult = HashSetToTest.Values();
@@ -2867,10 +2770,10 @@ test('JLinq.HashSet.MultiKeyObject.Test.1', function () {
     equal(ValuesResult[1].Id, 3);
 
     //try to add the same item now
-    equal(false, HashSetToTest.Add(_Array.First(x => x.Id === 2)));
+    equal(false, HashSetToTest.Add(UnitTestFramework._Array.First(x => x.Id === 2)));
 
     //try to add another item and make sure it was added
-    equal(true, HashSetToTest.Add(_Array.First(x => x.Id === 4)));
+    equal(true, HashSetToTest.Add(UnitTestFramework._Array.First(x => x.Id === 4)));
 
     //make sure we have 3 items now
     equal(HashSetToTest.Count(), 3);
@@ -2894,7 +2797,7 @@ test('JLinq.HashSet.MultiKeyObject.Test.1', function () {
 test('JLinq.HashSet.Generic.Test.1', function () {
 
     //just make sure a hashset works off of an array
-    equal(_Array.ToHashSet().Count(), _Array.Count());
+    equal(UnitTestFramework._Array.ToHashSet().Count(), UnitTestFramework._Array.Count());
 });
 
 //#endregion
@@ -2906,7 +2809,7 @@ test('JLinq.HashSet.Generic.Test.1', function () {
 test('JLinq.OrderBy.Asc.Number.Test.1', function () {
 
     //go build the query
-    var QueryToRun = _Array.OrderBy(x => x.Id);
+    var QueryToRun = UnitTestFramework._Array.OrderBy(x => x.Id);
 
     //push the results
     var QueryToRunResults = QueryToRun.ToArray();
@@ -2919,7 +2822,7 @@ test('JLinq.OrderBy.Asc.Number.Test.1', function () {
     }
 
     //****Lazy Execution Test****
-    var CurrentResult: ToracTechnologies.JLinq.IteratorResult<ITestObject>;
+    var CurrentResult: ToracTechnologies.JLinq.IteratorResult<UnitTestFramework.ITestObject>;
 
     //holds the current index
     var Index = 0;
@@ -2938,7 +2841,7 @@ test('JLinq.OrderBy.Asc.Number.Test.1', function () {
 test('JLinq.OrderBy.Asc.Number.ChainTest.1', function () {
 
     //go materialize the results into the result
-    var QueryToRun = _Array.Select(x => x.Id).OrderBy(x => x);
+    var QueryToRun = UnitTestFramework._Array.Select(x => x.Id).OrderBy(x => x);
 
     //go materialize the array
     var QueryToRunResults = QueryToRun.ToArray();
@@ -2970,7 +2873,7 @@ test('JLinq.OrderBy.Asc.Number.ChainTest.1', function () {
 test('JLinq.OrderBy.Desc.Number.Test.1', function () {
 
     //go materialize the results into the result
-    var QueryToRun = _Array.OrderByDescending(x => x.Id);
+    var QueryToRun = UnitTestFramework._Array.OrderByDescending(x => x.Id);
 
     //go materialize the array
     var QueryToRunResults = QueryToRun.ToArray();
@@ -2989,7 +2892,7 @@ test('JLinq.OrderBy.Desc.Number.Test.1', function () {
     }
 
     //****Lazy Execution Test****
-    var CurrentResult: ToracTechnologies.JLinq.IteratorResult<ITestObject>;
+    var CurrentResult: ToracTechnologies.JLinq.IteratorResult<UnitTestFramework.ITestObject>;
 
     //reset the id
     IdLengthCalculator = 1;
@@ -3008,7 +2911,7 @@ test('JLinq.OrderBy.Desc.Number.Test.1', function () {
 test('JLinq.OrderBy.Desc.Number.ChainTest.1', function () {
 
     //go materialize the results into the result
-    var QueryToRun = _Array.Select(x=> x.Id).OrderByDescending(x => x);
+    var QueryToRun = UnitTestFramework._Array.Select(x=> x.Id).OrderByDescending(x => x);
 
     //go materialize the array
     var QueryToRunResults = QueryToRun.ToArray();
@@ -3050,7 +2953,7 @@ test('JLinq.OrderBy.Desc.Number.ChainTest.1', function () {
 test('JLinq.OrderBy.Asc.String.Test.1', function () {
 
     //go build the query
-    var QueryToRun: any = BuildArray(_DefaultItemsToBuild);
+    var QueryToRun: any = UnitTestFramework.BuildArray(UnitTestFramework._DefaultItemsToBuild);
 
     //push a new item now
     QueryToRun.push({ Id: 1000, Txt: 'abc' });
@@ -3069,7 +2972,7 @@ test('JLinq.OrderBy.Asc.String.Test.1', function () {
     equal(QueryToRunResults[QueryToRunResults.length - 2].Txt, 'abc');
 
     //****Lazy Execution Test****
-    var CurrentResult: ToracTechnologies.JLinq.IteratorResult<ITestObject>;
+    var CurrentResult: ToracTechnologies.JLinq.IteratorResult<UnitTestFramework.ITestObject>;
 
     //holds the index
     var Index = 0;
@@ -3096,7 +2999,7 @@ test('JLinq.OrderBy.Asc.String.Test.1', function () {
 test('JLinq.OrderBy.Asc.String.Test.2', function () {
 
     //go build the query
-    var QueryToRun: any = BuildArray(_DefaultItemsToBuild);
+    var QueryToRun: any = UnitTestFramework.BuildArray(UnitTestFramework._DefaultItemsToBuild);
 
     //push a new item now
     QueryToRun.push({ Id: 1000, Txt: 'abc' });
@@ -3120,7 +3023,7 @@ test('JLinq.OrderBy.Asc.String.Test.2', function () {
 
 
     //****Lazy Execution Test****
-    var CurrentResult: ToracTechnologies.JLinq.IteratorResult<ITestObject>;
+    var CurrentResult: ToracTechnologies.JLinq.IteratorResult<UnitTestFramework.ITestObject>;
 
     //holds the index
     var Index = 0;
@@ -3149,7 +3052,7 @@ test('JLinq.OrderBy.Asc.String.Test.2', function () {
 test('JLinq.OrderBy.Asc.String.ChainTest.1', function () {
 
     //go build the query
-    var QueryToRun: any = BuildArray(_DefaultItemsToBuild);
+    var QueryToRun: any = UnitTestFramework.BuildArray(UnitTestFramework._DefaultItemsToBuild);
 
     //push a new item now
     QueryToRun.splice(0, 0, { Id: 1000, Txt: 'abc' });
@@ -3168,7 +3071,7 @@ test('JLinq.OrderBy.Asc.String.ChainTest.1', function () {
     equal(QueryToRunResults[QueryToRunResults.length - 2], 'abc');
 
     //****Lazy Execution Test****
-    var CurrentResult: ToracTechnologies.JLinq.IteratorResult<ITestObject>;
+    var CurrentResult: ToracTechnologies.JLinq.IteratorResult<UnitTestFramework.ITestObject>;
 
     //holds the index
     var Index = 0;
@@ -3194,7 +3097,7 @@ test('JLinq.OrderBy.Asc.String.ChainTest.1', function () {
 test('JLinq.OrderBy.Desc.String.Test.1', function () {
 
     //go build the query
-    var QueryToRun: any = BuildArray(_DefaultItemsToBuild);
+    var QueryToRun: any = UnitTestFramework.BuildArray(UnitTestFramework._DefaultItemsToBuild);
 
     //push a new item now
     QueryToRun.push({ Id: 1000, Txt: 'abc' });
@@ -3213,7 +3116,7 @@ test('JLinq.OrderBy.Desc.String.Test.1', function () {
     equal(QueryToRunResults[1].Txt, 'abc');
 
     //****Lazy Execution Test****
-    var CurrentResult: ToracTechnologies.JLinq.IteratorResult<ITestObject>;
+    var CurrentResult: ToracTechnologies.JLinq.IteratorResult<UnitTestFramework.ITestObject>;
 
     //holds the index
     var Index = 0;
@@ -3232,7 +3135,7 @@ test('JLinq.OrderBy.Desc.String.Test.1', function () {
 test('JLinq.OrderBy.Desc.String.Test.2', function () {
 
     //go build the query
-    var QueryToRun: any = BuildArray(_DefaultItemsToBuild);
+    var QueryToRun: any = UnitTestFramework.BuildArray(UnitTestFramework._DefaultItemsToBuild);
 
     //push a new item now
     QueryToRun.push({ Id: 1000, Txt: 'abc' });
@@ -3255,7 +3158,7 @@ test('JLinq.OrderBy.Desc.String.Test.2', function () {
     equal(QueryToRunResults[2].Txt, 'ABC');
 
     //****Lazy Execution Test****
-    var CurrentResult: ToracTechnologies.JLinq.IteratorResult<ITestObject>;
+    var CurrentResult: ToracTechnologies.JLinq.IteratorResult<UnitTestFramework.ITestObject>;
 
     //holds the index
     var Index = 0;
@@ -3274,7 +3177,7 @@ test('JLinq.OrderBy.Desc.String.Test.2', function () {
 test('JLinq.OrderBy.Desc.String.ChainTest.1', function () {
 
     //go build the query
-    var QueryToRun: any = BuildArray(_DefaultItemsToBuild);
+    var QueryToRun: any = UnitTestFramework.BuildArray(UnitTestFramework._DefaultItemsToBuild);
 
     //push a new item now
     QueryToRun.push({ Id: 1000, Txt: 'abc' });
@@ -3293,7 +3196,7 @@ test('JLinq.OrderBy.Desc.String.ChainTest.1', function () {
     equal(QueryToRunResults[1], 'abc');
 
     //****Lazy Execution Test****
-    var CurrentResult: ToracTechnologies.JLinq.IteratorResult<ITestObject>;
+    var CurrentResult: ToracTechnologies.JLinq.IteratorResult<UnitTestFramework.ITestObject>;
 
     //holds the index
     var Index = 0;
@@ -3316,7 +3219,7 @@ test('JLinq.OrderBy.Desc.String.ChainTest.1', function () {
 test('JLinq.OrderBy.Asc.Boolean.Test.1', function () {
 
     //go materialize the results into an array
-    var QueryToRunResults = _Array.OrderBy(x => x.IsActive);
+    var QueryToRunResults = UnitTestFramework._Array.OrderBy(x => x.IsActive);
 
     //go test the results
     equal(QueryToRunResults.Last().IsActive, true);
@@ -3325,7 +3228,7 @@ test('JLinq.OrderBy.Asc.Boolean.Test.1', function () {
 test('JLinq.OrderBy.Asc.Boolean.ChainTest.1', function () {
 
     //go materialize the results into an array
-    var QueryToRun = _Array.Select(x => x.IsActive).OrderBy(x => x);
+    var QueryToRun = UnitTestFramework._Array.Select(x => x.IsActive).OrderBy(x => x);
 
     //go test the results
     equal(QueryToRun.Last(), true);
@@ -3334,7 +3237,7 @@ test('JLinq.OrderBy.Asc.Boolean.ChainTest.1', function () {
 test('JLinq.OrderBy.Desc.Boolean.Test.1', function () {
 
     //go materialize the results into an array
-    var QueryToRunResults = _Array.OrderBy(x => x.IsActive).ToArray();
+    var QueryToRunResults = UnitTestFramework._Array.OrderBy(x => x.IsActive).ToArray();
 
     //go test the results
     equal(QueryToRunResults[0].IsActive, false);
@@ -3343,7 +3246,7 @@ test('JLinq.OrderBy.Desc.Boolean.Test.1', function () {
 test('JLinq.OrderBy.Desc.Boolean.ChainTest.1', function () {
 
     //go materialize the results into an array
-    var QueryToRun = _Array.Select(x => x.IsActive).OrderBy(x => x).ToArray();
+    var QueryToRun = UnitTestFramework._Array.Select(x => x.IsActive).OrderBy(x => x).ToArray();
 
     //go test the results
     equal(QueryToRun[0], false);
@@ -3356,7 +3259,7 @@ test('JLinq.OrderBy.Desc.Boolean.ChainTest.1', function () {
 test('JLinq.OrderBy.Asc.Date.Test.1', function () {
 
     //go materialize the results into an array
-    var QueryToRun = _Array.OrderBy(x => x.CreatedDate).ToArray();
+    var QueryToRun = UnitTestFramework._Array.OrderBy(x => x.CreatedDate).ToArray();
 
     equal(QueryToRun[0].CreatedDate.toString(), new Date('12/1/1980').toString());
 });
@@ -3364,7 +3267,7 @@ test('JLinq.OrderBy.Asc.Date.Test.1', function () {
 test('JLinq.OrderBy.Asc.Date.ChainTest.1', function () {
 
     //go materialize the results into an array
-    var QueryToRun = _Array.Select(x => x.CreatedDate).OrderBy(x => x).ToArray();
+    var QueryToRun = UnitTestFramework._Array.Select(x => x.CreatedDate).OrderBy(x => x).ToArray();
 
     equal(QueryToRun[0].toString(), new Date('12/1/1980').toString());
 });
@@ -3372,7 +3275,7 @@ test('JLinq.OrderBy.Asc.Date.ChainTest.1', function () {
 test('JLinq.OrderBy.Desc.Date.Test.1', function () {
 
     //go materialize the results into an array
-    var QueryToRun = _Array.OrderByDescending(x => x.CreatedDate).ToArray();
+    var QueryToRun = UnitTestFramework._Array.OrderByDescending(x => x.CreatedDate).ToArray();
 
     equal(QueryToRun.Last().CreatedDate.toString(), new Date('12/1/1980').toString());
 });
@@ -3380,7 +3283,7 @@ test('JLinq.OrderBy.Desc.Date.Test.1', function () {
 test('JLinq.OrderBy.Desc.Date.ChainTest.1', function () {
 
     //go materialize the results into an array
-    var QueryToRun = _Array.Select(x => x.CreatedDate).OrderByDescending(x => x).ToArray();
+    var QueryToRun = UnitTestFramework._Array.Select(x => x.CreatedDate).OrderByDescending(x => x).ToArray();
 
     equal(QueryToRun.Last().toString(), new Date('12/1/1980').toString());
 });
@@ -3394,7 +3297,7 @@ test('JLinq.OrderBy.Desc.Date.ChainTest.1', function () {
 test('JLinq.ThenBy.Asc.Test.1', function () {
 
     //go build the query
-    var QueryToRun = _SortOrderArray.OrderBy(x => x.Txt).ThenBy(x => x.Id);
+    var QueryToRun = UnitTestFramework._SortOrderArray.OrderBy(x => x.Txt).ThenBy(x => x.Id);
 
     //push the results
     var QueryToRunResults = QueryToRun.ToArray();
@@ -3406,7 +3309,7 @@ test('JLinq.ThenBy.Asc.Test.1', function () {
     equal(QueryToRunResults[3].Id, 4);
 
     //****Lazy Execution Test****
-    var CurrentResult: ToracTechnologies.JLinq.IteratorResult<IObject>;
+    var CurrentResult: ToracTechnologies.JLinq.IteratorResult<UnitTestFramework.IObject>;
 
     //holds the current index
     var Index = 0;
@@ -3425,7 +3328,7 @@ test('JLinq.ThenBy.Asc.Test.1', function () {
 test('JLinq.ThenBy.Asc.Test.2', function () {
 
     //go build the query
-    var QueryToRun = _SortOrderArray.OrderBy(x => x.Txt).ThenByDescending(x => x.Txt2);
+    var QueryToRun = UnitTestFramework._SortOrderArray.OrderBy(x => x.Txt).ThenByDescending(x => x.Txt2);
 
     //push the results
     var QueryToRunResults = QueryToRun.ToArray();
@@ -3437,7 +3340,7 @@ test('JLinq.ThenBy.Asc.Test.2', function () {
     equal(QueryToRunResults[3].Id, 4);
 
     //****Lazy Execution Test****
-    var CurrentResult: ToracTechnologies.JLinq.IteratorResult<IObject>;
+    var CurrentResult: ToracTechnologies.JLinq.IteratorResult<UnitTestFramework.IObject>;
 
     //holds the current index
     var Index = 0;
@@ -3456,7 +3359,7 @@ test('JLinq.ThenBy.Asc.Test.2', function () {
 test('JLinq.ThenBy.Asc.Test.3', function () {
 
     //go build the query
-    var QueryToRun = _SortOrderArray.OrderBy(x => x.Txt).ThenByDescending(x => x.Txt2).ThenBy(x => x.Id);
+    var QueryToRun = UnitTestFramework._SortOrderArray.OrderBy(x => x.Txt).ThenByDescending(x => x.Txt2).ThenBy(x => x.Id);
 
     //push the results
     var QueryToRunResults = QueryToRun.ToArray();
@@ -3468,7 +3371,7 @@ test('JLinq.ThenBy.Asc.Test.3', function () {
     equal(QueryToRunResults[3].Id, 4);
 
     //****Lazy Execution Test****
-    var CurrentResult: ToracTechnologies.JLinq.IteratorResult<IObject>;
+    var CurrentResult: ToracTechnologies.JLinq.IteratorResult<UnitTestFramework.IObject>;
 
     //holds the current index
     var Index = 0;
@@ -3487,7 +3390,7 @@ test('JLinq.ThenBy.Asc.Test.3', function () {
 test('JLinq.ThenBy.Asc.ChainTest.1', function () {
 
     //go build the query
-    var QueryToRun = _SortOrderArray.Where(x => x.Id <= 3).OrderBy(x => x.Txt).ThenBy(x => x.Id);
+    var QueryToRun = UnitTestFramework._SortOrderArray.Where(x => x.Id <= 3).OrderBy(x => x.Txt).ThenBy(x => x.Id);
 
     //push the results
     var QueryToRunResults = QueryToRun.ToArray();
@@ -3498,7 +3401,7 @@ test('JLinq.ThenBy.Asc.ChainTest.1', function () {
     equal(QueryToRunResults[2].Id, 3);
 
     //****Lazy Execution Test****
-    var CurrentResult: ToracTechnologies.JLinq.IteratorResult<IObject>;
+    var CurrentResult: ToracTechnologies.JLinq.IteratorResult<UnitTestFramework.IObject>;
 
     //holds the current index
     var Index = 0;
@@ -3517,7 +3420,7 @@ test('JLinq.ThenBy.Asc.ChainTest.1', function () {
 test('JLinq.ThenBy.Asc.ChainTest.2', function () {
 
     //go build the query
-    var QueryToRun = _SortOrderArray.Where(x => x.Id <= 3).OrderBy(x => x.Txt).ThenBy(x => x.Id).Select(x => x.Id);
+    var QueryToRun = UnitTestFramework._SortOrderArray.Where(x => x.Id <= 3).OrderBy(x => x.Txt).ThenBy(x => x.Id).Select(x => x.Id);
 
     //push the results
     var QueryToRunResults = QueryToRun.ToArray();
@@ -3547,7 +3450,7 @@ test('JLinq.ThenBy.Asc.ChainTest.2', function () {
 test('JLinq.ThenBy.Desc.Test.1', function () {
 
     //go build the query
-    var QueryToRun = _SortOrderArray.OrderByDescending(x => x.Txt).ThenByDescending(x => x.Id);
+    var QueryToRun = UnitTestFramework._SortOrderArray.OrderByDescending(x => x.Txt).ThenByDescending(x => x.Id);
 
     //push the results
     var QueryToRunResults = QueryToRun.ToArray();
@@ -3559,7 +3462,7 @@ test('JLinq.ThenBy.Desc.Test.1', function () {
     equal(QueryToRunResults[3].Id, 1);
 
     //****Lazy Execution Test****
-    var CurrentResult: ToracTechnologies.JLinq.IteratorResult<IObject>;
+    var CurrentResult: ToracTechnologies.JLinq.IteratorResult<UnitTestFramework.IObject>;
 
     //holds the current index
     var Index = 0;
@@ -3578,7 +3481,7 @@ test('JLinq.ThenBy.Desc.Test.1', function () {
 test('JLinq.ThenBy.Desc.Test.2', function () {
 
     //go build the query
-    var QueryToRun = _SortOrderArray.OrderByDescending(x => x.Txt).ThenBy(x => x.Txt2);
+    var QueryToRun = UnitTestFramework._SortOrderArray.OrderByDescending(x => x.Txt).ThenBy(x => x.Txt2);
 
     //push the results
     var QueryToRunResults = QueryToRun.ToArray();
@@ -3590,7 +3493,7 @@ test('JLinq.ThenBy.Desc.Test.2', function () {
     equal(QueryToRunResults[3].Id, 2);
 
     //****Lazy Execution Test****
-    var CurrentResult: ToracTechnologies.JLinq.IteratorResult<IObject>;
+    var CurrentResult: ToracTechnologies.JLinq.IteratorResult<UnitTestFramework.IObject>;
 
     //holds the current index
     var Index = 0;
@@ -3609,7 +3512,7 @@ test('JLinq.ThenBy.Desc.Test.2', function () {
 test('JLinq.ThenBy.Desc.Test.3', function () {
 
     //go build the query
-    var QueryToRun = _SortOrderArray.OrderByDescending(x => x.Txt).ThenBy(x => x.Txt2).ThenBy(x => x.Id);
+    var QueryToRun = UnitTestFramework._SortOrderArray.OrderByDescending(x => x.Txt).ThenBy(x => x.Txt2).ThenBy(x => x.Id);
 
     //push the results
     var QueryToRunResults = QueryToRun.ToArray();
@@ -3621,7 +3524,7 @@ test('JLinq.ThenBy.Desc.Test.3', function () {
     equal(QueryToRunResults[3].Txt, 'abc');
 
     //****Lazy Execution Test****
-    var CurrentResult: ToracTechnologies.JLinq.IteratorResult<IObject>;
+    var CurrentResult: ToracTechnologies.JLinq.IteratorResult<UnitTestFramework.IObject>;
 
     //holds the current index
     var Index = 0;
@@ -3640,7 +3543,7 @@ test('JLinq.ThenBy.Desc.Test.3', function () {
 test('JLinq.ThenBy.Desc.ChainTest.1', function () {
 
     //go build the query
-    var QueryToRun = _SortOrderArray.Where(x => x.Id <= 3).OrderByDescending(x => x.Txt).ThenByDescending(x => x.Id);
+    var QueryToRun = UnitTestFramework._SortOrderArray.Where(x => x.Id <= 3).OrderByDescending(x => x.Txt).ThenByDescending(x => x.Id);
 
     //push the results
     var QueryToRunResults = QueryToRun.ToArray();
@@ -3651,7 +3554,7 @@ test('JLinq.ThenBy.Desc.ChainTest.1', function () {
     equal(QueryToRunResults[2].Id, 1);
 
     //****Lazy Execution Test****
-    var CurrentResult: ToracTechnologies.JLinq.IteratorResult<IObject>;
+    var CurrentResult: ToracTechnologies.JLinq.IteratorResult<UnitTestFramework.IObject>;
 
     //holds the current index
     var Index = 0;
@@ -3670,7 +3573,7 @@ test('JLinq.ThenBy.Desc.ChainTest.1', function () {
 test('JLinq.ThenBy.Desc.ChainTest.2', function () {
 
     //go build the query
-    var QueryToRun = _SortOrderArray.Where(x => x.Id <= 3).OrderByDescending(x => x.Txt).ThenByDescending(x => x.Id).Select(x => x.Id);
+    var QueryToRun = UnitTestFramework._SortOrderArray.Where(x => x.Id <= 3).OrderByDescending(x => x.Txt).ThenByDescending(x => x.Id).Select(x => x.Id);
 
     //push the results
     var QueryToRunResults = QueryToRun.ToArray();
