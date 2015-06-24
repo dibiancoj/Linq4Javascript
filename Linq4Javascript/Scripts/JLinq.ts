@@ -919,6 +919,10 @@ module ToracTechnologies {
                 }
             }
 
+            public AsyncSerializedFunc(): Array<KeyValuePair<string, string>> {
+                return null;
+            }
+
             //#endregion
 
         }
