@@ -1,6 +1,17 @@
 ﻿/// <reference path="qunit.d.ts"/>
 /// <reference path="unittestframework.ts" />
 
+//#region Framework Stuff
+
+function ErrorCallBack(MethodName: string): (ErrorObject: ErrorEvent) => void {
+
+    return (ErrorObject: ErrorEvent) => {
+        throw MethodName;
+    };
+}
+
+//#endregion
+
 //#region Unit Tests
 
 //#region AsQueryable
@@ -9,8 +20,6 @@ asyncTest("JLinq.AsQueryable.Test.1", function () {
 
     //i'm going to run 3 asserts
     expect(3);
-
-    //var called = 0;
 
     var callBack = (Result: UnitTestFramework.ITestObject[]) => {
         //check the length
@@ -27,10 +36,6 @@ asyncTest("JLinq.AsQueryable.Test.1", function () {
         start();
     }
 
-    var errorCallBack = (ErrorObject: ErrorEvent) => {
-        throw 'JLinq.WhereAsync.Test.1 - Error';
-    };
-
     //grab only 2 items so it's easier to test
     var shorterList = UnitTestFramework._Array.Where(x => x.Id == 1 || x.Id == 2).ToArray();
 
@@ -38,10 +43,10 @@ asyncTest("JLinq.AsQueryable.Test.1", function () {
     var asQueryableResults = shorterList.AsQueryable();
 
     //go run the async operation
-    asQueryableResults.ToArrayAsync(callBack, errorCallBack);
+    asQueryableResults.ToArrayAsync(callBack, ErrorCallBack('AsQueryable.Test.1'));
 
     //wait about 5 seconds before calling the test
-    setTimeout(callBack, 5000); 
+    setTimeout(callBack, 5000);
 });
 
 //#endregion
@@ -72,10 +77,6 @@ asyncTest('JLinq.SelectMany.Test.1', function () {
         start();
     };
 
-    var errorCallBack = (ErrorObject: ErrorEvent) => {
-        throw 'JLinq.WhereAsync.Test.1 - Error';
-    };
-
     //how many items we should have
     var howManyItemsShouldWeHave: number = (UnitTestFramework._Array.length - 2) * 2;
 
@@ -83,10 +84,10 @@ asyncTest('JLinq.SelectMany.Test.1', function () {
     var QueryToRun = UnitTestFramework._Array.SelectMany(x => x.lst);
 
     //go run the async operation
-    QueryToRun.ToArrayAsync(callBack, errorCallBack);
+    QueryToRun.ToArrayAsync(callBack, ErrorCallBack('SelectMany.Test.1'));
 
     //wait about 5 seconds before calling the test
-    setTimeout(callBack, 5000); 
+    setTimeout(callBack, 5000);
 });
 
 asyncTest('JLinq.SelectMany.Test.2', function () {
@@ -108,20 +109,16 @@ asyncTest('JLinq.SelectMany.Test.2', function () {
         start();
     };
 
-    var errorCallBack = (ErrorObject: ErrorEvent) => {
-        throw 'JLinq.WhereAsync.Test.1 - Error';
-    };
-
     //this is a select many with a where before it
 
     //go build the query
     var QueryToRun = UnitTestFramework._Array.Where(x => x.Id === 4).SelectMany(x => x.lst);
 
     //go run the async operation
-    QueryToRun.ToArrayAsync(callBack, errorCallBack);
+    QueryToRun.ToArrayAsync(callBack, ErrorCallBack('SelectMany.Test.2'));
 
     //wait about 5 seconds before calling the test
-    setTimeout(callBack, 5000); 
+    setTimeout(callBack, 5000);
 });
 
 asyncTest('JLinq.SelectMany.Test.3', function () {
@@ -142,20 +139,16 @@ asyncTest('JLinq.SelectMany.Test.3', function () {
         start();
     };
 
-    var errorCallBack = (ErrorObject: ErrorEvent) => {
-        throw 'JLinq.WhereAsync.Test.1 - Error';
-    };
-
     //this is a select many with a where before it and then a select after it
 
     //go build the query
     var QueryToRun = UnitTestFramework._Array.Where(x => x.Id === 4).SelectMany(x => x.lst).Select(x => { return { mapId: x }; });
 
     //go run the async operation
-    QueryToRun.ToArrayAsync(callBack, errorCallBack);
+    QueryToRun.ToArrayAsync(callBack, ErrorCallBack('SelectMany.Test.3'));
 
     //wait about 5 seconds before calling the test
-    setTimeout(callBack, 5000); 
+    setTimeout(callBack, 5000);
 });
 
 //#endregion
