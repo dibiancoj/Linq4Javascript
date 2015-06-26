@@ -263,4 +263,77 @@ asyncTest('JLinq.Where.ChainTest.2', function () {
 
 //#endregion
 
+//#region Concat
+
+//#region Concat Off Of Query With Array
+
+asyncTest('JLinq.Concat.TestOffOfQueryWithArray.1', function () {
+
+    //i'm going to run 3 asserts
+    expect(7);
+
+    var callBack = (Result: Array<any>) => {
+
+        //****To-UnitTestFramework._Array Test****
+        equal(Result[0].Id, 1);
+        equal(Result[0].Txt, '1');
+        equal(Result[1].Id, 0);
+        equal(Result[1].Txt, '0');
+        equal(Result[2].Id, 1);
+        equal(Result[2].Txt, '1');
+        equal(Result.length, 3);
+
+        start();
+    }
+
+    //go build the query
+    var QueryToRun = UnitTestFramework._Array.Where(x => x.Id === 1).Concat(UnitTestFramework.BuildArray(2));
+
+    //go run the async operation
+    QueryToRun.ToArrayAsync(callBack, ErrorCallBack('Concat.TestOffOfQueryWithArray.1'));
+
+    //wait about 5 seconds before calling the test
+    setTimeout(callBack, 5000);
+});
+
+//#endregion
+
+//#region Concat Query Off Of Array With Array
+
+asyncTest('JLinq.Concat.TestOffOfArrayWithArray.1', function () {
+
+    //i'm going to run 2 * number of records
+    expect(15);
+
+    var callBack = (Result: Array<any>) => {
+
+        //****To-UnitTestFramework._Array Test****
+        for (var i = 0; i < Result.length; i++) {
+
+            //since we are mergeing 2 arrays...when we get to the 2nd array (i>=5...then we subtract 5 to get back to 0)
+            var IntTest: number = i >= 5 ? i - 5 : i;
+
+            equal(Result[i].Id, IntTest);
+            equal(Result[i].Txt, IntTest.toString());
+        }
+
+        equal(Result.length, 7);
+
+        start();
+    }
+
+    //go build the query
+    var QueryToRun = UnitTestFramework._Array.Concat(UnitTestFramework.BuildArray(2));
+
+    //go run the async operation
+    QueryToRun.ToArrayAsync(callBack, ErrorCallBack('Concat.TestOffOfArrayWithArray.1'));
+
+    //wait about 5 seconds before calling the test
+    setTimeout(callBack, 5000);
+});
+
+//#endregion
+
+//#endregion
+
 //#endregion
