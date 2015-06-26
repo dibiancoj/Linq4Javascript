@@ -153,4 +153,114 @@ asyncTest('JLinq.SelectMany.Test.3', function () {
 
 //#endregion
 
+//#region Where
+
+asyncTest('JLinq.Where.Test.1', function () {
+
+    //i'm going to run 3 asserts
+    expect(3);
+
+    var callBack = (Result: Array<any>) => {
+
+        //****To-UnitTestFramework._Array Test****
+        equal(Result[0].Id, 1);
+        equal(Result[0].Txt, '1');
+        equal(Result.length, 1);
+
+        start();
+    }
+
+    //go build the query
+    var QueryToRun = UnitTestFramework._Array.Where(x => x.Id === 1);
+
+    //go run the async operation
+    QueryToRun.ToArrayAsync(callBack, ErrorCallBack('Where.Test.1'));
+
+    //wait about 5 seconds before calling the test
+    setTimeout(callBack, 5000);
+});
+
+asyncTest('JLinq.Where.Test.2', function () {
+
+    //i'm going to run 3 asserts
+    expect(5);
+
+    var callBack = (Result: Array<any>) => {
+
+        //****To-UnitTestFramework._Array Test****
+        equal(Result[0].Id, 1);
+        equal(Result[0].Txt, '1');
+
+        equal(Result[1].Id, 2);
+        equal(Result[1].Txt, '2');
+
+        equal(Result.length, 2);
+
+        start();
+    }
+
+    //go build the query
+    var QueryToRun = UnitTestFramework._Array.Where(x => x.Id === 1 || x.Id === 2);
+
+    //go run the async operation
+    QueryToRun.ToArrayAsync(callBack, ErrorCallBack('Where.Test.2'));
+
+    //wait about 5 seconds before calling the test
+    setTimeout(callBack, 5000);
+});
+
+asyncTest('JLinq.Where.ChainTest.1', function () {
+
+    //i'm going to run 3 asserts
+    expect(3);
+
+    var callBack = (Result: Array<any>) => {
+
+        equal(Result.length, 1);
+        equal(Result[0].Id, 1);
+        equal(Result[0].Txt, '1');
+
+        start();
+    }
+
+    //go build the query
+    var QueryToRun = UnitTestFramework._Array.Where(x => x.Id === 1 || x.Id === 2).Take(1);
+
+    //go run the async operation
+    QueryToRun.ToArrayAsync(callBack, ErrorCallBack('Where.ChainTest.1'));
+
+    //wait about 5 seconds before calling the test
+    setTimeout(callBack, 5000);
+});
+
+asyncTest('JLinq.Where.ChainTest.2', function () {
+
+    //i'm going to run 3 asserts
+    expect(5);
+
+    var callBack = (Result: Array<any>) => {
+
+        equal(Result.length, 2);
+
+        equal(Result[0].Id, 1);
+        equal(Result[0].Txt, '1');
+
+        equal(Result[1].Id, 2);
+        equal(Result[1].Txt, '2');
+
+        start();
+    }
+
+    //test the where clause when it's somewhere in the chain after the first call off of array
+    var QueryToRun = UnitTestFramework._Array.Take(5).Where(x => x.Id === 1 || x.Id === 2);
+
+    //go run the async operation
+    QueryToRun.ToArrayAsync(callBack, ErrorCallBack('Where.ChainTest.2'));
+
+    //wait about 5 seconds before calling the test
+    setTimeout(callBack, 5000);
+});
+
+//#endregion
+
 //#endregion
