@@ -3472,7 +3472,7 @@ module ToracTechnologies {
                 var CastedOrderBy = (<ToracTechnologies.JLinq.OrderByIterator<any>>Queryable);
 
                 //go return the order by
-                return new ToracTechnologies.JLinq.OrderByIterator(Queryable, CastedOrderBy.SortDirection, ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(x => x.Key == 'SortPropertySelector').Value), CastedOrderBy.ThenBySortPropertySelectors);
+                return new ToracTechnologies.JLinq.OrderByIterator(Queryable, CurrentLevelOfTree.SortDirection, ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(x => x.Key == 'SortPropertySelector').Value), CastedOrderBy.ThenBySortPropertySelectors);
             }
 
             if (CurrentLevelOfTree.TypeOfObject == 'ConcatArrayIterator') {

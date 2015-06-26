@@ -2209,7 +2209,7 @@ var ToracTechnologies;
                 //cast the queryable
                 var CastedOrderBy = Queryable;
                 //go return the order by
-                return new ToracTechnologies.JLinq.OrderByIterator(Queryable, CastedOrderBy.SortDirection, ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(function (x) { return x.Key == 'SortPropertySelector'; }).Value), CastedOrderBy.ThenBySortPropertySelectors);
+                return new ToracTechnologies.JLinq.OrderByIterator(Queryable, CurrentLevelOfTree.SortDirection, ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(function (x) { return x.Key == 'SortPropertySelector'; }).Value), CastedOrderBy.ThenBySortPropertySelectors);
             }
             if (CurrentLevelOfTree.TypeOfObject == 'ConcatArrayIterator') {
                 //cast the queryable

@@ -1098,7 +1098,7 @@ test('JLinq.Select.Test.1', function () {
         ItemCount++;
     }
 });
-test('JLinq.SingleOrDefault.ChainTest.1', function () {
+test('JLinq.Select.ChainTest.1', function () {
     //go build the query
     var QueryToRun = UnitTestFramework._Array.Where(function (x) { return x.Id >= 2; }).Select(function (x) { return x.Id; });
     //go materialize the results into an array

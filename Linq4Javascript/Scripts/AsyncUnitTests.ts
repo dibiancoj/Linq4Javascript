@@ -1030,4 +1030,174 @@ asyncTest('JLinq.Select.ChainTest.1', function () {
 
 //#endregion
 
+//#region Distinct
+
+asyncTest('JLinq.Distinct.Number.Test.1', function () {
+
+    //i'm going to run 3 asserts
+    expect(2);
+
+    var callBack = (Result: Array<any>) => {
+
+        //****To-UnitTestFramework._Array Test****
+        equal(Result.length, 5);
+        equal(Result[0], 0);
+
+        start();
+    }
+
+    //let's build on to the default array
+    var arrayToTestAgainst: UnitTestFramework.ITestObject[] = UnitTestFramework.BuildArray(UnitTestFramework._DefaultItemsToBuild);
+
+    //push the new values into the array
+    arrayToTestAgainst.push({ Id: 1, Txt: "100", IsActive: true, GroupByKey: "1", GroupByKey2: "1", lst: null, CreatedDate: UnitTestFramework._DateOfTest });
+    arrayToTestAgainst.push({ Id: 1, Txt: "100", IsActive: true, GroupByKey: "1", GroupByKey2: "1", lst: null, CreatedDate: UnitTestFramework._DateOfTest });
+
+    //go build the query
+    var QueryToRun = arrayToTestAgainst.Distinct(x => x.Id);
+
+    //go run the async operation
+    QueryToRun.ToArrayAsync(callBack, ErrorCallBack('Distinct.Number.Test.1'));
+
+    //wait about 5 seconds before calling the test
+    setTimeout(callBack, 5000);
+});
+
+asyncTest('JLinq.Distinct.Number.Test.2', function () {
+
+    //i'm going to run 3 asserts
+    expect(2);
+
+    var callBack = (Result: Array<any>) => {
+
+        //****To-UnitTestFramework._Array Test****
+        equal(Result.length, 5);
+        equal(Result[0], 0);
+
+        start();
+    }
+
+    //let's build on to the default array
+    var arrayToTestAgainst: UnitTestFramework.ITestObject[] = UnitTestFramework.BuildArray(UnitTestFramework._DefaultItemsToBuild);
+
+    //push the new values into the array
+    arrayToTestAgainst.push({ Id: 1, Txt: "100", IsActive: true, GroupByKey: "1", GroupByKey2: "1", lst: null, CreatedDate: UnitTestFramework._DateOfTest });
+    arrayToTestAgainst.push({ Id: 1, Txt: "100", IsActive: true, GroupByKey: "1", GroupByKey2: "1", lst: null, CreatedDate: UnitTestFramework._DateOfTest });
+
+    //go build the query
+    var QueryToRun = arrayToTestAgainst.Distinct(x => x.Id);
+
+    //go run the async operation
+    QueryToRun.ToArrayAsync(callBack, ErrorCallBack('Distinct.Number.Test.2'));
+
+    //wait about 5 seconds before calling the test
+    setTimeout(callBack, 5000);
+});
+
+asyncTest('JLinq.Distinct.Date.Test.3', function () {
+
+    //i'm going to run 3 asserts
+    expect(4);
+
+    var callBack = (Result: Array<any>) => {
+   
+        //****To-UnitTestFramework._Array Test****
+        equal(Result.length, 3);
+        equal(JSON.stringify(Result[0]), JSON.stringify(UnitTestFramework._FirstIndexDate));
+        equal(JSON.stringify(Result[1]), JSON.stringify(dtToAdd));
+        equal(JSON.stringify(Result[2]), JSON.stringify(UnitTestFramework._DateOfTest));
+
+        start();
+    }
+
+    //same test ...going to test with a date
+
+    //grab a new date for the new items
+    var dtToAdd: Date = new Date(2014, 0, 1);
+
+    //let's build on to the default array
+    var arrayToTestAgainst: UnitTestFramework.ITestObject[] = UnitTestFramework.BuildArray(UnitTestFramework._DefaultItemsToBuild);
+
+    //push the new values into the array
+    arrayToTestAgainst.push({ Id: 1, Txt: "1", IsActive: true, GroupByKey: "1", GroupByKey2: "1", lst: null, CreatedDate: dtToAdd });
+    arrayToTestAgainst.push({ Id: 2, Txt: "2", IsActive: true, GroupByKey: "1", GroupByKey2: "1", lst: null, CreatedDate: dtToAdd });
+
+    //go build the query
+    var QueryToRun = arrayToTestAgainst.Distinct(x => x.CreatedDate);
+
+    //go run the async operation
+    QueryToRun.OrderBy(x => x).ToArrayAsync(callBack, ErrorCallBack('Distinct.Date.Test.3'));
+
+    //wait about 5 seconds before calling the test
+    setTimeout(callBack, 5000);
+});
+
+asyncTest('JLinq.Distinct.String.Test.2', function () {
+
+    //i'm going to run 3 asserts
+    expect(4);
+
+    var callBack = (Result: Array<any>) => {
+
+        //****To-UnitTestFramework._Array Test****
+        equal(Result.length, 6);
+        equal(Result[0], 0);
+        equal(Result[1], 1);
+        equal(Result[2], 2);
+
+        start();
+    }
+
+    //let's build on to the default array
+    var arrayToTestAgainst: UnitTestFramework.ITestObject[] = UnitTestFramework.BuildArray(UnitTestFramework._DefaultItemsToBuild);
+
+    //push the new values into the array
+    arrayToTestAgainst.push({ Id: 0, Txt: "0", IsActive: true, GroupByKey: "0", GroupByKey2: "0", lst: null, CreatedDate: UnitTestFramework._DateOfTest });
+    arrayToTestAgainst.push({ Id: 1, Txt: "100", IsActive: true, GroupByKey: "1", GroupByKey2: "1", lst: null, CreatedDate: UnitTestFramework._DateOfTest });
+
+    //go build the query
+    var QueryToRun = arrayToTestAgainst.Distinct(x => x.Txt);
+
+    //go run the async operation
+    QueryToRun.ToArrayAsync(callBack, ErrorCallBack('Distinct.String.Test.2'));
+
+    //wait about 5 seconds before calling the test
+    setTimeout(callBack, 5000);
+});
+
+asyncTest('JLinq.Distinct.ChainTest.1', function () {
+
+    //i'm going to run 3 asserts
+    expect(2);
+
+    var callBack = (Result: Array<any>) => {
+
+        //****To-UnitTestFramework._Array Test****
+        equal(Result.length, 5);
+        equal(Result[0], 0);
+
+        start();
+    }
+
+    //let's build on to the default array
+    var arrayToTestAgainst: UnitTestFramework.ITestObject[] = UnitTestFramework.BuildArray(UnitTestFramework._DefaultItemsToBuild);
+
+    //push the new values into the array
+    arrayToTestAgainst.push({ Id: 1, Txt: "100", IsActive: true, GroupByKey: "1", GroupByKey2: "1", lst: null, CreatedDate: UnitTestFramework._DateOfTest });
+    arrayToTestAgainst.push({ Id: 1, Txt: "100", IsActive: true, GroupByKey: "1", GroupByKey2: "1", lst: null, CreatedDate: UnitTestFramework._DateOfTest });
+
+    //go build the query
+    var QueryToRun = arrayToTestAgainst.Where(x => x.Id >= 0).Distinct(x=> x.Id);
+
+    //go run the async operation
+    QueryToRun.ToArrayAsync(callBack, ErrorCallBack('Where.Test.1'));
+
+    //wait about 5 seconds before calling the test
+    setTimeout(callBack, 5000);
+});
+
 //#endregion
+
+//#endregion
+
+alert('Have the following left. "order by" and "then by"');
