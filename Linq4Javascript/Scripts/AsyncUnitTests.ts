@@ -18,7 +18,6 @@ function ErrorCallBack(MethodName: string): (ErrorObject: ErrorEvent) => void {
 
 asyncTest("JLinq.AsQueryable.Test.1", function () {
 
-
     expect(3);
 
     var callBack = (Result: UnitTestFramework.ITestObject[]) => {
@@ -45,9 +44,6 @@ asyncTest("JLinq.AsQueryable.Test.1", function () {
 
     //go run the async operation
     asQueryableResults.ToArrayAsync(callBack, ErrorCallBack('AsQueryable.Test.1'));
-
-    //wait about 5 seconds before calling the test
-    setTimeout(callBack, 5000);
 });
 
 //#endregion
@@ -55,7 +51,6 @@ asyncTest("JLinq.AsQueryable.Test.1", function () {
 //#region Select Many
 
 asyncTest('JLinq.SelectMany.Test.1', function () {
-
 
     expect(7);
 
@@ -86,13 +81,9 @@ asyncTest('JLinq.SelectMany.Test.1', function () {
 
     //go run the async operation
     QueryToRun.ToArrayAsync(callBack, ErrorCallBack('SelectMany.Test.1'));
-
-    //wait about 5 seconds before calling the test
-    setTimeout(callBack, 5000);
 });
 
 asyncTest('JLinq.SelectMany.Test.2', function () {
-
 
     expect(3);
 
@@ -117,13 +108,9 @@ asyncTest('JLinq.SelectMany.Test.2', function () {
 
     //go run the async operation
     QueryToRun.ToArrayAsync(callBack, ErrorCallBack('SelectMany.Test.2'));
-
-    //wait about 5 seconds before calling the test
-    setTimeout(callBack, 5000);
 });
 
 asyncTest('JLinq.SelectMany.Test.3', function () {
-
 
     expect(3);
 
@@ -147,9 +134,6 @@ asyncTest('JLinq.SelectMany.Test.3', function () {
 
     //go run the async operation
     QueryToRun.ToArrayAsync(callBack, ErrorCallBack('SelectMany.Test.3'));
-
-    //wait about 5 seconds before calling the test
-    setTimeout(callBack, 5000);
 });
 
 //#endregion
@@ -157,7 +141,6 @@ asyncTest('JLinq.SelectMany.Test.3', function () {
 //#region Where
 
 asyncTest('JLinq.Where.Test.1', function () {
-
 
     expect(3);
 
@@ -176,13 +159,9 @@ asyncTest('JLinq.Where.Test.1', function () {
 
     //go run the async operation
     QueryToRun.ToArrayAsync(callBack, ErrorCallBack('Where.Test.1'));
-
-    //wait about 5 seconds before calling the test
-    setTimeout(callBack, 5000);
 });
 
 asyncTest('JLinq.Where.Test.2', function () {
-
 
     expect(5);
 
@@ -205,13 +184,9 @@ asyncTest('JLinq.Where.Test.2', function () {
 
     //go run the async operation
     QueryToRun.ToArrayAsync(callBack, ErrorCallBack('Where.Test.2'));
-
-    //wait about 5 seconds before calling the test
-    setTimeout(callBack, 5000);
 });
 
 asyncTest('JLinq.Where.ChainTest.1', function () {
-
 
     expect(3);
 
@@ -229,13 +204,9 @@ asyncTest('JLinq.Where.ChainTest.1', function () {
 
     //go run the async operation
     QueryToRun.ToArrayAsync(callBack, ErrorCallBack('Where.ChainTest.1'));
-
-    //wait about 5 seconds before calling the test
-    setTimeout(callBack, 5000);
 });
 
 asyncTest('JLinq.Where.ChainTest.2', function () {
-
 
     expect(5);
 
@@ -257,9 +228,6 @@ asyncTest('JLinq.Where.ChainTest.2', function () {
 
     //go run the async operation
     QueryToRun.ToArrayAsync(callBack, ErrorCallBack('Where.ChainTest.2'));
-
-    //wait about 5 seconds before calling the test
-    setTimeout(callBack, 5000);
 });
 
 //#endregion
@@ -269,7 +237,6 @@ asyncTest('JLinq.Where.ChainTest.2', function () {
 //#region Concat Off Of Query With Array
 
 asyncTest('JLinq.Concat.TestOffOfQueryWithArray.1', function () {
-
 
     expect(7);
 
@@ -292,9 +259,6 @@ asyncTest('JLinq.Concat.TestOffOfQueryWithArray.1', function () {
 
     //go run the async operation
     QueryToRun.ToArrayAsync(callBack, ErrorCallBack('Concat.TestOffOfQueryWithArray.1'));
-
-    //wait about 5 seconds before calling the test
-    setTimeout(callBack, 5000);
 });
 
 //#endregion
@@ -303,7 +267,6 @@ asyncTest('JLinq.Concat.TestOffOfQueryWithArray.1', function () {
 
 asyncTest('JLinq.Concat.TestOffOfArrayWithArray.1', function () {
 
-    //i'm going to run 2 * number of records
     expect(15);
 
     var callBack = (Result: Array<any>) => {
@@ -328,9 +291,6 @@ asyncTest('JLinq.Concat.TestOffOfArrayWithArray.1', function () {
 
     //go run the async operation
     QueryToRun.ToArrayAsync(callBack, ErrorCallBack('Concat.TestOffOfArrayWithArray.1'));
-
-    //wait about 5 seconds before calling the test
-    setTimeout(callBack, 5000);
 });
 
 //#endregion
@@ -342,7 +302,6 @@ asyncTest('JLinq.Concat.TestOffOfArrayWithArray.1', function () {
 //#region Concat Off Of Query With Another Query
 
 asyncTest('JLinq.ConcatQuery.TestOffOfQueryWithQuery.1', function () {
-
 
     expect(5);
 
@@ -363,13 +322,9 @@ asyncTest('JLinq.ConcatQuery.TestOffOfQueryWithQuery.1', function () {
 
     //go run the async operation
     QueryToRun.ToArrayAsync(callBack, ErrorCallBack('ConcatQuery.TestOffOfQueryWithQuery.1'));
-
-    //wait about 5 seconds before calling the test
-    setTimeout(callBack, 5000);
 });
 
 asyncTest('JLinq.ConcatQuery.TestOffOfQueryWithQuery.2', function () {
-
 
     expect(3);
 
@@ -388,9 +343,6 @@ asyncTest('JLinq.ConcatQuery.TestOffOfQueryWithQuery.2', function () {
 
     //go run the async operation
     QueryToRun.ToArrayAsync(callBack, ErrorCallBack('JLinq.ConcatQuery.TestOffOfQueryWithQuery.2'));
-
-    //wait about 5 seconds before calling the test
-    setTimeout(callBack, 5000);
 });
 
 //#endregion
@@ -424,9 +376,6 @@ asyncTest('JLinq.ConcatQuery.TestOffOfArrayWithQuery.1', function () {
 
     //go run the async operation
     QueryToRun.ToArrayAsync(callBack, ErrorCallBack('ConcatQuery.TestOffOfArrayWithQuery.1'));
-
-    //wait about 5 seconds before calling the test
-    setTimeout(callBack, 5000);
 });
 
 //#endregion
@@ -438,7 +387,6 @@ asyncTest('JLinq.ConcatQuery.TestOffOfArrayWithQuery.1', function () {
 //#region Union Off Of Query With Array
 
 asyncTest('JLinq.Union.TestOffOfQueryWithArray.1', function () {
-
 
     expect(5);
 
@@ -459,9 +407,6 @@ asyncTest('JLinq.Union.TestOffOfQueryWithArray.1', function () {
 
     //go run the async operation
     QueryToRun.ToArrayAsync(callBack, ErrorCallBack('Union.TestOffOfQueryWithArray.1'));
-
-    //wait about 5 seconds before calling the test
-    setTimeout(callBack, 5000);
 });
 
 //#endregion
@@ -469,7 +414,6 @@ asyncTest('JLinq.Union.TestOffOfQueryWithArray.1', function () {
 //#region Union Query Off Of Array With Array
 
 asyncTest('JLinq.Union.TestOffOfArrayWithArray.1', function () {
-
 
     expect(6);
 
@@ -491,9 +435,6 @@ asyncTest('JLinq.Union.TestOffOfArrayWithArray.1', function () {
 
     //go run the async operation
     QueryToRun.ToArrayAsync(callBack, ErrorCallBack('Union.TestOffOfArrayWithArray.1'));
-
-    //wait about 5 seconds before calling the test
-    setTimeout(callBack, 5000);
 });
 
 //#endregion
@@ -505,7 +446,6 @@ asyncTest('JLinq.Union.TestOffOfArrayWithArray.1', function () {
 //#region Union Off Of Query With Another Query
 
 asyncTest('JLinq.UnionQuery.TestOffOfQueryWithQuery.1', function () {
-
 
     expect(3);
 
@@ -524,9 +464,6 @@ asyncTest('JLinq.UnionQuery.TestOffOfQueryWithQuery.1', function () {
 
     //go run the async operation
     QueryToRun.ToArrayAsync(callBack, ErrorCallBack('UnionQuery.TestOffOfQueryWithQuery.1'));
-
-    //wait about 5 seconds before calling the test
-    setTimeout(callBack, 5000);
 });
 
 //#endregion
@@ -534,7 +471,6 @@ asyncTest('JLinq.UnionQuery.TestOffOfQueryWithQuery.1', function () {
 //#region Union Query Off Of Array With Query
 
 asyncTest('JLinq.UnionQuery.TestOffOfArrayWithQuery.1', function () {
-
 
     expect(6);
 
@@ -556,9 +492,6 @@ asyncTest('JLinq.UnionQuery.TestOffOfArrayWithQuery.1', function () {
 
     //go run the async operation
     QueryToRun.ToArrayAsync(callBack, ErrorCallBack('UnionQuery.TestOffOfArrayWithQuery.1'));
-
-    //wait about 5 seconds before calling the test
-    setTimeout(callBack, 5000);
 });
 
 //#endregion
@@ -568,7 +501,6 @@ asyncTest('JLinq.UnionQuery.TestOffOfArrayWithQuery.1', function () {
 //#region Take
 
 asyncTest('JLinq.Take.Test.1', function () {
-
 
     expect(5);
 
@@ -591,13 +523,9 @@ asyncTest('JLinq.Take.Test.1', function () {
 
     //go run the async operation
     QueryToRun.ToArrayAsync(callBack, ErrorCallBack('Take.Test.1'));
-
-    //wait about 5 seconds before calling the test
-    setTimeout(callBack, 5000);
 });
 
 asyncTest('JLinq.Take.ChainTest.1', function () {
-
 
     expect(5);
 
@@ -619,9 +547,6 @@ asyncTest('JLinq.Take.ChainTest.1', function () {
 
     //go run the async operation
     QueryToRun.ToArrayAsync(callBack, ErrorCallBack('Take.ChainTest.1'));
-
-    //wait about 5 seconds before calling the test
-    setTimeout(callBack, 5000);
 });
 
 //#endregion
@@ -631,8 +556,7 @@ asyncTest('JLinq.Take.ChainTest.1', function () {
 asyncTest('JLinq.TakeWhile.Test.1', function () {
  
     //Remember...will return all the elements before the test no longer passes. "Where" will return everything that meet the condition. TakeWhile will exit the routine wasn't it doesnt pass the expression
-
-    
+  
     expect(5);
 
     var callBack = (Result: Array<any>) => {
@@ -654,16 +578,12 @@ asyncTest('JLinq.TakeWhile.Test.1', function () {
 
     //go run the async operation
     QueryToRun.ToArrayAsync(callBack, ErrorCallBack('TakeWhile.Test.1'));
-
-    //wait about 5 seconds before calling the test
-    setTimeout(callBack, 5000);
 });
 
 asyncTest('JLinq.TakeWhile.ChainTest.1', function () {
 
     //Remember...will return all the elements before the test no longer passes. "Where" will return everything that meet the condition. TakeWhile will exit the routine wasn't it doesnt pass the expression
-
-    
+   
     expect(5);
 
     var callBack = (Result: Array<any>) => {
@@ -685,9 +605,6 @@ asyncTest('JLinq.TakeWhile.ChainTest.1', function () {
 
     //go run the async operation
     QueryToRun.ToArrayAsync(callBack, ErrorCallBack('TakeWhile.ChainTest.1'));
-
-    //wait about 5 seconds before calling the test
-    setTimeout(callBack, 5000);
 });
 
 //#endregion
@@ -695,7 +612,6 @@ asyncTest('JLinq.TakeWhile.ChainTest.1', function () {
 //#region Skip
 
 asyncTest('JLinq.Skip.Test.1', function () {
-
 
     expect(9);
 
@@ -724,13 +640,9 @@ asyncTest('JLinq.Skip.Test.1', function () {
 
     //go run the async operation
     QueryToRun.ToArrayAsync(callBack, ErrorCallBack('Where.Test.1'));
-
-    //wait about 5 seconds before calling the test
-    setTimeout(callBack, 5000);
 });
 
 asyncTest('JLinq.Skip.ChainTest.1', function () {
-
 
     expect(5);
 
@@ -752,10 +664,6 @@ asyncTest('JLinq.Skip.ChainTest.1', function () {
 
     //go run the async operation
     QueryToRun.ToArrayAsync(callBack, ErrorCallBack('Where.Test.1'));
-
-    //wait about 5 seconds before calling the test
-    setTimeout(callBack, 5000);
-
 });
 
 //#endregion
@@ -765,8 +673,7 @@ asyncTest('JLinq.Skip.ChainTest.1', function () {
 asyncTest('JLinq.SkipWhile.Test.1', function () {
 
     //Remember...after predicate is met, it will return everything after that
-
-    
+  
     expect(5);
 
     var callBack = (Result: Array<any>) => {
@@ -788,15 +695,11 @@ asyncTest('JLinq.SkipWhile.Test.1', function () {
 
     //go run the async operation
     QueryToRun.ToArrayAsync(callBack, ErrorCallBack('SkipWhile.Test.1'));
-
-    //wait about 5 seconds before calling the test
-    setTimeout(callBack, 5000);
 });
 
 asyncTest('JLinq.SkipWhile.ChainTest.1', function () {
 
     //Remember...after predicate is met, it will return everything after that
-
     
     expect(5);
 
@@ -819,9 +722,6 @@ asyncTest('JLinq.SkipWhile.ChainTest.1', function () {
 
     //go run the async operation
     QueryToRun.ToArrayAsync(callBack, ErrorCallBack('SkipWhile.ChainTest.1'));
-
-    //wait about 5 seconds before calling the test
-    setTimeout(callBack, 5000);
 });
 
 //#endregion
@@ -829,7 +729,6 @@ asyncTest('JLinq.SkipWhile.ChainTest.1', function () {
 //#region Paginate
 
 asyncTest('JLinq.Paginate.Test.1', function () {
-
 
     expect(11);
 
@@ -861,13 +760,9 @@ asyncTest('JLinq.Paginate.Test.1', function () {
 
     //go run the async operation
     QueryToRun.ToArrayAsync(callBack, ErrorCallBack('Paginate.Test.1'));
-
-    //wait about 5 seconds before calling the test
-    setTimeout(callBack, 5000);
 });
 
 asyncTest('JLinq.Paginate.Test.1', function () {
-
 
     expect(7);
 
@@ -899,13 +794,9 @@ asyncTest('JLinq.Paginate.Test.1', function () {
 
     //go run the async operation
     QueryToRun.ToArrayAsync(callBack, ErrorCallBack('Paginate.Test.2'));
-
-    //wait about 5 seconds before calling the test
-    setTimeout(callBack, 5000);
 });
 
 asyncTest('JLinq.Paginate.Test.3', function () {
-
 
     expect(3);
 
@@ -931,13 +822,9 @@ asyncTest('JLinq.Paginate.Test.3', function () {
 
     //go run the async operation
     QueryToRun.ToArrayAsync(callBack, ErrorCallBack('Paginate.Test.3'));
-
-    //wait about 5 seconds before calling the test
-    setTimeout(callBack, 5000);
 });
 
 asyncTest('JLinq.Paginate.ChainTest.1', function () {
-
 
     expect(7);
 
@@ -963,9 +850,6 @@ asyncTest('JLinq.Paginate.ChainTest.1', function () {
 
     //go run the async operation
     QueryToRun.ToArrayAsync(callBack, ErrorCallBack('Paginate.ChainTest.1'));
-
-    //wait about 5 seconds before calling the test
-    setTimeout(callBack, 5000);
 });
 
 //#endregion
@@ -973,7 +857,6 @@ asyncTest('JLinq.Paginate.ChainTest.1', function () {
 //#region Select
 
 asyncTest('JLinq.Select.Test.1', function () {
-
 
     expect(5);
 
@@ -997,13 +880,9 @@ asyncTest('JLinq.Select.Test.1', function () {
 
     //go run the async operation
     QueryToRun.ToArrayAsync(callBack, ErrorCallBack('Select.Test.1'));
-
-    //wait about 5 seconds before calling the test
-    setTimeout(callBack, 5000);
 });
 
 asyncTest('JLinq.Select.ChainTest.1', function () {
-
 
     expect(4);
 
@@ -1023,9 +902,6 @@ asyncTest('JLinq.Select.ChainTest.1', function () {
 
     //go run the async operation
     QueryToRun.ToArrayAsync(callBack, ErrorCallBack('Select.ChainTest.1'));
-
-    //wait about 5 seconds before calling the test
-    setTimeout(callBack, 5000);
 });
 
 //#endregion
@@ -1033,7 +909,6 @@ asyncTest('JLinq.Select.ChainTest.1', function () {
 //#region Distinct
 
 asyncTest('JLinq.Distinct.Number.Test.1', function () {
-
 
     expect(2);
 
@@ -1058,13 +933,9 @@ asyncTest('JLinq.Distinct.Number.Test.1', function () {
 
     //go run the async operation
     QueryToRun.ToArrayAsync(callBack, ErrorCallBack('Distinct.Number.Test.1'));
-
-    //wait about 5 seconds before calling the test
-    setTimeout(callBack, 5000);
 });
 
 asyncTest('JLinq.Distinct.Number.Test.2', function () {
-
 
     expect(2);
 
@@ -1089,13 +960,10 @@ asyncTest('JLinq.Distinct.Number.Test.2', function () {
 
     //go run the async operation
     QueryToRun.ToArrayAsync(callBack, ErrorCallBack('Distinct.Number.Test.2'));
-
-    //wait about 5 seconds before calling the test
-    setTimeout(callBack, 5000);
 });
 
 asyncTest('JLinq.Distinct.Date.Test.3', function () {
-    
+
     expect(4);
 
     var callBack = (Result: Array<any>) => {
@@ -1126,13 +994,9 @@ asyncTest('JLinq.Distinct.Date.Test.3', function () {
 
     //go run the async operation
     QueryToRun.OrderBy(x => x).ToArrayAsync(callBack, ErrorCallBack('Distinct.Date.Test.3'));
-
-    //wait about 5 seconds before calling the test
-    setTimeout(callBack, 5000);
 });
 
 asyncTest('JLinq.Distinct.String.Test.2', function () {
-
 
     expect(4);
 
@@ -1159,13 +1023,9 @@ asyncTest('JLinq.Distinct.String.Test.2', function () {
 
     //go run the async operation
     QueryToRun.ToArrayAsync(callBack, ErrorCallBack('Distinct.String.Test.2'));
-
-    //wait about 5 seconds before calling the test
-    setTimeout(callBack, 5000);
 });
 
 asyncTest('JLinq.Distinct.ChainTest.1', function () {
-
 
     expect(2);
 
@@ -1190,9 +1050,6 @@ asyncTest('JLinq.Distinct.ChainTest.1', function () {
 
     //go run the async operation
     QueryToRun.ToArrayAsync(callBack, ErrorCallBack('Where.Test.1'));
-
-    //wait about 5 seconds before calling the test
-    setTimeout(callBack, 5000);
 });
 
 //#endregion
@@ -1202,7 +1059,6 @@ asyncTest('JLinq.Distinct.ChainTest.1', function () {
 //#region Order By Number
 
 asyncTest('JLinq.OrderBy.Asc.Number.Test.1', function () {
-
 
     expect(5);
 
@@ -1223,13 +1079,9 @@ asyncTest('JLinq.OrderBy.Asc.Number.Test.1', function () {
 
     //go run the async operation
     QueryToRun.ToArrayAsync(callBack, ErrorCallBack('OrderBy.Asc.Number.Test.1'));
-
-    //wait about 5 seconds before calling the test
-    setTimeout(callBack, 5000);
 });
 
 asyncTest('JLinq.OrderBy.Asc.Number.ChainTest.1', function () {
-
 
     expect(5);
 
@@ -1249,14 +1101,10 @@ asyncTest('JLinq.OrderBy.Asc.Number.ChainTest.1', function () {
     var QueryToRun = UnitTestFramework._Array.Select(x => x.Id).OrderBy(x => x);
 
     //go run the async operation
-    QueryToRun.ToArrayAsync(callBack, ErrorCallBack('OrderBy.Asc.Number.ChainTest.1'));
-
-    //wait about 5 seconds before calling the test
-    setTimeout(callBack, 5000);
+    QueryToRun.ToArrayAsync(callBack, ErrorCallBack('OrderBy.Asc.Number.ChainTest.1'));;
 });
 
 asyncTest('JLinq.OrderBy.Desc.Number.Test.1', function () {
-
 
     expect(5);
 
@@ -1283,13 +1131,9 @@ asyncTest('JLinq.OrderBy.Desc.Number.Test.1', function () {
 
     //go run the async operation
     QueryToRun.ToArrayAsync(callBack, ErrorCallBack('OrderBy.Desc.Number.Test.1'));
-
-    //wait about 5 seconds before calling the test
-    setTimeout(callBack, 5000);
 });
 
 asyncTest('JLinq.OrderBy.Desc.Number.ChainTest.1', function () {
-
 
     expect(5);
 
@@ -1316,9 +1160,6 @@ asyncTest('JLinq.OrderBy.Desc.Number.ChainTest.1', function () {
 
     //go run the async operation
     QueryToRun.ToArrayAsync(callBack, ErrorCallBack('OrderBy.Desc.Number.ChainTest.1'));
-
-    //wait about 5 seconds before calling the test
-    setTimeout(callBack, 5000);
 });
 
 //#endregion
@@ -1326,7 +1167,6 @@ asyncTest('JLinq.OrderBy.Desc.Number.ChainTest.1', function () {
 //#region Order By String
 
 asyncTest('JLinq.OrderBy.Asc.String.Test.1', function () {
-
 
     expect(2);
 
@@ -1353,13 +1193,9 @@ asyncTest('JLinq.OrderBy.Asc.String.Test.1', function () {
 
     //go run the async operation
     QueryToRun.ToArrayAsync(callBack, ErrorCallBack('OrderBy.Asc.String.Test.1'));
-
-    //wait about 5 seconds before calling the test
-    setTimeout(callBack, 5000);
 });
 
 asyncTest('JLinq.OrderBy.Asc.String.Test.2', function () {
-
 
     expect(3);
 
@@ -1390,13 +1226,9 @@ asyncTest('JLinq.OrderBy.Asc.String.Test.2', function () {
 
     //go run the async operation
     QueryToRun.ToArrayAsync(callBack, ErrorCallBack('OrderBy.Asc.String.Test.2'));
-
-    //wait about 5 seconds before calling the test
-    setTimeout(callBack, 5000);
 });
 
 asyncTest('JLinq.OrderBy.Asc.String.ChainTest.1', function () {
-
 
     expect(2);
 
@@ -1424,13 +1256,9 @@ asyncTest('JLinq.OrderBy.Asc.String.ChainTest.1', function () {
 
     //go run the async operation
     QueryToRun.ToArrayAsync(callBack, ErrorCallBack('OrderBy.Asc.String.ChainTest.1'));
-
-    //wait about 5 seconds before calling the test
-    setTimeout(callBack, 5000);
 });
 
 asyncTest('JLinq.OrderBy.Desc.String.Test.1', function () {
-
 
     expect(2);
 
@@ -1457,13 +1285,9 @@ asyncTest('JLinq.OrderBy.Desc.String.Test.1', function () {
 
     //go run the async operation
     QueryToRun.ToArrayAsync(callBack, ErrorCallBack('OrderBy.Desc.String.Test.1'));
-
-    //wait about 5 seconds before calling the test
-    setTimeout(callBack, 5000);
 });
 
 asyncTest('JLinq.OrderBy.Desc.String.Test.2', function () {
-
 
     expect(3);
 
@@ -1494,13 +1318,9 @@ asyncTest('JLinq.OrderBy.Desc.String.Test.2', function () {
 
     //go run the async operation
     QueryToRun.ToArrayAsync(callBack, ErrorCallBack('OrderBy.Desc.String.Test.2'));
-
-    //wait about 5 seconds before calling the test
-    setTimeout(callBack, 5000);
 });
 
 asyncTest('JLinq.OrderBy.Desc.String.ChainTest.1', function () {
-
 
     expect(2);
 
@@ -1527,9 +1347,6 @@ asyncTest('JLinq.OrderBy.Desc.String.ChainTest.1', function () {
 
     //go run the async operation
     QueryToRun.ToArrayAsync(callBack, ErrorCallBack('OrderBy.Desc.String.ChainTest.1'));
-
-    //wait about 5 seconds before calling the test
-    setTimeout(callBack, 5000);
 });
 
 //#endregion
@@ -1537,7 +1354,6 @@ asyncTest('JLinq.OrderBy.Desc.String.ChainTest.1', function () {
 //#region Order By Boolean
 
 asyncTest('JLinq.OrderBy.Asc.Boolean.Test.1', function () {
-
 
     expect(1);
 
@@ -1554,13 +1370,9 @@ asyncTest('JLinq.OrderBy.Asc.Boolean.Test.1', function () {
 
     //go run the async operation
     QueryToRun.ToArrayAsync(callBack, ErrorCallBack('OrderBy.Asc.Boolean.Test.1'));
-
-    //wait about 5 seconds before calling the test
-    setTimeout(callBack, 5000);
 });
 
 asyncTest('JLinq.OrderBy.Asc.Boolean.ChainTest.1', function () {
-
 
     expect(1);
 
@@ -1577,13 +1389,9 @@ asyncTest('JLinq.OrderBy.Asc.Boolean.ChainTest.1', function () {
 
     //go run the async operation
     QueryToRun.ToArrayAsync(callBack, ErrorCallBack('OrderBy.Asc.Boolean.ChainTest.1'));
-
-    //wait about 5 seconds before calling the test
-    setTimeout(callBack, 5000);
 });
 
 asyncTest('JLinq.OrderBy.Desc.Boolean.Test.1', function () {
-
 
     expect(1);
 
@@ -1600,19 +1408,13 @@ asyncTest('JLinq.OrderBy.Desc.Boolean.Test.1', function () {
 
     //go run the async operation
     QueryToRun.ToArrayAsync(callBack, ErrorCallBack('OrderBy.Desc.Boolean.Test.1'));
-
-    //wait about 5 seconds before calling the test
-    setTimeout(callBack, 5000);
 });
-
-;
 
 //#endregion
 
 //#region Order By Date
 
 asyncTest('JLinq.OrderBy.Asc.Date.Test.1', function () {
-
 
     expect(1);
 
@@ -1628,13 +1430,9 @@ asyncTest('JLinq.OrderBy.Asc.Date.Test.1', function () {
 
     //go run the async operation
     QueryToRun.ToArrayAsync(callBack, ErrorCallBack('OrderBy.Asc.Date.Test.1'));
-
-    //wait about 5 seconds before calling the test
-    setTimeout(callBack, 5000);
 });
 
 asyncTest('JLinq.OrderBy.Asc.Date.ChainTest.1', function () {
-
 
     expect(1);
 
@@ -1650,13 +1448,9 @@ asyncTest('JLinq.OrderBy.Asc.Date.ChainTest.1', function () {
 
     //go run the async operation
     QueryToRun.ToArrayAsync(callBack, ErrorCallBack('OrderBy.Asc.Date.ChainTest.1'));
-
-    //wait about 5 seconds before calling the test
-    setTimeout(callBack, 5000);
 });
 
 asyncTest('JLinq.OrderBy.Desc.Date.Test.1', function () {
-
 
     expect(1);
 
@@ -1672,13 +1466,9 @@ asyncTest('JLinq.OrderBy.Desc.Date.Test.1', function () {
 
     //go run the async operation
     QueryToRun.ToArrayAsync(callBack, ErrorCallBack('OrderBy.Desc.Date.Test.1'));
-
-    //wait about 5 seconds before calling the test
-    setTimeout(callBack, 5000);
 });
 
 asyncTest('JLinq.OrderBy.Desc.Date.ChainTest.1', function () {
-
 
     expect(1);
 
@@ -1694,9 +1484,6 @@ asyncTest('JLinq.OrderBy.Desc.Date.ChainTest.1', function () {
 
     //go run the async operation
     QueryToRun.ToArrayAsync(callBack, ErrorCallBack('OrderBy.Desc.Date.ChainTest.1'));
-
-    //wait about 5 seconds before calling the test
-    setTimeout(callBack, 5000);
 });
 
 //#endregion
@@ -1725,9 +1512,6 @@ asyncTest('JLinq.ThenBy.Asc.Test.1', function () {
 
     //go run the async operation
     QueryToRun.ToArrayAsync(callBack, ErrorCallBack('ThenBy.Asc.Test.1'));
-
-    //wait about 5 seconds before calling the test
-    setTimeout(callBack, 5000);
 });
 
 asyncTest('JLinq.ThenBy.Asc.Test.2', function () {
@@ -1750,9 +1534,6 @@ asyncTest('JLinq.ThenBy.Asc.Test.2', function () {
 
     //go run the async operation
     QueryToRun.ToArrayAsync(callBack, ErrorCallBack('ThenBy.Asc.Test.2'));
-
-    //wait about 5 seconds before calling the test
-    setTimeout(callBack, 5000);
 });
 
 asyncTest('JLinq.ThenBy.Asc.Test.3', function () {
@@ -1775,9 +1556,6 @@ asyncTest('JLinq.ThenBy.Asc.Test.3', function () {
 
     //go run the async operation
     QueryToRun.ToArrayAsync(callBack, ErrorCallBack('ThenBy.Asc.Test.3'));
-
-    //wait about 5 seconds before calling the test
-    setTimeout(callBack, 5000);
 });
 
 asyncTest('JLinq.ThenBy.Asc.ChainTest.1', function () {
@@ -1799,9 +1577,6 @@ asyncTest('JLinq.ThenBy.Asc.ChainTest.1', function () {
 
     //go run the async operation
     QueryToRun.ToArrayAsync(callBack, ErrorCallBack('ThenBy.Asc.ChainTest.1'));
-
-    //wait about 5 seconds before calling the test
-    setTimeout(callBack, 5000);
 });
 
 asyncTest('JLinq.ThenBy.Asc.ChainTest.2', function () {
@@ -1823,9 +1598,6 @@ asyncTest('JLinq.ThenBy.Asc.ChainTest.2', function () {
 
     //go run the async operation
     QueryToRun.ToArrayAsync(callBack, ErrorCallBack('ThenBy.Asc.ChainTest.2'));
-
-    //wait about 5 seconds before calling the test
-    setTimeout(callBack, 5000);
 });
 
 asyncTest('JLinq.ThenBy.Desc.Test.1', function () {
@@ -1848,9 +1620,6 @@ asyncTest('JLinq.ThenBy.Desc.Test.1', function () {
 
     //go run the async operation
     QueryToRun.ToArrayAsync(callBack, ErrorCallBack('ThenBy.Desc.Test.1'));
-
-    //wait about 5 seconds before calling the test
-    setTimeout(callBack, 5000);
 });
 
 asyncTest('JLinq.ThenBy.Desc.Test.2', function () {
@@ -1873,9 +1642,6 @@ asyncTest('JLinq.ThenBy.Desc.Test.2', function () {
 
     //go run the async operation
     QueryToRun.ToArrayAsync(callBack, ErrorCallBack('ThenBy.Desc.Test.2'));
-
-    //wait about 5 seconds before calling the test
-    setTimeout(callBack, 5000);
 });
 
 asyncTest('JLinq.ThenBy.Desc.Test.3', function () {
@@ -1898,9 +1664,6 @@ asyncTest('JLinq.ThenBy.Desc.Test.3', function () {
 
     //go run the async operation
     QueryToRun.ToArrayAsync(callBack, ErrorCallBack('ThenBy.Desc.Test.3'));
-
-    //wait about 5 seconds before calling the test
-    setTimeout(callBack, 5000);
 });
 
 asyncTest('JLinq.ThenBy.Desc.ChainTest.1', function () {
@@ -1922,9 +1685,6 @@ asyncTest('JLinq.ThenBy.Desc.ChainTest.1', function () {
 
     //go run the async operation
     QueryToRun.ToArrayAsync(callBack, ErrorCallBack('ThenBy.Desc.ChainTest.1'));
-
-    //wait about 5 seconds before calling the test
-    setTimeout(callBack, 5000);
 });
 
 asyncTest('JLinq.ThenBy.Desc.ChainTest.2', function () {
@@ -1946,9 +1706,6 @@ asyncTest('JLinq.ThenBy.Desc.ChainTest.2', function () {
 
     //go run the async operation
     QueryToRun.ToArrayAsync(callBack, ErrorCallBack('ThenBy.Desc.ChainTest.2'));
-
-    //wait about 5 seconds before calling the test
-    setTimeout(callBack, 5000);
 });
 
 //#endregion
