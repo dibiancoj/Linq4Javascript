@@ -2349,4 +2349,4 @@ Array.prototype.OrderByDescending = function (SortPropertySelector) {
 };
 //#endregion
 //#endregion 
-//# sourceMappingURL=JLinq.js.map
+//# sourceMappingURL=jlinq.js.map

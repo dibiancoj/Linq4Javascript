@@ -1637,7 +1637,7 @@ test('JLinq.Select.Test.1', function () {
     }
 });
 
-test('JLinq.SingleOrDefault.ChainTest.1', function () {
+test('JLinq.Select.ChainTest.1', function () {
 
     //go build the query
     var QueryToRun = UnitTestFramework._Array.Where(x => x.Id >= 2).Select(x => x.Id);
