@@ -3508,7 +3508,7 @@ module ToracTechnologies {
                 var CastedUnionQuery = RebuildTree((<ToracTechnologies.JLinq.UnionIterator<any>>CurrentLevelOfTree).UnionThisQuery);
         
                 //we need to go rebuild the union query tree...then pass it in
-                return Queryable.ConcatQuery(CastedUnionQuery);
+                return Queryable.UnionQuery(CastedUnionQuery);
             }
 
             if (CurrentLevelOfTree.TypeOfObject == 'Queryable') {

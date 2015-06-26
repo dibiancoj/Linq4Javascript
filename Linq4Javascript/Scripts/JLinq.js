@@ -2233,7 +2233,7 @@ var ToracTechnologies;
                 //cast the queryable
                 var CastedUnionQuery = RebuildTree(CurrentLevelOfTree.UnionThisQuery);
                 //we need to go rebuild the union query tree...then pass it in
-                return Queryable.ConcatQuery(CastedUnionQuery);
+                return Queryable.UnionQuery(CastedUnionQuery);
             }
             if (CurrentLevelOfTree.TypeOfObject == 'Queryable') {
                 //we need to go rebuild the concat query tree...then pass it in
@@ -2349,4 +2349,4 @@ Array.prototype.OrderByDescending = function (SortPropertySelector) {
 };
 //#endregion
 //#endregion 
-//# sourceMappingURL=jlinq.js.map
+//# sourceMappingURL=JLinq.js.map
