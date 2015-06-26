@@ -22,6 +22,7 @@ asyncTest("JLinq.AsQueryable.Test.1", function () {
     expect(3);
 
     var callBack = (Result: UnitTestFramework.ITestObject[]) => {
+
         //check the length
         equal(Result.length, 2);
 
@@ -327,6 +328,102 @@ asyncTest('JLinq.Concat.TestOffOfArrayWithArray.1', function () {
 
     //go run the async operation
     QueryToRun.ToArrayAsync(callBack, ErrorCallBack('Concat.TestOffOfArrayWithArray.1'));
+
+    //wait about 5 seconds before calling the test
+    setTimeout(callBack, 5000);
+});
+
+//#endregion
+
+//#endregion
+
+//#region Concat Query
+
+//#region Concat Off Of Query With Another Query
+
+asyncTest('JLinq.ConcatQuery.TestOffOfQueryWithQuery.1', function () {
+
+    //i'm going to run 3 asserts
+    expect(5);
+
+    var callBack = (Result: Array<any>) => {
+
+        //****To-UnitTestFramework._Array Test****
+        equal(Result[0].Id, 1);
+        equal(Result[0].Txt, '1');
+        equal(Result[1].Id, 1);
+        equal(Result[1].Txt, '1');
+        equal(Result.length, 2);
+
+        start();
+    }
+
+    //go build the query
+    var QueryToRun = UnitTestFramework._Array.Where(x => x.Id === 1).ConcatQuery(UnitTestFramework.BuildArray(2).Where(x => x.Id === 1));
+
+    //go run the async operation
+    QueryToRun.ToArrayAsync(callBack, ErrorCallBack('ConcatQuery.TestOffOfQueryWithQuery.1'));
+
+    //wait about 5 seconds before calling the test
+    setTimeout(callBack, 5000);
+});
+
+asyncTest('JLinq.ConcatQuery.TestOffOfQueryWithQuery.2', function () {
+
+    //i'm going to run 3 asserts
+    expect(3);
+
+    var callBack = (Result: Array<any>) => {
+
+        //****To-UnitTestFramework._Array Test****
+        equal(Result[0].Id, 4);
+        equal(Result[0].Txt, '4');
+        equal(Result.length, 1);
+
+        start();
+    }
+
+    //go build the query
+    var QueryToRun = UnitTestFramework._Array.Where(x => x.Id > 1).ConcatQuery(UnitTestFramework.BuildArray(2).Where(x => x.Id === 1)).Where(x=> x.Id === 4);
+
+    //go run the async operation
+    QueryToRun.ToArrayAsync(callBack, ErrorCallBack('JLinq.ConcatQuery.TestOffOfQueryWithQuery.2'));
+
+    //wait about 5 seconds before calling the test
+    setTimeout(callBack, 5000);
+});
+
+//#endregion
+
+//#region Concat Query Off Of Array With Query
+
+asyncTest('JLinq.ConcatQuery.TestOffOfArrayWithQuery.1', function () {
+
+    //i'm going to run 3 asserts
+    expect(12);
+
+    var callBack = (Result: Array<any>) => {
+
+        //****To-UnitTestFramework._Array Test****
+        for (var i = 0; i < Result.length; i++) {
+
+            if (i === 5) {
+                equal(Result[i].Id, 1);
+                equal(Result[i].Txt, '1');
+            } else {
+                equal(Result[i].Id, i);
+                equal(Result[i].Txt, i.toString());
+            }
+        }
+
+        start();
+    }
+
+    //go build the query
+    var QueryToRun = UnitTestFramework._Array.ConcatQuery(UnitTestFramework.BuildArray(2).Where(x => x.Id === 1));
+
+    //go run the async operation
+    QueryToRun.ToArrayAsync(callBack, ErrorCallBack('ConcatQuery.TestOffOfArrayWithQuery.1'));
 
     //wait about 5 seconds before calling the test
     setTimeout(callBack, 5000);
