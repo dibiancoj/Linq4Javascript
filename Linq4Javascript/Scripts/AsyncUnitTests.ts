@@ -1710,7 +1710,7 @@ asyncTest('JLinq.ThenBy.Asc.Test.1', function () {
     expect(4);
 
     var callBack = (Result: Array<any>) => {
-        debugger;
+       
         //go test the results
         equal(Result[0].Id, 1);
         equal(Result[1].Id, 2);
@@ -1954,4 +1954,3 @@ asyncTest('JLinq.ThenBy.Desc.ChainTest.2', function () {
 //#endregion
 
 //#endregion
-
