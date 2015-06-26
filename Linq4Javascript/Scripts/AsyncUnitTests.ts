@@ -1198,6 +1198,511 @@ asyncTest('JLinq.Distinct.ChainTest.1', function () {
 
 //#endregion
 
+//#region Order By
+
+//#region Order By Number
+
+asyncTest('JLinq.OrderBy.Asc.Number.Test.1', function () {
+
+    //i'm going to run 3 asserts
+    expect(5);
+
+    var callBack = (Result: Array<any>) => {
+
+        //go test the results
+        for (var i = 0; i < Result.length; i++) {
+
+            //just make sure the results are whatever i is
+            equal(Result[i].Id, i);
+        }
+
+        start();
+    }
+
+    //go build the query
+    var QueryToRun = UnitTestFramework._Array.OrderBy(x => x.Id);
+
+    //go run the async operation
+    QueryToRun.ToArrayAsync(callBack, ErrorCallBack('OrderBy.Asc.Number.Test.1'));
+
+    //wait about 5 seconds before calling the test
+    setTimeout(callBack, 5000);
+});
+
+asyncTest('JLinq.OrderBy.Asc.Number.ChainTest.1', function () {
+
+    //i'm going to run 3 asserts
+    expect(5);
+
+    var callBack = (Result: Array<any>) => {
+
+        //go test the results
+        for (var i = 0; i < Result.length; i++) {
+
+            //just make sure the results are whatever i is
+            equal(Result[i], i);
+        }
+
+        start();
+    }
+
+    //go materialize the results into the result
+    var QueryToRun = UnitTestFramework._Array.Select(x => x.Id).OrderBy(x => x);
+
+    //go run the async operation
+    QueryToRun.ToArrayAsync(callBack, ErrorCallBack('OrderBy.Asc.Number.ChainTest.1'));
+
+    //wait about 5 seconds before calling the test
+    setTimeout(callBack, 5000);
+});
+
+asyncTest('JLinq.OrderBy.Desc.Number.Test.1', function () {
+
+    //i'm going to run 3 asserts
+    expect(5);
+
+    var callBack = (Result: Array<any>) => {
+
+        //initialize to 1 so we can just subtract the length
+        var IdLengthCalculator = 1;
+
+        //go test the results
+        for (var i = 0; i < Result.length; i++) {
+
+            //subtract the length from the index we are up to (starting at 1)
+            equal(Result[i].Id, Result.length - IdLengthCalculator);
+
+            //increase the tally
+            IdLengthCalculator++;
+        }
+
+        start();
+    }
+
+    //go materialize the results into the result
+    var QueryToRun = UnitTestFramework._Array.OrderByDescending(x => x.Id);
+
+    //go run the async operation
+    QueryToRun.ToArrayAsync(callBack, ErrorCallBack('OrderBy.Desc.Number.Test.1'));
+
+    //wait about 5 seconds before calling the test
+    setTimeout(callBack, 5000);
+});
+
+asyncTest('JLinq.OrderBy.Desc.Number.ChainTest.1', function () {
+
+    //i'm going to run 3 asserts
+    expect(5);
+
+    var callBack = (Result: Array<any>) => {
+
+        //initialize to 1 so we can just subtract the length
+        var IdLengthCalculator = 1;
+
+        //go test the results
+        for (var i = 0; i < Result.length; i++) {
+
+            //subtract the length from the index we are up to (starting at 1)
+            equal(Result[i], Result.length - IdLengthCalculator);
+
+            //increase the tally
+            IdLengthCalculator++;
+        }
+
+        start();
+    }
+
+    //go materialize the results into the result
+    var QueryToRun = UnitTestFramework._Array.Select(x=> x.Id).OrderByDescending(x => x);
+
+    //go run the async operation
+    QueryToRun.ToArrayAsync(callBack, ErrorCallBack('OrderBy.Desc.Number.ChainTest.1'));
+
+    //wait about 5 seconds before calling the test
+    setTimeout(callBack, 5000);
+});
+
 //#endregion
 
-alert('Have the following left. "order by" and "then by"');
+//#region Order By String
+
+asyncTest('JLinq.OrderBy.Asc.String.Test.1', function () {
+
+    //i'm going to run 3 asserts
+    expect(2);
+
+    var callBack = (Result: Array<any>) => {
+
+        //go test the items
+        equal(Result.Last().Txt, 'bcd');
+        equal(Result[Result.length - 2].Txt, 'abc');
+
+        start();
+    }
+
+    //go build the query
+    var QueryToRun: any = UnitTestFramework.BuildArray(UnitTestFramework._DefaultItemsToBuild);
+
+    //push a new item now
+    QueryToRun.push({ Id: 1000, Txt: 'abc' });
+
+    //add a random item in spot 2
+    QueryToRun.splice(0, 0, { Id: 1001, Txt: 'bcd' });
+
+    //reset the query now
+    QueryToRun = QueryToRun.OrderBy(x => x.Txt);
+
+    //go run the async operation
+    QueryToRun.ToArrayAsync(callBack, ErrorCallBack('OrderBy.Asc.String.Test.1'));
+
+    //wait about 5 seconds before calling the test
+    setTimeout(callBack, 5000);
+});
+
+asyncTest('JLinq.OrderBy.Asc.String.Test.2', function () {
+
+    //i'm going to run 3 asserts
+    expect(3);
+
+    var callBack = (Result: Array<any>) => {
+
+        //go test the items
+        equal(Result.Last().Txt, 'bcd');
+        equal(Result[Result.length - 2].Txt, 'abc');
+        equal(Result[Result.length - 3].Txt, 'ABC');
+
+        start();
+    }
+
+    //go build the query
+    var QueryToRun: any = UnitTestFramework.BuildArray(UnitTestFramework._DefaultItemsToBuild);
+
+    //push a new item now
+    QueryToRun.push({ Id: 1000, Txt: 'abc' });
+
+    //push that same item into the first element spot (with captials)
+    QueryToRun.splice(0, 0, { Id: 1000, Txt: 'ABC' });
+
+    //add a random item
+    QueryToRun.splice(0, 0, { Id: 1001, Txt: 'bcd' });
+
+    //go reset the query
+    var QueryToRun = QueryToRun.OrderBy(x => x.Txt);
+
+    //go run the async operation
+    QueryToRun.ToArrayAsync(callBack, ErrorCallBack('OrderBy.Asc.String.Test.2'));
+
+    //wait about 5 seconds before calling the test
+    setTimeout(callBack, 5000);
+});
+
+asyncTest('JLinq.OrderBy.Asc.String.ChainTest.1', function () {
+
+    //i'm going to run 3 asserts
+    expect(2);
+
+    var callBack = (Result: Array<any>) => {
+
+
+        //is the last item bcd?
+        equal(Result.Last(), 'bcd');
+        equal(Result[Result.length - 2], 'abc');
+
+        start();
+    }
+
+    //go build the query
+    var QueryToRun: any = UnitTestFramework.BuildArray(UnitTestFramework._DefaultItemsToBuild);
+
+    //push a new item now
+    QueryToRun.splice(0, 0, { Id: 1000, Txt: 'abc' });
+
+    //add a random item
+    QueryToRun.splice(0, 0, { Id: 1001, Txt: 'bcd' });
+
+    //reset the query
+    QueryToRun = QueryToRun.Select(x => x.Txt).OrderBy(x => x);
+
+    //go run the async operation
+    QueryToRun.ToArrayAsync(callBack, ErrorCallBack('OrderBy.Asc.String.ChainTest.1'));
+
+    //wait about 5 seconds before calling the test
+    setTimeout(callBack, 5000);
+});
+
+asyncTest('JLinq.OrderBy.Desc.String.Test.1', function () {
+
+    //i'm going to run 3 asserts
+    expect(2);
+
+    var callBack = (Result: Array<any>) => {
+
+        //go test the values
+        equal(Result[0].Txt, 'bcd');
+        equal(Result[1].Txt, 'abc');
+
+        start();
+    }
+
+    //go build the query
+    var QueryToRun: any = UnitTestFramework.BuildArray(UnitTestFramework._DefaultItemsToBuild);
+
+    //push a new item now
+    QueryToRun.push({ Id: 1000, Txt: 'abc' });
+
+    //add a random item
+    QueryToRun.push({ Id: 1001, Txt: 'bcd' });
+
+    //go reset the query
+    QueryToRun = QueryToRun.OrderByDescending(x => x.Txt);
+
+    //go run the async operation
+    QueryToRun.ToArrayAsync(callBack, ErrorCallBack('OrderBy.Desc.String.Test.1'));
+
+    //wait about 5 seconds before calling the test
+    setTimeout(callBack, 5000);
+});
+
+asyncTest('JLinq.OrderBy.Desc.String.Test.2', function () {
+
+    //i'm going to run 3 asserts
+    expect(3);
+
+    var callBack = (Result: Array<any>) => {
+
+        //go test the values
+        equal(Result[0].Txt, 'bcd');
+        equal(Result[1].Txt, 'abc');
+        equal(Result[2].Txt, 'ABC');
+
+        start();
+    }
+
+    //go build the query
+    var QueryToRun: any = UnitTestFramework.BuildArray(UnitTestFramework._DefaultItemsToBuild);
+
+    //push a new item now
+    QueryToRun.push({ Id: 1000, Txt: 'abc' });
+
+    //push that same item into the first element spot (with captials)
+    QueryToRun.splice(0, 0, { Id: 1000, Txt: 'ABC' });
+
+    //add a random item
+    QueryToRun.push({ Id: 1001, Txt: 'bcd' });
+
+    //reset the query now
+    QueryToRun = QueryToRun.OrderByDescending(x => x.Txt);
+
+    //go run the async operation
+    QueryToRun.ToArrayAsync(callBack, ErrorCallBack('OrderBy.Desc.String.Test.2'));
+
+    //wait about 5 seconds before calling the test
+    setTimeout(callBack, 5000);
+});
+
+asyncTest('JLinq.OrderBy.Desc.String.ChainTest.1', function () {
+
+    //i'm going to run 3 asserts
+    expect(2);
+
+    var callBack = (Result: Array<any>) => {
+
+        //test the values now
+        equal(Result[0], 'bcd');
+        equal(Result[1], 'abc');
+
+        start();
+    }
+
+    //go build the query
+    var QueryToRun: any = UnitTestFramework.BuildArray(UnitTestFramework._DefaultItemsToBuild);
+
+    //push a new item now
+    QueryToRun.push({ Id: 1000, Txt: 'abc' });
+
+    //add a random item
+    QueryToRun.push({ Id: 1001, Txt: 'bcd' });
+
+    //go reset the query
+    QueryToRun = QueryToRun.Select(x => x.Txt).OrderByDescending(x => x);
+
+    //go run the async operation
+    QueryToRun.ToArrayAsync(callBack, ErrorCallBack('OrderBy.Desc.String.ChainTest.1'));
+
+    //wait about 5 seconds before calling the test
+    setTimeout(callBack, 5000);
+});
+
+//#endregion
+
+//#region Order By Boolean
+
+asyncTest('JLinq.OrderBy.Asc.Boolean.Test.1', function () {
+
+    //i'm going to run 3 asserts
+    expect(1);
+
+    var callBack = (Result: Array<any>) => {
+
+        //go test the results
+        equal(Result.Last().IsActive, true);
+
+        start();
+    }
+
+    //go materialize the results into an array
+    var QueryToRun = UnitTestFramework._Array.OrderBy(x => x.IsActive);
+
+    //go run the async operation
+    QueryToRun.ToArrayAsync(callBack, ErrorCallBack('OrderBy.Asc.Boolean.Test.1'));
+
+    //wait about 5 seconds before calling the test
+    setTimeout(callBack, 5000);
+});
+
+asyncTest('JLinq.OrderBy.Asc.Boolean.ChainTest.1', function () {
+
+    //i'm going to run 3 asserts
+    expect(1);
+
+    var callBack = (Result: Array<any>) => {
+
+        //go test the results
+        equal(Result.Last(), true);
+
+        start();
+    }
+
+    //go materialize the results into an array
+    var QueryToRun = UnitTestFramework._Array.Select(x => x.IsActive).OrderBy(x => x);
+
+    //go run the async operation
+    QueryToRun.ToArrayAsync(callBack, ErrorCallBack('OrderBy.Asc.Boolean.ChainTest.1'));
+
+    //wait about 5 seconds before calling the test
+    setTimeout(callBack, 5000);
+});
+
+asyncTest('JLinq.OrderBy.Desc.Boolean.Test.1', function () {
+
+    //i'm going to run 3 asserts
+    expect(1);
+
+    var callBack = (Result: Array<any>) => {
+
+        //go test the results
+        equal(Result[0].IsActive, false);
+
+        start();
+    }
+
+    //go materialize the results into an array
+    var QueryToRun = UnitTestFramework._Array.OrderBy(x => x.IsActive);
+
+    //go run the async operation
+    QueryToRun.ToArrayAsync(callBack, ErrorCallBack('OrderBy.Desc.Boolean.Test.1'));
+
+    //wait about 5 seconds before calling the test
+    setTimeout(callBack, 5000);
+});
+
+;
+
+//#endregion
+
+//#region Order By Date
+
+asyncTest('JLinq.OrderBy.Asc.Date.Test.1', function () {
+
+    //i'm going to run 3 asserts
+    expect(1);
+
+    var callBack = (Result: Array<any>) => {
+
+        equal(JSON.stringify(Result[0].CreatedDate), JSON.stringify(new Date('12/1/1980')));
+
+        start();
+    }
+
+    //go materialize the results into an array
+    var QueryToRun = UnitTestFramework._Array.OrderBy(x => x.CreatedDate);
+
+    //go run the async operation
+    QueryToRun.ToArrayAsync(callBack, ErrorCallBack('OrderBy.Asc.Date.Test.1'));
+
+    //wait about 5 seconds before calling the test
+    setTimeout(callBack, 5000);
+});
+
+asyncTest('JLinq.OrderBy.Asc.Date.ChainTest.1', function () {
+
+    //i'm going to run 3 asserts
+    expect(1);
+
+    var callBack = (Result: Array<any>) => {
+
+        equal(JSON.stringify(Result[0].toString()), JSON.stringify(new Date('12/1/1980')));
+
+        start();
+    }
+
+    //go materialize the results into an array
+    var QueryToRun = UnitTestFramework._Array.Select(x => x.CreatedDate).OrderBy(x => x);
+
+    //go run the async operation
+    QueryToRun.ToArrayAsync(callBack, ErrorCallBack('OrderBy.Asc.Date.ChainTest.1'));
+
+    //wait about 5 seconds before calling the test
+    setTimeout(callBack, 5000);
+});
+
+asyncTest('JLinq.OrderBy.Desc.Date.Test.1', function () {
+
+    //i'm going to run 3 asserts
+    expect(1);
+
+    var callBack = (Result: Array<any>) => {
+
+        equal(JSON.stringify(Result.Last().CreatedDate), JSON.stringify(new Date('12/1/1980')));
+
+        start();
+    }
+
+    //go materialize the results into an array
+    var QueryToRun = UnitTestFramework._Array.OrderByDescending(x => x.CreatedDate);
+
+    //go run the async operation
+    QueryToRun.ToArrayAsync(callBack, ErrorCallBack('OrderBy.Desc.Date.Test.1'));
+
+    //wait about 5 seconds before calling the test
+    setTimeout(callBack, 5000);
+});
+
+asyncTest('JLinq.OrderBy.Desc.Date.ChainTest.1', function () {
+
+    //i'm going to run 3 asserts
+    expect(1);
+
+    var callBack = (Result: Array<any>) => {
+
+        equal(JSON.stringify(Result.Last()), JSON.stringify(new Date('12/1/1980')));
+
+        start();
+    }
+
+    //go materialize the results into an array
+    var QueryToRun = UnitTestFramework._Array.Select(x => x.CreatedDate).OrderByDescending(x => x);
+
+    //go run the async operation
+    QueryToRun.ToArrayAsync(callBack, ErrorCallBack('OrderBy.Desc.Date.ChainTest.1'));
+
+    //wait about 5 seconds before calling the test
+    setTimeout(callBack, 5000);
+});
+
+//#endregion
+
+//#endregion
+
+//#endregion
+
