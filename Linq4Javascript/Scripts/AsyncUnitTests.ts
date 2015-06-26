@@ -18,7 +18,7 @@ function ErrorCallBack(MethodName: string): (ErrorObject: ErrorEvent) => void {
 
 asyncTest("JLinq.AsQueryable.Test.1", function () {
 
-    //i'm going to run 3 asserts
+
     expect(3);
 
     var callBack = (Result: UnitTestFramework.ITestObject[]) => {
@@ -56,7 +56,7 @@ asyncTest("JLinq.AsQueryable.Test.1", function () {
 
 asyncTest('JLinq.SelectMany.Test.1', function () {
 
-    //i'm going to run 3 asserts
+
     expect(7);
 
     var callBack = (Result: Array<number>) => {
@@ -93,7 +93,7 @@ asyncTest('JLinq.SelectMany.Test.1', function () {
 
 asyncTest('JLinq.SelectMany.Test.2', function () {
 
-    //i'm going to run 3 asserts
+
     expect(3);
 
     var callBack = (Result: Array<number>) => {
@@ -124,7 +124,7 @@ asyncTest('JLinq.SelectMany.Test.2', function () {
 
 asyncTest('JLinq.SelectMany.Test.3', function () {
 
-    //i'm going to run 3 asserts
+
     expect(3);
 
     var callBack = (Result: Array<any>) => {
@@ -158,7 +158,7 @@ asyncTest('JLinq.SelectMany.Test.3', function () {
 
 asyncTest('JLinq.Where.Test.1', function () {
 
-    //i'm going to run 3 asserts
+
     expect(3);
 
     var callBack = (Result: Array<any>) => {
@@ -183,7 +183,7 @@ asyncTest('JLinq.Where.Test.1', function () {
 
 asyncTest('JLinq.Where.Test.2', function () {
 
-    //i'm going to run 3 asserts
+
     expect(5);
 
     var callBack = (Result: Array<any>) => {
@@ -212,7 +212,7 @@ asyncTest('JLinq.Where.Test.2', function () {
 
 asyncTest('JLinq.Where.ChainTest.1', function () {
 
-    //i'm going to run 3 asserts
+
     expect(3);
 
     var callBack = (Result: Array<any>) => {
@@ -236,7 +236,7 @@ asyncTest('JLinq.Where.ChainTest.1', function () {
 
 asyncTest('JLinq.Where.ChainTest.2', function () {
 
-    //i'm going to run 3 asserts
+
     expect(5);
 
     var callBack = (Result: Array<any>) => {
@@ -270,7 +270,7 @@ asyncTest('JLinq.Where.ChainTest.2', function () {
 
 asyncTest('JLinq.Concat.TestOffOfQueryWithArray.1', function () {
 
-    //i'm going to run 3 asserts
+
     expect(7);
 
     var callBack = (Result: Array<any>) => {
@@ -343,7 +343,7 @@ asyncTest('JLinq.Concat.TestOffOfArrayWithArray.1', function () {
 
 asyncTest('JLinq.ConcatQuery.TestOffOfQueryWithQuery.1', function () {
 
-    //i'm going to run 3 asserts
+
     expect(5);
 
     var callBack = (Result: Array<any>) => {
@@ -370,7 +370,7 @@ asyncTest('JLinq.ConcatQuery.TestOffOfQueryWithQuery.1', function () {
 
 asyncTest('JLinq.ConcatQuery.TestOffOfQueryWithQuery.2', function () {
 
-    //i'm going to run 3 asserts
+
     expect(3);
 
     var callBack = (Result: Array<any>) => {
@@ -399,7 +399,7 @@ asyncTest('JLinq.ConcatQuery.TestOffOfQueryWithQuery.2', function () {
 
 asyncTest('JLinq.ConcatQuery.TestOffOfArrayWithQuery.1', function () {
 
-    //i'm going to run 3 asserts
+
     expect(12);
 
     var callBack = (Result: Array<any>) => {
@@ -439,7 +439,7 @@ asyncTest('JLinq.ConcatQuery.TestOffOfArrayWithQuery.1', function () {
 
 asyncTest('JLinq.Union.TestOffOfQueryWithArray.1', function () {
 
-    //i'm going to run 3 asserts
+
     expect(5);
 
     var callBack = (Result: Array<any>) => {
@@ -470,7 +470,7 @@ asyncTest('JLinq.Union.TestOffOfQueryWithArray.1', function () {
 
 asyncTest('JLinq.Union.TestOffOfArrayWithArray.1', function () {
 
-    //i'm going to run 3 asserts
+
     expect(6);
 
     var callBack = (Result: Array<any>) => {
@@ -506,7 +506,7 @@ asyncTest('JLinq.Union.TestOffOfArrayWithArray.1', function () {
 
 asyncTest('JLinq.UnionQuery.TestOffOfQueryWithQuery.1', function () {
 
-    //i'm going to run 3 asserts
+
     expect(3);
 
     var callBack = (Result: Array<any>) => {
@@ -535,7 +535,7 @@ asyncTest('JLinq.UnionQuery.TestOffOfQueryWithQuery.1', function () {
 
 asyncTest('JLinq.UnionQuery.TestOffOfArrayWithQuery.1', function () {
 
-    //i'm going to run 3 asserts
+
     expect(6);
 
     var callBack = (Result: Array<any>) => {
@@ -569,7 +569,7 @@ asyncTest('JLinq.UnionQuery.TestOffOfArrayWithQuery.1', function () {
 
 asyncTest('JLinq.Take.Test.1', function () {
 
-    //i'm going to run 3 asserts
+
     expect(5);
 
     var callBack = (Result: Array<any>) => {
@@ -598,7 +598,7 @@ asyncTest('JLinq.Take.Test.1', function () {
 
 asyncTest('JLinq.Take.ChainTest.1', function () {
 
-    //i'm going to run 3 asserts
+
     expect(5);
 
     var callBack = (Result: Array<any>) => {
@@ -632,7 +632,7 @@ asyncTest('JLinq.TakeWhile.Test.1', function () {
  
     //Remember...will return all the elements before the test no longer passes. "Where" will return everything that meet the condition. TakeWhile will exit the routine wasn't it doesnt pass the expression
 
-    //i'm going to run 3 asserts
+    
     expect(5);
 
     var callBack = (Result: Array<any>) => {
@@ -663,7 +663,7 @@ asyncTest('JLinq.TakeWhile.ChainTest.1', function () {
 
     //Remember...will return all the elements before the test no longer passes. "Where" will return everything that meet the condition. TakeWhile will exit the routine wasn't it doesnt pass the expression
 
-    //i'm going to run 3 asserts
+    
     expect(5);
 
     var callBack = (Result: Array<any>) => {
@@ -696,7 +696,7 @@ asyncTest('JLinq.TakeWhile.ChainTest.1', function () {
 
 asyncTest('JLinq.Skip.Test.1', function () {
 
-    //i'm going to run 3 asserts
+
     expect(9);
 
     var callBack = (Result: Array<any>) => {
@@ -731,7 +731,7 @@ asyncTest('JLinq.Skip.Test.1', function () {
 
 asyncTest('JLinq.Skip.ChainTest.1', function () {
 
-    //i'm going to run 3 asserts
+
     expect(5);
 
     var callBack = (Result: Array<any>) => {
@@ -766,7 +766,7 @@ asyncTest('JLinq.SkipWhile.Test.1', function () {
 
     //Remember...after predicate is met, it will return everything after that
 
-    //i'm going to run 3 asserts
+    
     expect(5);
 
     var callBack = (Result: Array<any>) => {
@@ -797,7 +797,7 @@ asyncTest('JLinq.SkipWhile.ChainTest.1', function () {
 
     //Remember...after predicate is met, it will return everything after that
 
-    //i'm going to run 3 asserts
+    
     expect(5);
 
     var callBack = (Result: Array<any>) => {
@@ -830,7 +830,7 @@ asyncTest('JLinq.SkipWhile.ChainTest.1', function () {
 
 asyncTest('JLinq.Paginate.Test.1', function () {
 
-    //i'm going to run 3 asserts
+
     expect(11);
 
     var callBack = (Result: Array<any>) => {
@@ -868,7 +868,7 @@ asyncTest('JLinq.Paginate.Test.1', function () {
 
 asyncTest('JLinq.Paginate.Test.1', function () {
 
-    //i'm going to run 3 asserts
+
     expect(7);
 
     var callBack = (Result: Array<any>) => {
@@ -906,7 +906,7 @@ asyncTest('JLinq.Paginate.Test.1', function () {
 
 asyncTest('JLinq.Paginate.Test.3', function () {
 
-    //i'm going to run 3 asserts
+
     expect(3);
 
     var callBack = (Result: Array<any>) => {
@@ -938,7 +938,7 @@ asyncTest('JLinq.Paginate.Test.3', function () {
 
 asyncTest('JLinq.Paginate.ChainTest.1', function () {
 
-    //i'm going to run 3 asserts
+
     expect(7);
 
     var callBack = (Result: Array<any>) => {
@@ -974,7 +974,7 @@ asyncTest('JLinq.Paginate.ChainTest.1', function () {
 
 asyncTest('JLinq.Select.Test.1', function () {
 
-    //i'm going to run 3 asserts
+
     expect(5);
 
     var callBack = (Result: Array<any>) => {
@@ -1004,7 +1004,7 @@ asyncTest('JLinq.Select.Test.1', function () {
 
 asyncTest('JLinq.Select.ChainTest.1', function () {
 
-    //i'm going to run 3 asserts
+
     expect(4);
 
     var callBack = (Result: Array<any>) => {
@@ -1034,7 +1034,7 @@ asyncTest('JLinq.Select.ChainTest.1', function () {
 
 asyncTest('JLinq.Distinct.Number.Test.1', function () {
 
-    //i'm going to run 3 asserts
+
     expect(2);
 
     var callBack = (Result: Array<any>) => {
@@ -1065,7 +1065,7 @@ asyncTest('JLinq.Distinct.Number.Test.1', function () {
 
 asyncTest('JLinq.Distinct.Number.Test.2', function () {
 
-    //i'm going to run 3 asserts
+
     expect(2);
 
     var callBack = (Result: Array<any>) => {
@@ -1095,8 +1095,7 @@ asyncTest('JLinq.Distinct.Number.Test.2', function () {
 });
 
 asyncTest('JLinq.Distinct.Date.Test.3', function () {
-
-    //i'm going to run 3 asserts
+    
     expect(4);
 
     var callBack = (Result: Array<any>) => {
@@ -1134,7 +1133,7 @@ asyncTest('JLinq.Distinct.Date.Test.3', function () {
 
 asyncTest('JLinq.Distinct.String.Test.2', function () {
 
-    //i'm going to run 3 asserts
+
     expect(4);
 
     var callBack = (Result: Array<any>) => {
@@ -1167,7 +1166,7 @@ asyncTest('JLinq.Distinct.String.Test.2', function () {
 
 asyncTest('JLinq.Distinct.ChainTest.1', function () {
 
-    //i'm going to run 3 asserts
+
     expect(2);
 
     var callBack = (Result: Array<any>) => {
@@ -1204,7 +1203,7 @@ asyncTest('JLinq.Distinct.ChainTest.1', function () {
 
 asyncTest('JLinq.OrderBy.Asc.Number.Test.1', function () {
 
-    //i'm going to run 3 asserts
+
     expect(5);
 
     var callBack = (Result: Array<any>) => {
@@ -1231,7 +1230,7 @@ asyncTest('JLinq.OrderBy.Asc.Number.Test.1', function () {
 
 asyncTest('JLinq.OrderBy.Asc.Number.ChainTest.1', function () {
 
-    //i'm going to run 3 asserts
+
     expect(5);
 
     var callBack = (Result: Array<any>) => {
@@ -1258,7 +1257,7 @@ asyncTest('JLinq.OrderBy.Asc.Number.ChainTest.1', function () {
 
 asyncTest('JLinq.OrderBy.Desc.Number.Test.1', function () {
 
-    //i'm going to run 3 asserts
+
     expect(5);
 
     var callBack = (Result: Array<any>) => {
@@ -1291,7 +1290,7 @@ asyncTest('JLinq.OrderBy.Desc.Number.Test.1', function () {
 
 asyncTest('JLinq.OrderBy.Desc.Number.ChainTest.1', function () {
 
-    //i'm going to run 3 asserts
+
     expect(5);
 
     var callBack = (Result: Array<any>) => {
@@ -1328,7 +1327,7 @@ asyncTest('JLinq.OrderBy.Desc.Number.ChainTest.1', function () {
 
 asyncTest('JLinq.OrderBy.Asc.String.Test.1', function () {
 
-    //i'm going to run 3 asserts
+
     expect(2);
 
     var callBack = (Result: Array<any>) => {
@@ -1361,7 +1360,7 @@ asyncTest('JLinq.OrderBy.Asc.String.Test.1', function () {
 
 asyncTest('JLinq.OrderBy.Asc.String.Test.2', function () {
 
-    //i'm going to run 3 asserts
+
     expect(3);
 
     var callBack = (Result: Array<any>) => {
@@ -1398,7 +1397,7 @@ asyncTest('JLinq.OrderBy.Asc.String.Test.2', function () {
 
 asyncTest('JLinq.OrderBy.Asc.String.ChainTest.1', function () {
 
-    //i'm going to run 3 asserts
+
     expect(2);
 
     var callBack = (Result: Array<any>) => {
@@ -1432,7 +1431,7 @@ asyncTest('JLinq.OrderBy.Asc.String.ChainTest.1', function () {
 
 asyncTest('JLinq.OrderBy.Desc.String.Test.1', function () {
 
-    //i'm going to run 3 asserts
+
     expect(2);
 
     var callBack = (Result: Array<any>) => {
@@ -1465,7 +1464,7 @@ asyncTest('JLinq.OrderBy.Desc.String.Test.1', function () {
 
 asyncTest('JLinq.OrderBy.Desc.String.Test.2', function () {
 
-    //i'm going to run 3 asserts
+
     expect(3);
 
     var callBack = (Result: Array<any>) => {
@@ -1502,7 +1501,7 @@ asyncTest('JLinq.OrderBy.Desc.String.Test.2', function () {
 
 asyncTest('JLinq.OrderBy.Desc.String.ChainTest.1', function () {
 
-    //i'm going to run 3 asserts
+
     expect(2);
 
     var callBack = (Result: Array<any>) => {
@@ -1539,7 +1538,7 @@ asyncTest('JLinq.OrderBy.Desc.String.ChainTest.1', function () {
 
 asyncTest('JLinq.OrderBy.Asc.Boolean.Test.1', function () {
 
-    //i'm going to run 3 asserts
+
     expect(1);
 
     var callBack = (Result: Array<any>) => {
@@ -1562,7 +1561,7 @@ asyncTest('JLinq.OrderBy.Asc.Boolean.Test.1', function () {
 
 asyncTest('JLinq.OrderBy.Asc.Boolean.ChainTest.1', function () {
 
-    //i'm going to run 3 asserts
+
     expect(1);
 
     var callBack = (Result: Array<any>) => {
@@ -1585,7 +1584,7 @@ asyncTest('JLinq.OrderBy.Asc.Boolean.ChainTest.1', function () {
 
 asyncTest('JLinq.OrderBy.Desc.Boolean.Test.1', function () {
 
-    //i'm going to run 3 asserts
+
     expect(1);
 
     var callBack = (Result: Array<any>) => {
@@ -1614,7 +1613,7 @@ asyncTest('JLinq.OrderBy.Desc.Boolean.Test.1', function () {
 
 asyncTest('JLinq.OrderBy.Asc.Date.Test.1', function () {
 
-    //i'm going to run 3 asserts
+
     expect(1);
 
     var callBack = (Result: Array<any>) => {
@@ -1636,7 +1635,7 @@ asyncTest('JLinq.OrderBy.Asc.Date.Test.1', function () {
 
 asyncTest('JLinq.OrderBy.Asc.Date.ChainTest.1', function () {
 
-    //i'm going to run 3 asserts
+
     expect(1);
 
     var callBack = (Result: Array<any>) => {
@@ -1658,7 +1657,7 @@ asyncTest('JLinq.OrderBy.Asc.Date.ChainTest.1', function () {
 
 asyncTest('JLinq.OrderBy.Desc.Date.Test.1', function () {
 
-    //i'm going to run 3 asserts
+
     expect(1);
 
     var callBack = (Result: Array<any>) => {
@@ -1680,7 +1679,7 @@ asyncTest('JLinq.OrderBy.Desc.Date.Test.1', function () {
 
 asyncTest('JLinq.OrderBy.Desc.Date.ChainTest.1', function () {
 
-    //i'm going to run 3 asserts
+
     expect(1);
 
     var callBack = (Result: Array<any>) => {
@@ -1701,6 +1700,256 @@ asyncTest('JLinq.OrderBy.Desc.Date.ChainTest.1', function () {
 });
 
 //#endregion
+
+//#endregion
+
+//#region Then By Order
+
+asyncTest('JLinq.ThenBy.Asc.Test.1', function () {
+
+    expect(4);
+
+    var callBack = (Result: Array<any>) => {
+        debugger;
+        //go test the results
+        equal(Result[0].Id, 1);
+        equal(Result[1].Id, 2);
+        equal(Result[2].Id, 3);
+        equal(Result[3].Id, 4);
+
+        start();
+    }
+
+    //go build the query
+    var QueryToRun = UnitTestFramework._SortOrderArray.OrderBy(x => x.Txt).ThenBy(x => x.Id);
+
+    //go run the async operation
+    QueryToRun.ToArrayAsync(callBack, ErrorCallBack('ThenBy.Asc.Test.1'));
+
+    //wait about 5 seconds before calling the test
+    setTimeout(callBack, 5000);
+});
+
+asyncTest('JLinq.ThenBy.Asc.Test.2', function () {
+
+    expect(4);
+
+    var callBack = (Result: Array<any>) => {
+
+        //go test the results
+        equal(Result[0].Id, 2);
+        equal(Result[1].Id, 1);
+        equal(Result[2].Id, 3);
+        equal(Result[3].Id, 4);
+
+        start();
+    }
+
+    //go build the query
+    var QueryToRun = UnitTestFramework._SortOrderArray.OrderBy(x => x.Txt).ThenByDescending(x => x.Txt2);
+
+    //go run the async operation
+    QueryToRun.ToArrayAsync(callBack, ErrorCallBack('ThenBy.Asc.Test.2'));
+
+    //wait about 5 seconds before calling the test
+    setTimeout(callBack, 5000);
+});
+
+asyncTest('JLinq.ThenBy.Asc.Test.3', function () {
+
+    expect(4);
+
+    var callBack = (Result: Array<any>) => {
+
+        //go test the results
+        equal(Result[0].Id, 2);
+        equal(Result[1].Id, 1);
+        equal(Result[2].Id, 3);
+        equal(Result[3].Id, 4);
+
+        start();
+    }
+
+    //go build the query
+    var QueryToRun = UnitTestFramework._SortOrderArray.OrderBy(x => x.Txt).ThenByDescending(x => x.Txt2).ThenBy(x => x.Id);
+
+    //go run the async operation
+    QueryToRun.ToArrayAsync(callBack, ErrorCallBack('ThenBy.Asc.Test.3'));
+
+    //wait about 5 seconds before calling the test
+    setTimeout(callBack, 5000);
+});
+
+asyncTest('JLinq.ThenBy.Asc.ChainTest.1', function () {
+
+    expect(3);
+
+    var callBack = (Result: Array<any>) => {
+
+        //go test the results
+        equal(Result[0].Id, 1);
+        equal(Result[1].Id, 2);
+        equal(Result[2].Id, 3);
+
+        start();
+    }
+
+    //go build the query
+    var QueryToRun = UnitTestFramework._SortOrderArray.Where(x => x.Id <= 3).OrderBy(x => x.Txt).ThenBy(x => x.Id);
+
+    //go run the async operation
+    QueryToRun.ToArrayAsync(callBack, ErrorCallBack('ThenBy.Asc.ChainTest.1'));
+
+    //wait about 5 seconds before calling the test
+    setTimeout(callBack, 5000);
+});
+
+asyncTest('JLinq.ThenBy.Asc.ChainTest.2', function () {
+
+    expect(3);
+
+    var callBack = (Result: Array<any>) => {
+
+        //go test the results
+        equal(Result[0], 1);
+        equal(Result[1], 2);
+        equal(Result[2], 3);
+
+        start();
+    }
+
+    //go build the query
+    var QueryToRun = UnitTestFramework._SortOrderArray.Where(x => x.Id <= 3).OrderBy(x => x.Txt).ThenBy(x => x.Id).Select(x => x.Id);
+
+    //go run the async operation
+    QueryToRun.ToArrayAsync(callBack, ErrorCallBack('ThenBy.Asc.ChainTest.2'));
+
+    //wait about 5 seconds before calling the test
+    setTimeout(callBack, 5000);
+});
+
+asyncTest('JLinq.ThenBy.Desc.Test.1', function () {
+
+    expect(4);
+
+    var callBack = (Result: Array<any>) => {
+
+        //go test the results
+        equal(Result[0].Id, 4);
+        equal(Result[1].Id, 3);
+        equal(Result[2].Id, 2);
+        equal(Result[3].Id, 1);
+
+        start();
+    }
+
+    //go build the query
+    var QueryToRun = UnitTestFramework._SortOrderArray.OrderByDescending(x => x.Txt).ThenByDescending(x => x.Id);
+
+    //go run the async operation
+    QueryToRun.ToArrayAsync(callBack, ErrorCallBack('ThenBy.Desc.Test.1'));
+
+    //wait about 5 seconds before calling the test
+    setTimeout(callBack, 5000);
+});
+
+asyncTest('JLinq.ThenBy.Desc.Test.2', function () {
+
+    expect(4);
+
+    var callBack = (Result: Array<any>) => {
+
+        //go test the results
+        equal(Result[0].Id, 4);
+        equal(Result[1].Id, 3);
+        equal(Result[2].Id, 1);
+        equal(Result[3].Id, 2);
+
+        start();
+    }
+
+    //go build the query
+    var QueryToRun = UnitTestFramework._SortOrderArray.OrderByDescending(x => x.Txt).ThenBy(x => x.Txt2);
+
+    //go run the async operation
+    QueryToRun.ToArrayAsync(callBack, ErrorCallBack('ThenBy.Desc.Test.2'));
+
+    //wait about 5 seconds before calling the test
+    setTimeout(callBack, 5000);
+});
+
+asyncTest('JLinq.ThenBy.Desc.Test.3', function () {
+
+    expect(4);
+
+    var callBack = (Result: Array<any>) => {
+
+        //go test the results
+        equal(Result[0].Txt, 'zzz');
+        equal(Result[1].Txt, 'bcd');
+        equal(Result[2].Txt, 'abc');
+        equal(Result[3].Txt, 'abc');
+
+        start();
+    }
+
+    //go build the query
+    var QueryToRun = UnitTestFramework._SortOrderArray.OrderByDescending(x => x.Txt).ThenBy(x => x.Txt2).ThenBy(x => x.Id);
+
+    //go run the async operation
+    QueryToRun.ToArrayAsync(callBack, ErrorCallBack('ThenBy.Desc.Test.3'));
+
+    //wait about 5 seconds before calling the test
+    setTimeout(callBack, 5000);
+});
+
+asyncTest('JLinq.ThenBy.Desc.ChainTest.1', function () {
+
+    expect(3);
+
+    var callBack = (Result: Array<any>) => {
+
+        //go test the results
+        equal(Result[0].Id, 3);
+        equal(Result[1].Id, 2);
+        equal(Result[2].Id, 1);
+
+        start();
+    }
+
+    //go build the query
+    var QueryToRun = UnitTestFramework._SortOrderArray.Where(x => x.Id <= 3).OrderByDescending(x => x.Txt).ThenByDescending(x => x.Id);
+
+    //go run the async operation
+    QueryToRun.ToArrayAsync(callBack, ErrorCallBack('ThenBy.Desc.ChainTest.1'));
+
+    //wait about 5 seconds before calling the test
+    setTimeout(callBack, 5000);
+});
+
+asyncTest('JLinq.ThenBy.Desc.ChainTest.2', function () {
+
+    expect(3);
+
+    var callBack = (Result: Array<any>) => {
+
+        //go test the results
+        equal(Result[0], 3);
+        equal(Result[1], 2);
+        equal(Result[2], 1);
+
+        start();
+    }
+
+    //go build the query
+    var QueryToRun = UnitTestFramework._SortOrderArray.Where(x => x.Id <= 3).OrderByDescending(x => x.Txt).ThenByDescending(x => x.Id).Select(x => x.Id);
+
+    //go run the async operation
+    QueryToRun.ToArrayAsync(callBack, ErrorCallBack('ThenBy.Desc.ChainTest.2'));
+
+    //wait about 5 seconds before calling the test
+    setTimeout(callBack, 5000);
+});
 
 //#endregion
 
