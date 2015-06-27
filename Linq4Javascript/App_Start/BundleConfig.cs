@@ -16,7 +16,7 @@ namespace Linq4Javascript
 
             bundles.Add(new ScriptBundle("~/bundles/bootstrap").Include("~/Scripts/bootstrap.js", "~/Scripts/respond.js"));
 
-            bundles.Add(new ScriptBundle("~/bundles/Linq4Javscript").Include("~/Scripts/JLinq.js", "~/Scripts/JLinqWebWorker.js"));
+            bundles.Add(new ScriptBundle("~/bundles/Linq4Javscript").Include("~/Scripts/JLinq.js"));
 
             bundles.Add(new ScriptBundle("~/bundles/AsyncTester").Include("~/Scripts/ConfigForWorkingAsync.js"));
 

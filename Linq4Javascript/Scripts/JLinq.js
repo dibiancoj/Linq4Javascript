@@ -41,7 +41,7 @@ var ToracTechnologies;
 (function (ToracTechnologies) {
     var JLinq;
     (function (JLinq) {
-        //#region Properties
+        //#region Export Functions
         //check if the browser supports web workers
         function AsyncIsAvailable() {
             return typeof (Worker) !== 'undefined';
@@ -322,7 +322,7 @@ var ToracTechnologies;
                 if (CanWeUseAsync) {
                     // Yes! Web worker support!
                     //go create the web worker
-                    var workerToRun = new Worker('../Scripts/JLinqWebWorker.js');
+                    var workerToRun = Iterator.BuildWebWorker(); //new Worker('../Scripts/JLinqWebWorker.js');
                     //attach the event handler
                     workerToRun.addEventListener('message', function (e) {
                         //we are all done. go tell the user that the data is done with the callback
@@ -382,6 +382,30 @@ var ToracTechnologies;
             };
             //#endregion
             //#region Public Static Methods
+            //builds the web worker without having to declare an external script page
+            Iterator.BuildWebWorker = function () {
+                //did we already build the web worker?
+                if (Iterator.WebWorkerBlobToCache == null) {
+                    //var scripts
+                    var ScriptTags = document.getElementsByTagName("script");
+                    //jlinq path
+                    var JLinqPath = '';
+                    for (var i = 0; i < ScriptTags.length; i++) {
+                        //we basically need to find the jlinq file so we can grab the full path
+                        if (ScriptTags[i].src != null && ScriptTags[i].src.toLowerCase().indexOf('jlinq.js') > -1) {
+                            //set the path and exit the for loop
+                            JLinqPath = ScriptTags[i].src;
+                            break;
+                        }
+                    }
+                    //let's build the function text now
+                    var FunctionScript = "self.addEventListener('message', function(e) { \n" + " importScripts('" + JLinqPath + "') \n" + " var Query = JSON.parse(e.data); \n" + " var TreeRebuilt = ToracTechnologies.JLinq.RebuildTree(Query); \n" + " self.postMessage(TreeRebuilt.ToArray(), null, null); }, false);";
+                    //go set the blob...
+                    this.WebWorkerBlobToCache = new Blob([FunctionScript]);
+                }
+                //go build the worker and return it
+                return new Worker(URL.createObjectURL(this.WebWorkerBlobToCache));
+            };
             //builds an async tree from an iterator. Re-builds the entire tree by adding the methods it needs to run the query. (methods don't serialize)
             Iterator.BuildAsyncTree = function (Query) {
                 //flatten the tree
@@ -437,6 +461,8 @@ var ToracTechnologies;
                 }
                 return eval("(" + MethodCode + ")");
             };
+            //we are going to cache the jlinq blob
+            Iterator.WebWorkerBlobToCache = null;
             return Iterator;
         })();
         JLinq.Iterator = Iterator;
@@ -2403,4 +2429,4 @@ Array.prototype.OrderByDescending = function (SortPropertySelector) {
 };
 //#endregion
 //#endregion 
-//# sourceMappingURL=jlinq.js.map
+//# sourceMappingURL=JLinq.js.map

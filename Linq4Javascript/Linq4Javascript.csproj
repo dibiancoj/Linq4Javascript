@@ -170,7 +170,6 @@
     <Content Include="Global.asax" />
     <Content Include="Scripts\ConfigForWorkingAsync.js" />
     <Content Include="Scripts\unittestframework.js" />
-    <Content Include="Scripts\JLinqWebWorker.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="Areas\HelpPage\Views\Web.config" />
@@ -194,7 +193,6 @@
     <Content Include="Areas\HelpPage\Views\Help\Api.cshtml" />
     <Content Include="Scripts\JLinq Change Log.txt" />
     <Content Include="Scripts\JLinq.js.map" />
-    <Content Include="Scripts\JLinqWebWorker.js.map" />
     <Content Include="Scripts\ConfigForWorkingAsync.js.map" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\JLinq.js" />
@@ -232,7 +230,6 @@
   <ItemGroup>
     <TypeScriptCompile Include="Scripts\ConfigForWorkingAsync.ts" />
     <TypeScriptCompile Include="Scripts\UnitTestsAsync.ts" />
-    <TypeScriptCompile Include="Scripts\JLinqWebWorker.ts" />
     <TypeScriptCompile Include="Scripts\JLinq.ts" />
     <TypeScriptCompile Include="Scripts\UnitTestsRegular.ts" />
     <TypeScriptCompile Include="Scripts\qunit.d.ts" />

@@ -39,7 +39,7 @@ module ToracTechnologies {
 
     export module JLinq {
 
-        //#region Properties
+        //#region Export Functions
 
         //check if the browser supports web workers
         export function AsyncIsAvailable(): boolean {
@@ -63,6 +63,9 @@ module ToracTechnologies {
 
             //holds the methods we need to serialize when we run async
             public AsyncSerialized: Array<KeyValuePair<string, string>>;
+
+            //we are going to cache the jlinq blob
+            private static WebWorkerBlobToCache = null;
 
             //#endregion
 
@@ -443,7 +446,7 @@ module ToracTechnologies {
                     // Yes! Web worker support!
 
                     //go create the web worker
-                    var workerToRun = new Worker('../Scripts/JLinqWebWorker.js');
+                    var workerToRun = Iterator.BuildWebWorker();//new Worker('../Scripts/JLinqWebWorker.js');
 
                     //attach the event handler
                     workerToRun.addEventListener('message', e => {
@@ -525,6 +528,57 @@ module ToracTechnologies {
             //#endregion
 
             //#region Public Static Methods
+
+            //builds the web worker without having to declare an external script page
+            public static BuildWebWorker() {
+            
+                //did we already build the web worker?
+                if (Iterator.WebWorkerBlobToCache == null) {
+
+                    //var scripts
+                    var ScriptTags = document.getElementsByTagName("script");
+
+                    //jlinq path
+                    var JLinqPath = '';
+
+                    //(this part is a little hacky..and i'm not sure this will work always...if your using amd or something fancy. We go with it and see how it turns out)
+
+                    //loop through it until we find JLinq
+                    for (var i = 0; i < ScriptTags.length; i++) {
+
+                        //we basically need to find the jlinq file so we can grab the full path
+                        if (ScriptTags[i].src != null && ScriptTags[i].src.toLowerCase().indexOf('jlinq.js') > -1) {
+
+                            //set the path and exit the for loop
+                            JLinqPath = ScriptTags[i].src;
+
+                            //exit the for loop
+                            break;
+                        }
+                    }
+
+                    //let's build the function text now
+                    var FunctionScript = "self.addEventListener('message', function(e) { \n" +
+
+                    //let's import the jlinq library
+                        " importScripts('" + JLinqPath + "') \n" +
+
+                    //let's go parse the json which is the query
+                        " var Query = JSON.parse(e.data); \n" +
+
+                    //let's rebuild the tree
+                        " var TreeRebuilt = ToracTechnologies.JLinq.RebuildTree(Query); \n" +
+
+                    //go build up the results and pass back the array
+                        " self.postMessage(TreeRebuilt.ToArray(), null, null); }, false);";
+
+                    //go set the blob...
+                    this.WebWorkerBlobToCache = new Blob([FunctionScript]);
+                }
+
+                //go build the worker and return it
+                return new Worker(URL.createObjectURL(this.WebWorkerBlobToCache));
+            }
 
             //builds an async tree from an iterator. Re-builds the entire tree by adding the methods it needs to run the query. (methods don't serialize)
             public static BuildAsyncTree<T>(Query: Iterator<T>): Iterator<T> {
