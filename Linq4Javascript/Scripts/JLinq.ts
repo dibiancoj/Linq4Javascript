@@ -1,7 +1,7 @@
 //********************************Torac Technologies***************************************
 //Description: Linq Style Methods In Javascript To Manipulate Collections                 *
 //Release Date: 10/17/2013                                                                *
-//Current Version: 2.5.4                                                                  *
+//Current Version: 3.0.0                                                                  *
 //Release History In JLinqChangeLog.txt                                                   *
 //*****************************************************************************************
 
@@ -24,17 +24,27 @@
         No need to ResetQuery on this because it automatically does it
 */
 
+/* Async Sample:
+    var query = UnitTestFramework._Array.Where(x => x.Id == 1 || x.Id == 2);
+
+    var runQuery = query.ToArrayAsync(function(result)
+                                      {
+                                            //do something with the result array
+                                      }, function(errorMessageObject){
+                                            //do something if there is an error. Web worker produces silent error without handler
+                                      });
+*/
+
 module ToracTechnologies {
 
     export module JLinq {
 
-        //#region Utilities
+        //#region Properties
 
+        //check if the browser supports web workers
         export function AsyncIsAvailable(): boolean {
-
-            //does this browser support web workers? (async)
             return typeof (Worker) !== 'undefined';
-        }
+        } 
 
         //#endregion
 
@@ -412,10 +422,24 @@ module ToracTechnologies {
             }
 
             //materializes the expression to an array in a web worker so it doesn't feeze the ui. if a web worker is not available it will just call the ToArray()
-            public ToArrayAsync(CallbackWhenQueryIsComplete: (Result: Array<T>) => void, OnErrorCallBack: (ErrorObject: ErrorEvent) => void): void {
+            public ToArrayAsync(CallBackWhenQueryIsComplete: (Result: Array<T>) => void, OnErrorCallBack: (ErrorObject: ErrorEvent) => void, IsAsyncAvailable?: boolean): void {
+
+                //can we use async?
+                var CanWeUseAsync: boolean;
+
+                //did they pass it in?
+                if (IsAsyncAvailable == null) {
+
+                    //use the jlinq implementation
+                    CanWeUseAsync = AsyncIsAvailable();
+                } else {
+
+                    //use whatever the user wants (if they want there own logic
+                    CanWeUseAsync = IsAsyncAvailable;
+                }
 
                 //is the browser new enough to run web webworkers?
-                if (AsyncIsAvailable()) {
+                if (CanWeUseAsync) {
                     // Yes! Web worker support!
 
                     //go create the web worker
@@ -425,7 +449,7 @@ module ToracTechnologies {
                     workerToRun.addEventListener('message', e => {
 
                         //we are all done. go tell the user that the data is done with the callback
-                        CallbackWhenQueryIsComplete(e.data);
+                        CallBackWhenQueryIsComplete(e.data);
                         
                         //i'm going to cleanup after we run this call. I don't know how useful it is to keep it listening
                         workerToRun.terminate();
@@ -454,7 +478,7 @@ module ToracTechnologies {
 
                 } else {
                     // No Web Worker support.. just return the data
-                    CallbackWhenQueryIsComplete(this.ToArray());
+                    CallBackWhenQueryIsComplete(this.ToArray());
                 }
             }
 
@@ -478,8 +502,31 @@ module ToracTechnologies {
 
             //#endregion
 
-            //#region Private Static Methods
+            //#region Public Instance Methods
 
+            //should be treated as an abstract method
+            public AsyncSerializedFunc(): Array<KeyValuePair<string, string>> {
+                throw new Error('This method is abstract');
+            }
+
+            //serializes a method to a string. So pass in x => x.Id;...will return the function in a string (serialized function)
+            public SerializeMethod(MethodToSerialize: any) {
+
+                //if we don't have any methods, then just return a blank string
+                if (MethodToSerialize == null) {
+                    return '';
+                } else {
+
+                    //we have a method, pusing toString() will return the string representation of the method
+                    return MethodToSerialize.toString();
+                }
+            }
+
+            //#endregion
+
+            //#region Public Static Methods
+
+            //builds an async tree from an iterator. Re-builds the entire tree by adding the methods it needs to run the query. (methods don't serialize)
             public static BuildAsyncTree<T>(Query: Iterator<T>): Iterator<T> {
     
                 //flatten the tree
@@ -498,22 +545,6 @@ module ToracTechnologies {
                 //we have a built up query with serialized methods, go return it
                 return Query;
             }
-
-            public AsyncSerializedFunc(): Array<KeyValuePair<string, string>> {
-                throw new Error('This method is abstract');
-            }
-
-            public SerializeMethod(MethodToSerialize: any) {
-                if (MethodToSerialize == null) {
-                    return '';
-                } else {
-                    return MethodToSerialize.toString();
-                }
-            }
-
-            //#endregion
-
-            //#region Public Static Methods
 
             //pushes the query chain to an array
             public static ChainableTreeWalker<T>(Query: Iterator<T>): Array<IChainable<any, any>> {
@@ -571,7 +602,7 @@ module ToracTechnologies {
             //make a function from a string
             public static StringToCompiledMethod(MethodCode: string) {
 
-                if (MethodCode == null || MethodCode.length == 0) {
+                if (MethodCode == null || MethodCode.length === 0) {
                     return null;
                 }
 
