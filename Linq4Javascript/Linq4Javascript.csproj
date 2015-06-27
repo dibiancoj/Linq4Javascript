@@ -170,7 +170,6 @@
     <Content Include="Global.asax" />
     <Content Include="Scripts\ConfigForWorkingAsync.js" />
     <Content Include="Scripts\unittestframework.js" />
-    <Content Include="Scripts\UnitTestsAsync.js" />
     <Content Include="Scripts\JLinqWebWorker.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
@@ -196,18 +195,20 @@
     <Content Include="Scripts\JLinq Change Log.txt" />
     <Content Include="Scripts\JLinq.js.map" />
     <Content Include="Scripts\JLinqWebWorker.js.map" />
-    <Content Include="Scripts\UnitTestsAsync.js.map" />
     <Content Include="Scripts\ConfigForWorkingAsync.js.map" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\JLinq.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
     <Content Include="Scripts\jquery-1.10.2.min.js" />
+    <Content Include="Scripts\UnitTestsAsync.js" />
+    <Content Include="Scripts\UnitTestsAsync.js.map" />
     <Content Include="Scripts\UnitTestsRegular.js" />
     <Content Include="Scripts\modernizr-2.6.2.js" />
     <Content Include="Content\qunit.css" />
     <Content Include="Scripts\qunit.js" />
     <Content Include="Scripts\respond.js" />
     <Content Include="Scripts\respond.min.js" />
+    <Content Include="Scripts\UnitTestsRegular.js.map" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
@@ -224,7 +225,6 @@
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Scripts\jquery-1.10.2.min.map" />
-    <Content Include="Scripts\UnitTestsRegular.js.map" />
     <Content Include="Views\Home\AsyncWorkingEnvironment.cshtml" />
     <Content Include="Views\Home\AsyncUnitTests.cshtml" />
     <Content Include="Scripts\unittestframework.js.map" />
