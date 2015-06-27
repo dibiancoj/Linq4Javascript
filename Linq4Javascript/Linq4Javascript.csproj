@@ -168,8 +168,10 @@
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
-    <Content Include="Scripts\AsyncTester.js" />
-    <Content Include="Scripts\AsyncWebWorkerForDebugging.js" />
+    <Content Include="Scripts\ConfigForWorkingAsync.js" />
+    <Content Include="Scripts\unittestframework.js" />
+    <Content Include="Scripts\UnitTestsAsync.js" />
+    <Content Include="Scripts\JLinqWebWorker.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="Areas\HelpPage\Views\Web.config" />
@@ -193,13 +195,14 @@
     <Content Include="Areas\HelpPage\Views\Help\Api.cshtml" />
     <Content Include="Scripts\JLinq Change Log.txt" />
     <Content Include="Scripts\JLinq.js.map" />
-    <Content Include="Scripts\AsyncTester.js.map" />
-    <Content Include="Scripts\AsyncWebWorkerForDebugging.js.map" />
+    <Content Include="Scripts\JLinqWebWorker.js.map" />
+    <Content Include="Scripts\UnitTestsAsync.js.map" />
+    <Content Include="Scripts\ConfigForWorkingAsync.js.map" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\JLinq.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
     <Content Include="Scripts\jquery-1.10.2.min.js" />
-    <Content Include="Scripts\Linq4JavascriptHelpersUnitTest.js" />
+    <Content Include="Scripts\UnitTestsRegular.js" />
     <Content Include="Scripts\modernizr-2.6.2.js" />
     <Content Include="Content\qunit.css" />
     <Content Include="Scripts\qunit.js" />
@@ -221,16 +224,17 @@
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Scripts\jquery-1.10.2.min.map" />
-    <Content Include="Scripts\Linq4JavascriptHelpersUnitTest.js.map" />
+    <Content Include="Scripts\UnitTestsRegular.js.map" />
     <Content Include="Views\Home\AsyncWorkingEnvironment.cshtml" />
     <Content Include="Views\Home\AsyncUnitTests.cshtml" />
+    <Content Include="Scripts\unittestframework.js.map" />
   </ItemGroup>
   <ItemGroup>
-    <TypeScriptCompile Include="Scripts\AsyncTester.ts" />
-    <TypeScriptCompile Include="Scripts\AsyncUnitTests.ts" />
-    <TypeScriptCompile Include="Scripts\AsyncWebWorkerForDebugging.ts" />
+    <TypeScriptCompile Include="Scripts\ConfigForWorkingAsync.ts" />
+    <TypeScriptCompile Include="Scripts\UnitTestsAsync.ts" />
+    <TypeScriptCompile Include="Scripts\JLinqWebWorker.ts" />
     <TypeScriptCompile Include="Scripts\JLinq.ts" />
-    <TypeScriptCompile Include="Scripts\Linq4JavascriptHelpersUnitTest.ts" />
+    <TypeScriptCompile Include="Scripts\UnitTestsRegular.ts" />
     <TypeScriptCompile Include="Scripts\qunit.d.ts" />
     <TypeScriptCompile Include="Scripts\UnitTestFramework.ts" />
   </ItemGroup>

@@ -2405,4 +2405,4 @@ test('JLinq.ThenBy.Desc.ChainTest.2', function () {
 });
 //#endregion
 //#endregion 
-//# sourceMappingURL=Linq4JavascriptHelpersUnitTest.js.map
+//# sourceMappingURL=UnitTestsRegular.js.map

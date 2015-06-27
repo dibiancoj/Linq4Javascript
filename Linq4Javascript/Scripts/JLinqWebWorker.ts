@@ -1,5 +1,4 @@
-﻿/// <reference path="asynctester.ts" />
-/// <reference path="jlinq.ts" />
+﻿/// <reference path="jlinq.ts" />
 
 self.addEventListener('message', e => {
 

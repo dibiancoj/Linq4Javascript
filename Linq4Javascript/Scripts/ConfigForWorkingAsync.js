@@ -40,4 +40,4 @@ var inlineWorkerText = "self.addEventListener('message', function(e) { setTimeou
 //inlineWorker.onmessage = e => {
 //    DisplayResults(e.data);
 //}; 
-//# sourceMappingURL=AsyncTester.js.map
+//# sourceMappingURL=ConfigForWorkingAsync.js.map

@@ -322,7 +322,7 @@ var ToracTechnologies;
                 if (CanWeUseAsync) {
                     // Yes! Web worker support!
                     //go create the web worker
-                    var workerToRun = new Worker('../Scripts/AsyncWebWorkerForDebugging.js');
+                    var workerToRun = new Worker('../Scripts/JLinqWebWorker.js');
                     //attach the event handler
                     workerToRun.addEventListener('message', function (e) {
                         //we are all done. go tell the user that the data is done with the callback

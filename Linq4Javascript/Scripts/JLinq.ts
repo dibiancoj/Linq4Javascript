@@ -443,7 +443,7 @@ module ToracTechnologies {
                     // Yes! Web worker support!
 
                     //go create the web worker
-                    var workerToRun = new Worker('../Scripts/AsyncWebWorkerForDebugging.js');
+                    var workerToRun = new Worker('../Scripts/JLinqWebWorker.js');
 
                     //attach the event handler
                     workerToRun.addEventListener('message', e => {

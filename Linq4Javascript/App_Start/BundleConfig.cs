@@ -16,16 +16,19 @@ namespace Linq4Javascript
 
             bundles.Add(new ScriptBundle("~/bundles/bootstrap").Include("~/Scripts/bootstrap.js", "~/Scripts/respond.js"));
 
-            bundles.Add(new ScriptBundle("~/bundles/Linq4Javscript").Include("~/Scripts/JLinq.js"));
+            bundles.Add(new ScriptBundle("~/bundles/Linq4Javscript").Include("~/Scripts/JLinq.js", "~/Scripts/JLinqWebWorker.js"));
 
-            bundles.Add(new ScriptBundle("~/bundles/AsyncTester").Include("~/Scripts/AsyncTester.js"));
+            bundles.Add(new ScriptBundle("~/bundles/AsyncTester").Include("~/Scripts/ConfigForWorkingAsync.js"));
 
-            bundles.Add(new ScriptBundle("~/bundles/AsyncUnitTests").Include("~/Scripts/qunit.js", "~/Scripts/UnitTestFramework.js", "~/Scripts/AsyncUnitTests.js", "~/Scripts/AsyncWebWorkerForDebugging.js"));
+            bundles.Add(new ScriptBundle("~/bundles/AsyncUnitTests").Include(
+                "~/Scripts/qunit.js", 
+                "~/Scripts/UnitTestFramework.js",
+                "~/Scripts/UnitTestsAsync.js"));
 
             bundles.Add(new ScriptBundle("~/bundles/Linq4JavscriptMainUnitTests").Include(
                 "~/Scripts/qunit.js",
                 "~/Scripts/UnitTestFramework.js",
-                "~/Scripts/Linq4JavascriptHelpersUnitTest.js"));
+                "~/Scripts/UnitTestsRegular.js"));
 
             bundles.Add(new StyleBundle("~/Content/css").Include("~/Content/bootstrap.css", "~/Content/site.css"));
 

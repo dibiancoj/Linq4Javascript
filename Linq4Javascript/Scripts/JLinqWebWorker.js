@@ -1,4 +1,3 @@
-/// <reference path="asynctester.ts" />
 /// <reference path="jlinq.ts" />
 self.addEventListener('message', function (e) {
     //let's import the jlinq library
@@ -10,4 +9,4 @@ self.addEventListener('message', function (e) {
     //go build up the results and pass back the array
     self.postMessage(TreeRebuilt.ToArray(), null, null);
 }, false);
-//# sourceMappingURL=AsyncWebWorkerForDebugging.js.map
+//# sourceMappingURL=JLinqWebWorker.js.map
