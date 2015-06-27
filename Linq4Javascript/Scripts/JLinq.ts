@@ -441,43 +441,55 @@ module ToracTechnologies {
                     CanWeUseAsync = IsAsyncAvailable;
                 }
 
+                //web worker to run
+                var WorkerToRun: Worker = null;
+
+                //let's try to build the worker. This will handle IE 10...not well though because we create error's
+                try {
+
+                    //try to build the web worker.
+                    WorkerToRun = Iterator.BuildWebWorker();
+
+                } catch (e) {
+
+                    //flip the flag back
+                    CanWeUseAsync = false;
+                } 
+
                 //is the browser new enough to run web webworkers?
                 if (CanWeUseAsync) {
                     // Yes! Web worker support!
 
-                    //go create the web worker
-                    var workerToRun = Iterator.BuildWebWorker();//new Worker('../Scripts/JLinqWebWorker.js');
-
                     //attach the event handler
-                    workerToRun.addEventListener('message', e => {
+                    WorkerToRun.addEventListener('message', e => {
 
                         //we are all done. go tell the user that the data is done with the callback
                         CallBackWhenQueryIsComplete(e.data);
                         
                         //i'm going to cleanup after we run this call. I don't know how useful it is to keep it listening
-                        workerToRun.terminate();
+                        WorkerToRun.terminate();
 
                         //going to null it out just for good sake
-                        workerToRun = null;
+                        WorkerToRun = null;
 
                     }, false);
 
                     //add the on error event handler
-                    workerToRun.addEventListener("error", e => {
+                    WorkerToRun.addEventListener("error", e => {
 
                         //we are going to grab the error and pass it along, so we can cleanup the web worker
                         OnErrorCallBack(e);
 
                         //i'm going to cleanup after we run this call. I don't know how useful it is to keep it listening
-                        workerToRun.terminate();
+                        WorkerToRun.terminate();
 
                         //going to null it out just for good sake
-                        workerToRun = null;
+                        WorkerToRun = null;
 
                     }, false);
 
                     //we need to go grab all the methods and push them to a string so we can rebuild it in the web worker. ie. Where => convert the Where method the dev passes in.
-                    workerToRun.postMessage(JSON.stringify(Iterator.SerializeAsyncFuncToStringTree(this)));
+                    WorkerToRun.postMessage(JSON.stringify(Iterator.SerializeAsyncFuncToStringTree(this)));
 
                 } else {
                     // No Web Worker support.. just return the data
