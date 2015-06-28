@@ -2084,7 +2084,7 @@ asyncTest('JLinq.OrderBy.Asc.Date.ChainTest.1', function () {
 
     var callBack = (Result: Array<any>) => {
 
-        equal(JSON.stringify(Result[0].toString()), JSON.stringify(new Date('12/1/1980')));
+        equal(JSON.stringify(Result[0]), JSON.stringify(new Date('12/1/1980')));
 
         start();
     }
