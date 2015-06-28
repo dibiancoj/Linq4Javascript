@@ -41,13 +41,6 @@ var ToracTechnologies;
 (function (ToracTechnologies) {
     var JLinq;
     (function (JLinq) {
-        //#region Export Functions
-        //check if the browser supports web workers
-        function AsyncIsAvailable() {
-            return typeof (Worker) !== 'undefined';
-        }
-        JLinq.AsyncIsAvailable = AsyncIsAvailable;
-        //#endregion
         //#region Iterator Class
         //Class is used to throw the methods on a common class that we can inherit from
         var Iterator = (function () {
@@ -312,7 +305,7 @@ var ToracTechnologies;
                 //did they pass it in?
                 if (IsAsyncAvailable == null) {
                     //use the jlinq implementation
-                    CanWeUseAsync = AsyncIsAvailable();
+                    CanWeUseAsync = Iterator.AsyncIsAvailable;
                 }
                 else {
                     //use whatever the user wants (if they want there own logic
@@ -414,6 +407,24 @@ var ToracTechnologies;
                 //go build the worker and return it
                 return new Worker(URL.createObjectURL(this.WebWorkerBlobToCache));
             };
+            //check if the browser supports web workers
+            Iterator.AsyncIsAvailableCheck = function () {
+                //do we have a web worker?
+                if (typeof (Worker) !== 'undefined') {
+                    try {
+                        //try to build the web worker.
+                        Iterator.BuildWebWorker();
+                        //we can build the web worker, return true
+                        return true;
+                    }
+                    catch (e) {
+                        //we aren't able to create the web worker so return false
+                        return false;
+                    }
+                }
+                //fall back to false
+                return false;
+            };
             //builds an async tree from an iterator. Re-builds the entire tree by adding the methods it needs to run the query. (methods don't serialize)
             Iterator.BuildAsyncTree = function (Query) {
                 //flatten the tree
@@ -471,6 +482,8 @@ var ToracTechnologies;
             };
             //we are going to cache the jlinq blob
             Iterator.WebWorkerBlobToCache = null;
+            //go check if async is available
+            Iterator.AsyncIsAvailable = Iterator.AsyncIsAvailableCheck();
             return Iterator;
         })();
         JLinq.Iterator = Iterator;

@@ -39,15 +39,6 @@ module ToracTechnologies {
 
     export module JLinq {
 
-        //#region Export Functions
-
-        //check if the browser supports web workers
-        export function AsyncIsAvailable(): boolean {
-            return typeof (Worker) !== 'undefined';
-        } 
-
-        //#endregion
-
         //#region Iterator Class
 
         //Class is used to throw the methods on a common class that we can inherit from
@@ -66,6 +57,9 @@ module ToracTechnologies {
 
             //we are going to cache the jlinq blob
             private static WebWorkerBlobToCache = null;
+
+            //go check if async is available
+            private static AsyncIsAvailable: boolean = Iterator.AsyncIsAvailableCheck();
 
             //#endregion
 
@@ -426,15 +420,15 @@ module ToracTechnologies {
 
             //materializes the expression to an array in a web worker so it doesn't feeze the ui. if a web worker is not available it will just call the ToArray()
             public ToArrayAsync(CallBackWhenQueryIsComplete: (Result: Array<T>) => void, OnErrorCallBack: (ErrorObject: ErrorEvent) => void, IsAsyncAvailable?: boolean): void {
-
+               
                 //can we use async?
                 var CanWeUseAsync: boolean;
-
+              
                 //did they pass it in?
                 if (IsAsyncAvailable == null) {
 
                     //use the jlinq implementation
-                    CanWeUseAsync = AsyncIsAvailable();
+                    CanWeUseAsync = Iterator.AsyncIsAvailable;
                 } else {
 
                     //use whatever the user wants (if they want there own logic
@@ -444,7 +438,7 @@ module ToracTechnologies {
                 //web worker to run
                 var WorkerToRun: Worker = null;
 
-                //let's try to build the worker. This will handle IE 10...not well though because we create error's
+                //let's try to build the worker. This should already be good. Incase there are any reason's why (even after AsyncIsAvailable tried to do this)...to is a double check
                 try {
 
                     //try to build the web worker.
@@ -542,7 +536,7 @@ module ToracTechnologies {
             //#region Public Static Methods
 
             //builds the web worker without having to declare an external script page
-            public static BuildWebWorker() {
+            public static BuildWebWorker(): Worker {
             
                 //did we already build the web worker?
                 if (Iterator.WebWorkerBlobToCache == null) {
@@ -591,6 +585,33 @@ module ToracTechnologies {
                 //go build the worker and return it
                 return new Worker(URL.createObjectURL(this.WebWorkerBlobToCache));
             }
+
+            //check if the browser supports web workers
+            public static AsyncIsAvailableCheck(): boolean {
+          
+                //do we have a web worker?
+                if (typeof (Worker) !== 'undefined') {
+
+                    //we have a web worker...we need to make sure we can create a blob into a web worker now
+                    //IE 10 has issues with creating a web worker from a blob. So we need to check that and we can create a web worker
+                    try {
+
+                        //try to build the web worker.
+                        Iterator.BuildWebWorker();
+
+                        //we can build the web worker, return true
+                        return true;
+
+                    } catch (e) {
+
+                        //we aren't able to create the web worker so return false
+                        return false;
+                    }
+                }
+        
+                //fall back to false
+                return false;
+            } 
 
             //builds an async tree from an iterator. Re-builds the entire tree by adding the methods it needs to run the query. (methods don't serialize)
             public static BuildAsyncTree<T>(Query: Iterator<T>): Iterator<T> {
