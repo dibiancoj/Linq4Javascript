@@ -18,7 +18,7 @@ function RunQuery() {
     }, errMsg => {
 
             alert(errMsg.message);
-        });
+        }, 'http://' + window.location.host + '/Scripts/JLinq.js');
 }
 
 function DisplayResults(Results: Array<TestData>) {

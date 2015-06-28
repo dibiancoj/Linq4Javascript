@@ -8,7 +8,7 @@ function RunQuery() {
         DisplayResults(result);
     }, function (errMsg) {
         alert(errMsg.message);
-    });
+    }, 'http://' + window.location.host + '/Scripts/JLinq.js');
 }
 function DisplayResults(Results) {
     var html = '<ul>';

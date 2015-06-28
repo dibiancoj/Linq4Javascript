@@ -58,8 +58,8 @@ module ToracTechnologies {
             //we are going to cache the jlinq blob
             private static WebWorkerBlobToCache = null;
 
-            //go check if async is available
-            private static AsyncIsAvailable: boolean = Iterator.AsyncIsAvailableCheck();
+            //go check if async is available (this gets cached on first call to ArrayAsync)
+            private static AsyncIsAvailable: boolean = null;
 
             //#endregion
 
@@ -419,14 +419,21 @@ module ToracTechnologies {
             }
 
             //materializes the expression to an array in a web worker so it doesn't feeze the ui. if a web worker is not available it will just call the ToArray()
-            public ToArrayAsync(CallBackWhenQueryIsComplete: (Result: Array<T>) => void, OnErrorCallBack: (ErrorObject: ErrorEvent) => void, IsAsyncAvailable?: boolean): void {
+            public ToArrayAsync(CallBackWhenQueryIsComplete: (Result: Array<T>) => void, OnErrorCallBack: (ErrorObject: ErrorEvent) => void, JLinqJsUrlPath: string, IsAsyncAvailable?: boolean): void {
                
                 //can we use async?
                 var CanWeUseAsync: boolean;
+
+                //did we cache the AsyncIsAvailable yet?
+                if (Iterator.AsyncIsAvailable == null) {
+
+                    //we need to go grab the value and cache it
+                    Iterator.AsyncIsAvailable = Iterator.AsyncIsAvailableCheck(JLinqJsUrlPath);
+                }
               
                 //did they pass it in?
                 if (IsAsyncAvailable == null) {
-
+      
                     //use the jlinq implementation
                     CanWeUseAsync = Iterator.AsyncIsAvailable;
                 } else {
@@ -442,7 +449,7 @@ module ToracTechnologies {
                 try {
 
                     //try to build the web worker.
-                    WorkerToRun = Iterator.BuildWebWorker();
+                    WorkerToRun = Iterator.BuildWebWorker(JLinqJsUrlPath);
 
                 } catch (e) {
 
@@ -536,38 +543,18 @@ module ToracTechnologies {
             //#region Public Static Methods
 
             //builds the web worker without having to declare an external script page
-            public static BuildWebWorker(): Worker {
+            public static BuildWebWorker(JLinqJsUrlPath: string): Worker {
+
+                //we need to pass in the path incase they use bundling. We have no way of saying JLinq is in this bundle (because the names may not be JLinq.ts)
             
                 //did we already build the web worker?
-                if (Iterator.WebWorkerBlobToCache == null) {
-
-                    //var scripts
-                    var ScriptTags = document.getElementsByTagName("script");
-
-                    //jlinq path
-                    var JLinqPath = '';
-
-                    //(this part is a little hacky..and i'm not sure this will work always...if your using amd or something fancy. We go with it and see how it turns out)
-
-                    //loop through it until we find JLinq
-                    for (var i = 0; i < ScriptTags.length; i++) {
-
-                        //we basically need to find the jlinq file so we can grab the full path
-                        if (ScriptTags[i].src != null && ScriptTags[i].src.toLowerCase().indexOf('jlinq.js') > -1) {
-
-                            //set the path and exit the for loop
-                            JLinqPath = ScriptTags[i].src;
-
-                            //exit the for loop
-                            break;
-                        }
-                    }
+                if (Iterator.WebWorkerBlobToCache == null) { 
 
                     //let's build the function text now
                     var FunctionScript = "self.addEventListener('message', function(e) { \n" +
 
                     //let's import the jlinq library
-                        " importScripts('" + JLinqPath + "') \n" +
+                        " importScripts('" + JLinqJsUrlPath + "') \n" +
 
                     //let's go parse the json which is the query
                         " var Query = JSON.parse(e.data); \n" +
@@ -587,7 +574,7 @@ module ToracTechnologies {
             }
 
             //check if the browser supports web workers
-            public static AsyncIsAvailableCheck(): boolean {
+            public static AsyncIsAvailableCheck(JLinqJsUrlPath: string): boolean {
           
                 //do we have a web worker?
                 if (typeof (Worker) !== 'undefined') {
@@ -597,7 +584,7 @@ module ToracTechnologies {
                     try {
 
                         //try to build the web worker.
-                        Iterator.BuildWebWorker();
+                        Iterator.BuildWebWorker(JLinqJsUrlPath);
 
                         //we can build the web worker, return true
                         return true;

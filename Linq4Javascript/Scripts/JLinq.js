@@ -299,9 +299,14 @@ var ToracTechnologies;
                 return ArrayToBeReturned;
             };
             //materializes the expression to an array in a web worker so it doesn't feeze the ui. if a web worker is not available it will just call the ToArray()
-            Iterator.prototype.ToArrayAsync = function (CallBackWhenQueryIsComplete, OnErrorCallBack, IsAsyncAvailable) {
+            Iterator.prototype.ToArrayAsync = function (CallBackWhenQueryIsComplete, OnErrorCallBack, JLinqJsUrlPath, IsAsyncAvailable) {
                 //can we use async?
                 var CanWeUseAsync;
+                //did we cache the AsyncIsAvailable yet?
+                if (Iterator.AsyncIsAvailable == null) {
+                    //we need to go grab the value and cache it
+                    Iterator.AsyncIsAvailable = Iterator.AsyncIsAvailableCheck(JLinqJsUrlPath);
+                }
                 //did they pass it in?
                 if (IsAsyncAvailable == null) {
                     //use the jlinq implementation
@@ -315,7 +320,7 @@ var ToracTechnologies;
                 var WorkerToRun = null;
                 try {
                     //try to build the web worker.
-                    WorkerToRun = Iterator.BuildWebWorker();
+                    WorkerToRun = Iterator.BuildWebWorker(JLinqJsUrlPath);
                 }
                 catch (e) {
                     //flip the flag back
@@ -384,23 +389,12 @@ var ToracTechnologies;
             //#endregion
             //#region Public Static Methods
             //builds the web worker without having to declare an external script page
-            Iterator.BuildWebWorker = function () {
+            Iterator.BuildWebWorker = function (JLinqJsUrlPath) {
+                //we need to pass in the path incase they use bundling. We have no way of saying JLinq is in this bundle (because the names may not be JLinq.ts)
                 //did we already build the web worker?
                 if (Iterator.WebWorkerBlobToCache == null) {
-                    //var scripts
-                    var ScriptTags = document.getElementsByTagName("script");
-                    //jlinq path
-                    var JLinqPath = '';
-                    for (var i = 0; i < ScriptTags.length; i++) {
-                        //we basically need to find the jlinq file so we can grab the full path
-                        if (ScriptTags[i].src != null && ScriptTags[i].src.toLowerCase().indexOf('jlinq.js') > -1) {
-                            //set the path and exit the for loop
-                            JLinqPath = ScriptTags[i].src;
-                            break;
-                        }
-                    }
                     //let's build the function text now
-                    var FunctionScript = "self.addEventListener('message', function(e) { \n" + " importScripts('" + JLinqPath + "') \n" + " var Query = JSON.parse(e.data); \n" + " var TreeRebuilt = ToracTechnologies.JLinq.RebuildTree(Query); \n" + " self.postMessage(TreeRebuilt.ToArray(), null, null); }, false);";
+                    var FunctionScript = "self.addEventListener('message', function(e) { \n" + " importScripts('" + JLinqJsUrlPath + "') \n" + " var Query = JSON.parse(e.data); \n" + " var TreeRebuilt = ToracTechnologies.JLinq.RebuildTree(Query); \n" + " self.postMessage(TreeRebuilt.ToArray(), null, null); }, false);";
                     //go set the blob...
                     this.WebWorkerBlobToCache = new Blob([FunctionScript]);
                 }
@@ -408,12 +402,12 @@ var ToracTechnologies;
                 return new Worker(URL.createObjectURL(this.WebWorkerBlobToCache));
             };
             //check if the browser supports web workers
-            Iterator.AsyncIsAvailableCheck = function () {
+            Iterator.AsyncIsAvailableCheck = function (JLinqJsUrlPath) {
                 //do we have a web worker?
                 if (typeof (Worker) !== 'undefined') {
                     try {
                         //try to build the web worker.
-                        Iterator.BuildWebWorker();
+                        Iterator.BuildWebWorker(JLinqJsUrlPath);
                         //we can build the web worker, return true
                         return true;
                     }
@@ -482,8 +476,8 @@ var ToracTechnologies;
             };
             //we are going to cache the jlinq blob
             Iterator.WebWorkerBlobToCache = null;
-            //go check if async is available
-            Iterator.AsyncIsAvailable = Iterator.AsyncIsAvailableCheck();
+            //go check if async is available (this gets cached on first call to ArrayAsync)
+            Iterator.AsyncIsAvailable = null;
             return Iterator;
         })();
         JLinq.Iterator = Iterator;
