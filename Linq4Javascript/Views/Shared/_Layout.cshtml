@@ -7,6 +7,11 @@
     @Styles.Render("~/Content/css")
     @RenderSection("css", required: false)
     @Scripts.Render("~/bundles/modernizr")
+
+    <script type="text/javascript">
+        //this sets the jlinq url path for the bundles...this way we can use it in the rest of our apps.
+        var JLinqUrlPath = window.location.protocol + '//' + window.location.host + '@Scripts.Url("~/bundles/Linq4Javscript")';
+    </script>
 </head>
 <body>
     <div class="navbar navbar-inverse navbar-fixed-top">
