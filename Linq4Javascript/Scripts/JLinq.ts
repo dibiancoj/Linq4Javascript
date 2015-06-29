@@ -32,7 +32,7 @@
                                             //do something with the result array
                                       }, function(errorMessageObject){
                                             //do something if there is an error. Web worker produces silent error without handler
-                                      });
+                                      }, 'http://MyWebSite/Scripts/JLinq.js);
 */
 
 module ToracTechnologies {
