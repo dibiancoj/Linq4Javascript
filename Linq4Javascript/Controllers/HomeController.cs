@@ -16,7 +16,13 @@ namespace Linq4Javascript.Controllers
         }
 
         [HttpGet]
-        public ActionResult PerformanceUnitTests()
+        public ActionResult AsyncUnitTests()
+        {
+            return View();
+        }
+
+        [HttpGet]
+        public ActionResult AsyncWorkingEnvironment()
         {
             return View();
         }

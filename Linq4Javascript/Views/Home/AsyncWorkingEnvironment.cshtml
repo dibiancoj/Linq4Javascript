@@ -1,0 +1,33 @@
+﻿@{
+    ViewBag.Title = "Performance Unit Tests";
+}
+@section css{
+    @*<link href="~/Content/qunit.css" rel="stylesheet">*@
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/AsyncTester")
+    @*<script src="~/Scripts/AsyncWebWorkerForDebugging.js"></script>*@
+}
+
+
+<div id="Clock" style="margin-top: 25px;"></div>
+
+<hr />
+
+<button id="RunQuery" value="RunQuery" onclick="RunQuery()">Run Query</button>
+
+<hr />
+
+<div id="Results">
+</div>
+
+<script type="text/javascript">
+
+    setInterval(function () {
+        document.getElementById('Clock').innerHTML = new Date();
+    }, 1000);
+
+</script>
+
+

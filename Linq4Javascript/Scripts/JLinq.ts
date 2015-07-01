@@ -1,7 +1,7 @@
 //********************************Torac Technologies***************************************
 //Description: Linq Style Methods In Javascript To Manipulate Collections                 *
 //Release Date: 10/17/2013                                                                *
-//Current Version: 2.5.4                                                                  *
+//Current Version: 3.0.0                                                                  *
 //Release History In JLinqChangeLog.txt                                                   *
 //*****************************************************************************************
 
@@ -24,6 +24,17 @@
         No need to ResetQuery on this because it automatically does it
 */
 
+/* Async Sample:
+    var query = UnitTestFramework._Array.Where(x => x.Id == 1 || x.Id == 2);
+
+    var runQuery = query.ToArrayAsync(function(result)
+                                      {
+                                            //do something with the result array
+                                      }, function(errorMessageObject){
+                                            //do something if there is an error. Web worker produces silent error without handler
+                                      }, 'http://MyWebSite/Scripts/JLinq.js);
+*/
+
 module ToracTechnologies {
 
     export module JLinq {
@@ -32,6 +43,25 @@ module ToracTechnologies {
 
         //Class is used to throw the methods on a common class that we can inherit from
         export class Iterator<T> {
+
+            //#region Properties
+
+            //this is an abstract proeprty
+            public TypeOfObject: string;
+
+            //this is an abstract property
+            public PreviousExpression: IChainable<any, any>;
+
+            //holds the methods we need to serialize when we run async
+            public AsyncSerialized: Array<KeyValuePair<string, string>>;
+
+            //we are going to cache the jlinq blob
+            private static WebWorkerBlobToCache = null;
+
+            //go check if async is available (this gets cached on first call to ArrayAsync)
+            private static AsyncIsAvailable: boolean = null;
+
+            //#endregion
 
             //#region Linq Functionality Methods
 
@@ -44,7 +74,7 @@ module ToracTechnologies {
             public First(WhereClauseSelector?: (ItemToTest: T) => boolean): T {
 
                 //grab the result
-                var ResultOfQuery: T = new FirstOrDefaultIterator<T>(this, WhereClauseSelector).Next().CurrentItem;
+                var ResultOfQuery: T = new FirstOrDefaultIterator<T>(this, 'FirstIterator', WhereClauseSelector).Next().CurrentItem;
 
                 //if it's null then throw an error
                 if (ResultOfQuery == null) {
@@ -62,7 +92,7 @@ module ToracTechnologies {
             public FirstOrDefault(WhereClauseSelector?: (ItemToTest: T) => boolean): T {
 
                 //grab the result
-                var ResultOfQuery: T = new FirstOrDefaultIterator<T>(this, WhereClauseSelector).Next().CurrentItem;
+                var ResultOfQuery: T = new FirstOrDefaultIterator<T>(this, 'FirstOrDefaultIterator', WhereClauseSelector).Next().CurrentItem;
 
                 //reset the iterator
                 this.ResetQuery();
@@ -75,7 +105,7 @@ module ToracTechnologies {
             public Single(WhereClauseSelector?: (ItemToTest: T) => boolean): T {
 
                 //grab the result
-                var ResultOfQuery: T = new SingleOrDefaultIterator<T>(this, WhereClauseSelector).Next().CurrentItem;
+                var ResultOfQuery: T = new SingleOrDefaultIterator<T>(this, 'SingleIterator', WhereClauseSelector).Next().CurrentItem;
 
                 //if it's null then throw an error
                 if (ResultOfQuery == null) {
@@ -93,7 +123,7 @@ module ToracTechnologies {
             public SingleOrDefault(WhereClauseSelector?: (ItemToTest: T) => boolean): T {
 
                 //grab the result
-                var ResultOfQuery: T = new SingleOrDefaultIterator<T>(this, WhereClauseSelector).Next().CurrentItem;
+                var ResultOfQuery: T = new SingleOrDefaultIterator<T>(this, 'SingleOrDefaultIterator', WhereClauseSelector).Next().CurrentItem;
 
                 //reset the iterator
                 this.ResetQuery();
@@ -200,25 +230,25 @@ module ToracTechnologies {
             //go setup the iterator to concat a iterator and another query
             public ConcatQuery(QueryToConcat: Iterator<T>): ConcatIterator<T> {
                 //just return the concat iterator
-                return new ConcatIterator(this, QueryToConcat);
+                return new ConcatIterator(this, 'ConcatQueryIterator', QueryToConcat);
             }
 
             //go setup the iterator to concat a iterator and an array
             public Concat(ArrayToCombine: Array<T>): ConcatIterator<T> {
                 //just return the concat iterator
-                return new ConcatIterator(this, new Queryable(ArrayToCombine));
+                return new ConcatIterator(this, 'ConcatArrayIterator', new Queryable(ArrayToCombine));
             }
 
             //go setup the iterator to union a iterator and another query
             public UnionQuery(QueryToUnion: Iterator<T>): UnionIterator<T> {
                 //just return the union iterator
-                return new UnionIterator(this, QueryToUnion);
+                return new UnionIterator(this, 'UnionQueryIterator', QueryToUnion);
             }
 
             //go setup the iterator to union a iterator and an array
             public Union(ArrayToCombine: Array<T>): UnionIterator<T> {
                 //just return the union iterator
-                return new UnionIterator(this, new Queryable(ArrayToCombine));
+                return new UnionIterator(this, 'UnionArrayIterator', new Queryable(ArrayToCombine));
             }
 
             //counts the number of items that match the predicate
@@ -341,7 +371,7 @@ module ToracTechnologies {
                 }
 
                 //go skip x amount of pages and only take however amount of records you want on a page. 
-                return new SkipIterator<T>(this, ((CurrentPageNumber - 1) * HowManyRecordsPerPage)).Take(HowManyRecordsPerPage);
+                return new SkipIterator<T>(this,((CurrentPageNumber - 1) * HowManyRecordsPerPage)).Take(HowManyRecordsPerPage);
             }
 
             //order by from data source
@@ -388,16 +418,90 @@ module ToracTechnologies {
                 return ArrayToBeReturned;
             }
 
+            //materializes the expression to an array in a web worker so it doesn't feeze the ui. if a web worker is not available it will just call the ToArray()
+            public ToArrayAsync(CallBackWhenQueryIsComplete: (Result: Array<T>) => void, OnErrorCallBack: (ErrorObject: ErrorEvent) => void, JLinqJsUrlPath: string, IsAsyncAvailable?: boolean): void {
+               
+                //can we use async?
+                var CanWeUseAsync: boolean;
+
+                //did we cache the AsyncIsAvailable yet?
+                if (Iterator.AsyncIsAvailable == null) {
+
+                    //we need to go grab the value and cache it
+                    Iterator.AsyncIsAvailable = Iterator.AsyncIsAvailableCheck(JLinqJsUrlPath);
+                }
+              
+                //did they pass it in?
+                if (IsAsyncAvailable == null) {
+      
+                    //use the jlinq implementation
+                    CanWeUseAsync = Iterator.AsyncIsAvailable;
+                } else {
+
+                    //use whatever the user wants (if they want there own logic
+                    CanWeUseAsync = IsAsyncAvailable;
+                }
+
+                //web worker to run
+                var WorkerToRun: Worker = null;
+
+                //let's try to build the worker. This should already be good. Incase there are any reason's why (even after AsyncIsAvailable tried to do this)...to is a double check
+                try {
+
+                    //try to build the web worker.
+                    WorkerToRun = Iterator.BuildWebWorker(JLinqJsUrlPath);
+
+                } catch (e) {
+
+                    //flip the flag back
+                    CanWeUseAsync = false;
+                } 
+
+                //is the browser new enough to run web webworkers?
+                if (CanWeUseAsync) {
+                    // Yes! Web worker support!
+
+                    //attach the event handler
+                    WorkerToRun.addEventListener('message', e => {
+
+                        //we are all done. go tell the user that the data is done with the callback
+                        CallBackWhenQueryIsComplete(e.data);
+                        
+                        //i'm going to cleanup after we run this call. I don't know how useful it is to keep it listening
+                        WorkerToRun.terminate();
+
+                        //going to null it out just for good sake
+                        WorkerToRun = null;
+
+                    }, false);
+
+                    //add the on error event handler
+                    WorkerToRun.addEventListener("error", e => {
+
+                        //we are going to grab the error and pass it along, so we can cleanup the web worker
+                        OnErrorCallBack(e);
+
+                        //i'm going to cleanup after we run this call. I don't know how useful it is to keep it listening
+                        WorkerToRun.terminate();
+
+                        //going to null it out just for good sake
+                        WorkerToRun = null;
+
+                    }, false);
+
+                    //we need to go grab all the methods and push them to a string so we can rebuild it in the web worker. ie. Where => convert the Where method the dev passes in.
+                    WorkerToRun.postMessage(JSON.stringify(Iterator.SerializeAsyncFuncToStringTree(this)));
+
+                } else {
+                    // No Web Worker support.. just return the data
+                    CallBackWhenQueryIsComplete(this.ToArray());
+                }
+            }
+
             //this is an abstract method
             public Next(): IteratorResult<T> {
                 throw new Error('This method is abstract');
             }
-
-            //this is an abstract proeprty
-            public TypeOfObject: string;
-
-            //this is an abstract property
-            public PreviousExpression: IChainable<any, any>;
 
             //this is an abstract method (this should be considered private)
             public ResetIterator() {
@@ -414,7 +518,107 @@ module ToracTechnologies {
 
             //#endregion
 
+            //#region Public Instance Methods
+
+            //should be treated as an abstract method
+            public AsyncSerializedFunc(): Array<KeyValuePair<string, string>> {
+                throw new Error('This method is abstract');
+            }
+
+            //serializes a method to a string. So pass in x => x.Id;...will return the function in a string (serialized function)
+            public SerializeMethod(MethodToSerialize: any) {
+
+                //if we don't have any methods, then just return a blank string
+                if (MethodToSerialize == null) {
+                    return '';
+                } else {
+
+                    //we have a method, pusing toString() will return the string representation of the method
+                    return MethodToSerialize.toString();
+                }
+            }
+
+            //#endregion
+
             //#region Public Static Methods
+
+            //builds the web worker without having to declare an external script page
+            public static BuildWebWorker(JLinqJsUrlPath: string): Worker {
+
+                //we need to pass in the path incase they use bundling. We have no way of saying JLinq is in this bundle (because the names may not be JLinq.ts)
+            
+                //did we already build the web worker?
+                if (Iterator.WebWorkerBlobToCache == null) { 
+
+                    //let's build the function text now
+                    var FunctionScript = "self.addEventListener('message', function(e) { \n" +
+
+                    //let's import the jlinq library
+                        " importScripts('" + JLinqJsUrlPath + "') \n" +
+
+                    //let's go parse the json which is the query
+                        " var Query = JSON.parse(e.data); \n" +
+
+                    //let's rebuild the tree
+                        " var TreeRebuilt = ToracTechnologies.JLinq.RebuildTree(Query); \n" +
+
+                    //go build up the results and pass back the array
+                        " self.postMessage(TreeRebuilt.ToArray(), null, null); }, false);";
+
+                    //go set the blob...
+                    this.WebWorkerBlobToCache = new Blob([FunctionScript]);
+                }
+
+                //go build the worker and return it
+                return new Worker(URL.createObjectURL(this.WebWorkerBlobToCache));
+            }
+
+            //check if the browser supports web workers
+            public static AsyncIsAvailableCheck(JLinqJsUrlPath: string): boolean {
+          
+                //do we have a web worker?
+                if (typeof (Worker) !== 'undefined') {
+
+                    //we have a web worker...we need to make sure we can create a blob into a web worker now
+                    //IE 10 has issues with creating a web worker from a blob. So we need to check that and we can create a web worker
+                    try {
+
+                        //try to build the web worker.
+                        Iterator.BuildWebWorker(JLinqJsUrlPath);
+
+                        //we can build the web worker, return true
+                        return true;
+
+                    } catch (e) {
+
+                        //we aren't able to create the web worker so return false
+                        return false;
+                    }
+                }
+        
+                //fall back to false
+                return false;
+            } 
+
+            //builds an async tree from an iterator. Re-builds the entire tree by adding the methods it needs to run the query. (methods don't serialize)
+            public static BuildAsyncTree<T>(Query: Iterator<T>): Iterator<T> {
+    
+                //flatten the tree
+                var FlatTree = Iterator.ChainableTreeWalker(Query);
+
+                //loop through the tree
+                for (var i = 0, len = FlatTree.length; i < len; i++) {
+                    
+                    //grab the current item
+                    var CurrentLevelOfTree = FlatTree[i];
+
+                    //set the serialized info
+                    CurrentLevelOfTree.AsyncSerialized = CurrentLevelOfTree.AsyncSerializedFunc();
+                }
+
+                //we have a built up query with serialized methods, go return it
+                return Query;
+            }
 
             //pushes the query chain to an array
             public static ChainableTreeWalker<T>(Query: Iterator<T>): Array<IChainable<any, any>> {
@@ -447,6 +651,36 @@ module ToracTechnologies {
 
                 //return the array now
                 return IChainablesToReturn;
+            }
+
+            //serialize the func 
+            public static SerializeAsyncFuncToStringTree<T>(Query: Iterator<T>): Iterator<T> {
+       
+                //flatten the tree
+                var FlatTree = Iterator.ChainableTreeWalker(Query);
+
+                //loop through the tree
+                for (var i = 0, len = FlatTree.length; i < len; i++) {
+                    
+                    //grab the current item
+                    var CurrentLevelOfTree = FlatTree[i];
+
+                    //set the serialized info
+                    CurrentLevelOfTree.AsyncSerialized = CurrentLevelOfTree.AsyncSerializedFunc();
+                }
+
+                //we have a built up query with serialized methods, go return it
+                return Query;
+            }
+
+            //make a function from a string
+            public static StringToCompiledMethod(MethodCode: string) {
+
+                if (MethodCode == null || MethodCode.length === 0) {
+                    return null;
+                }
+
+                return eval("(" + MethodCode + ")");
             }
 
             //#endregion
@@ -501,6 +735,10 @@ module ToracTechnologies {
             TypeOfObject: string;
             PreviousExpression: IChainable<any, T>;
             ResetIterator();
+            AsyncSerializedFunc(): Array<KeyValuePair<string, string>>;
+             
+            //holds the methods we need to serialize when we run async
+            AsyncSerialized: Array<KeyValuePair<string, string>>;
         }
 
         //used as a return object in the GroupBy Method
@@ -759,7 +997,7 @@ module ToracTechnologies {
             private CollectionLength: number;
 
             //holds the base collection source which we are iterating over
-            private CollectionSource: Array<T>;
+            public CollectionSource: Array<T>;
 
             //#endregion
 
@@ -784,6 +1022,10 @@ module ToracTechnologies {
                     //grab the next item in the collection and increment the index
                     return new IteratorResult(this.CollectionSource[this.Index++], IteratorStatus.Running);
                 }
+            }
+
+            public AsyncSerializedFunc(): Array<KeyValuePair<string, string>> {
+                return null;
             }
 
             //#endregion
@@ -850,6 +1092,10 @@ module ToracTechnologies {
                 }
             }
 
+            public AsyncSerializedFunc(): Array<KeyValuePair<string, string>> {
+                return [new KeyValuePair('WhereClausePredicate', super.SerializeMethod(this.WhereClausePredicate))];
+            }
+
             //#endregion
 
         }
@@ -860,7 +1106,7 @@ module ToracTechnologies {
 
             //#region Constructor
 
-            constructor(PreviousLambdaExpression: IChainable<T, T>, WherePredicate?: (ItemToTest: T) => boolean) {
+            constructor(PreviousLambdaExpression: IChainable<T, T>, WhichTypeOfObject: string, WherePredicate?: (ItemToTest: T) => boolean) {
 
                 //set the queryable source
                 this.PreviousExpression = PreviousLambdaExpression;
@@ -872,7 +1118,7 @@ module ToracTechnologies {
                 this.HasNullWhereClause = this.WhereClausePredicate == null;
 
                 //throw this into a variable so we can debug this thing when we go from CollectionSource To CollectionSource and check the type
-                this.TypeOfObject = "FirstOrDefaultIterator";
+                this.TypeOfObject = WhichTypeOfObject;
 
                 //because we inherit from Iterator we need to call the base class
                 super();
@@ -914,6 +1160,10 @@ module ToracTechnologies {
                 }
             }
 
+            public AsyncSerializedFunc(): Array<KeyValuePair<string, string>> {
+                return [new KeyValuePair('WhereClausePredicate', super.SerializeMethod(this.WhereClausePredicate))];
+            }
+
             //#endregion
 
         }
@@ -924,7 +1174,7 @@ module ToracTechnologies {
 
             //#region Constructor
 
-            constructor(PreviousLambdaExpression: IChainable<T, T>, WherePredicate?: (ItemToTest: T) => boolean) {
+            constructor(PreviousLambdaExpression: IChainable<T, T>, WhichTypeOfObject: string, WherePredicate?: (ItemToTest: T) => boolean) {
 
                 //set the queryable source
                 this.PreviousExpression = PreviousLambdaExpression;
@@ -936,7 +1186,7 @@ module ToracTechnologies {
                 this.HasNullWhereClause = this.WhereClausePredicate == null;
 
                 //throw this into a variable so we can debug this thing when we go from CollectionSource To CollectionSource and check the type
-                this.TypeOfObject = "SingleOrDefaultIterator";
+                this.TypeOfObject = WhichTypeOfObject;
 
                 //because we inherit from Iterator we need to call the base class
                 super();
@@ -993,6 +1243,10 @@ module ToracTechnologies {
 
                 //we are done iterating through the previous expression, just return the result
                 return new IteratorResult(CurrentSelectedItem, IteratorStatus.Completed);
+            }
+
+            public AsyncSerializedFunc(): Array<KeyValuePair<string, string>> {
+                return [new KeyValuePair('WhereClausePredicate', super.SerializeMethod(this.WhereClausePredicate))];
             }
 
             //#endregion
@@ -1054,6 +1308,10 @@ module ToracTechnologies {
                     //now create this guy and return it
                     return new IteratorResult(this.SelectPredicate(NextItem.CurrentItem), IteratorStatus.Running);
                 }
+            }
+
+            public AsyncSerializedFunc(): Array<KeyValuePair<string, string>> {
+                return [new KeyValuePair('SelectPredicate', super.SerializeMethod(this.SelectPredicate))];
             }
 
             //#endregion
@@ -1167,6 +1425,10 @@ module ToracTechnologies {
                 }
             }
 
+            public AsyncSerializedFunc(): Array<KeyValuePair<string, string>> {
+                return [new KeyValuePair('CollectionPropertySelector', super.SerializeMethod(this.CollectionPropertySelector))];
+            }
+
             //#endregion
 
         }
@@ -1242,6 +1504,10 @@ module ToracTechnologies {
                 }
             }
 
+            public AsyncSerializedFunc(): Array<KeyValuePair<string, string>> {
+                return [new KeyValuePair('PropertySelector', super.SerializeMethod(this.PropertySelector))];
+            }
+
             //#endregion
 
         }
@@ -1274,7 +1540,7 @@ module ToracTechnologies {
 
             //#region Properties
 
-            private HowManyToTake: number;
+            public HowManyToTake: number;
             private HowManyHaveWeReturned: number;
 
             //#endregion
@@ -1318,6 +1584,10 @@ module ToracTechnologies {
                         return NextItem;
                     }
                 }
+            }
+
+            public AsyncSerializedFunc(): Array<KeyValuePair<string, string>> {
+                return null;
             }
 
             private WeReturnedWhatWeWantedAlready(): boolean {
@@ -1385,6 +1655,10 @@ module ToracTechnologies {
                 }
             }
 
+            public AsyncSerializedFunc(): Array<KeyValuePair<string, string>> {
+                return [new KeyValuePair('PredicateToTakeWhile', super.SerializeMethod(this.PredicateToTakeWhile))];
+            }
+
             //#endregion
 
         }
@@ -1417,7 +1691,7 @@ module ToracTechnologies {
 
             //#region Properties
 
-            private HowManyToSkip: number;
+            public HowManyToSkip: number;
             private HowManyHaveWeSkipped: number;
 
             //#endregion
@@ -1456,6 +1730,10 @@ module ToracTechnologies {
                         return NextItem;
                     }
                 }
+            }
+
+            public AsyncSerializedFunc(): Array<KeyValuePair<string, string>> {
+                return null;
             }
 
             //#endregion
@@ -1532,6 +1810,10 @@ module ToracTechnologies {
                 }
             }
 
+            public AsyncSerializedFunc(): Array<KeyValuePair<string, string>> {
+                return [new KeyValuePair('PredicateSkipUntil', super.SerializeMethod(this.PredicateSkipUntil))];
+            }
+
             //#endregion
 
         }
@@ -1605,6 +1887,10 @@ module ToracTechnologies {
                 }
             }
 
+            public AsyncSerializedFunc(): Array<KeyValuePair<string, string>> {
+                return [new KeyValuePair('PredicateAggregate', super.SerializeMethod(this.PredicateAggregate))];
+            }
+
             //#endregion
 
         }
@@ -1669,6 +1955,10 @@ module ToracTechnologies {
                         return new IteratorResult(false, IteratorStatus.Completed);
                     }
                 }
+            }
+
+            public AsyncSerializedFunc(): Array<KeyValuePair<string, string>> {
+                return [new KeyValuePair('WhereClausePredicate', super.SerializeMethod(this.WhereClausePredicate))];
             }
 
             //#endregion
@@ -1738,6 +2028,10 @@ module ToracTechnologies {
                         return new IteratorResult(true, IteratorStatus.Completed);
                     }
                 }
+            }
+
+            public AsyncSerializedFunc(): Array<KeyValuePair<string, string>> {
+                return [new KeyValuePair('WhereClausePredicate', super.SerializeMethod(this.WhereClausePredicate))];
             }
 
             //#endregion
@@ -1813,6 +2107,10 @@ module ToracTechnologies {
                 }
             }
 
+            public AsyncSerializedFunc(): Array<KeyValuePair<string, string>> {
+                return [new KeyValuePair('WhereClausePredicate', super.SerializeMethod(this.WhereClausePredicate))];
+            }
+
             //#endregion
 
         }
@@ -1823,7 +2121,7 @@ module ToracTechnologies {
 
             //#region Constructor
 
-            constructor(PreviousLambdaExpression: IChainable<T, T>, QueryToConcat: Iterator<T>) {
+            constructor(PreviousLambdaExpression: IChainable<T, T>, WhichTypeOfObject: string, QueryToConcat: Iterator<T>) {
 
                 //set the queryable source
                 this.PreviousExpression = PreviousLambdaExpression;
@@ -1832,7 +2130,7 @@ module ToracTechnologies {
                 this.ConcatThisQuery = QueryToConcat;
 
                 //throw this into a variable so we can debug this thing when we go from CollectionSource To CollectionSource and check the type
-                this.TypeOfObject = "ConcatIterator";
+                this.TypeOfObject = WhichTypeOfObject;
 
                 //because we inherit from Iterator we need to call the base class
                 super();
@@ -1842,7 +2140,7 @@ module ToracTechnologies {
 
             //#region Properties
 
-            private ConcatThisQuery: Iterator<T>;
+            public ConcatThisQuery: Iterator<T>;
 
             //#endregion
 
@@ -1881,6 +2179,18 @@ module ToracTechnologies {
                 }
             }
 
+            public AsyncSerializedFunc(): Array<KeyValuePair<string, string>> {
+
+                //if we have a query, then we need to serialize all the parameters in the tree
+                if (this.TypeOfObject == 'ConcatQueryIterator') {
+
+                    //we dont have any parameters to serialize, but the query needs to be recursed and walked through to serialize the functions
+                    Iterator.SerializeAsyncFuncToStringTree(this.ConcatThisQuery);
+                }
+
+                return null;
+            }
+
             //#endregion
 
         }
@@ -1891,7 +2201,7 @@ module ToracTechnologies {
 
             //#region Constructor
 
-            constructor(PreviousLambdaExpression: IChainable<T, T>, QueryToUnion: Iterator<T>) {
+            constructor(PreviousLambdaExpression: IChainable<T, T>, WhichTypeOfObject: string, QueryToUnion: Iterator<T>) {
 
                 //set the queryable source
                 this.PreviousExpression = PreviousLambdaExpression;
@@ -1900,7 +2210,7 @@ module ToracTechnologies {
                 this.UnionThisQuery = QueryToUnion;
 
                 //throw this into a variable so we can debug this thing when we go from CollectionSource To CollectionSource and check the type
-                this.TypeOfObject = "UnionIterator";
+                this.TypeOfObject = WhichTypeOfObject;
 
                 //create a new dictionary
                 this.HashSetStore = new HashSet<T>();
@@ -1913,7 +2223,7 @@ module ToracTechnologies {
 
             //#region Properties
 
-            private UnionThisQuery: Iterator<T>;
+            public UnionThisQuery: Iterator<T>;
             private HashSetStore: IHashSet<T>;
 
             //#endregion
@@ -1968,6 +2278,18 @@ module ToracTechnologies {
                         }
                     }
                 }
+            }
+
+            public AsyncSerializedFunc(): Array<KeyValuePair<string, string>> {
+
+                //if we have a query, then we need to serialize all the parameters in the tree
+                if (this.TypeOfObject == 'UnionQueryIterator') {
+
+                    //we dont have any parameters to serialize, but the query needs to be recursed and walked through to serialize the functions
+                    Iterator.SerializeAsyncFuncToStringTree(this.UnionThisQuery);
+                }
+
+                return null;
             }
 
             //#endregion
@@ -2041,6 +2363,10 @@ module ToracTechnologies {
                 }
             }
 
+            public AsyncSerializedFunc(): Array<KeyValuePair<string, string>> {
+                return [new KeyValuePair('WhereClausePredicate', super.SerializeMethod(this.WhereClausePredicate))];
+            }
+
             //#endregion
 
         }
@@ -2105,6 +2431,10 @@ module ToracTechnologies {
                         this.CurrentLowestNumber = NextItem.CurrentItem;
                     }
                 }
+            }
+
+            public AsyncSerializedFunc(): Array<KeyValuePair<string, string>> {
+                return null;
             }
 
             //#endregion
@@ -2173,6 +2503,10 @@ module ToracTechnologies {
                 }
             }
 
+            public AsyncSerializedFunc(): Array<KeyValuePair<string, string>> {
+                return null;
+            }
+
             //#endregion
 
         }
@@ -2237,6 +2571,10 @@ module ToracTechnologies {
                         this.CurrentSumTally += NextItem.CurrentItem;
                     }
                 }
+            }
+
+            public AsyncSerializedFunc(): Array<KeyValuePair<string, string>> {
+                return null;
             }
 
             //#endregion
@@ -2310,6 +2648,10 @@ module ToracTechnologies {
                         this.CurrentItemCountTally++;
                     }
                 }
+            }
+
+            public AsyncSerializedFunc(): Array<KeyValuePair<string, string>> {
+                return null;
             }
 
             //#endregion
@@ -2393,6 +2735,10 @@ module ToracTechnologies {
                 }
             }
 
+            public AsyncSerializedFunc(): Array<KeyValuePair<string, string>> {
+                return [new KeyValuePair('GroupBySelector', super.SerializeMethod(this.GroupBySelector))];
+            }
+
             //#endregion
 
         }
@@ -2431,7 +2777,7 @@ module ToracTechnologies {
 
             //#region Properties
 
-            private SortDirection: SortOrder;
+            public SortDirection: SortOrder;
             private SortPropertySelector: (PropertyToSortOn: T) => any;
 
             //holds the additional sort properties (this gets set from OrderThenByIterator)
@@ -2473,6 +2819,25 @@ module ToracTechnologies {
 
                 //just keep returning until the data source is completed
                 return this.DataSource.Next();
+            }
+
+            public AsyncSerializedFunc(): Array<KeyValuePair<string, string>> {
+
+                var CompactedThenBySettings = new Array<string>();
+
+                //loop through the then by sort property selectors
+                if (this.ThenBySortPropertySelectors != null) {
+
+                    //loop through the property selectors
+                    for (var i = 0; i < this.ThenBySortPropertySelectors.length; i++) {
+
+                        //add the method to the array
+                        CompactedThenBySettings.push(super.SerializeMethod(this.ThenBySortPropertySelectors[i].PropertySelector));
+                    }
+                }
+
+                return [new KeyValuePair('SortPropertySelector', super.SerializeMethod(this.SortPropertySelector)),
+                    new KeyValuePair('ThenBySortPropertySelectors', JSON.stringify(CompactedThenBySettings))];
             }
 
             //#endregion
@@ -2667,6 +3032,10 @@ module ToracTechnologies {
 
                 //just return the previous expression, because the "OrderBy" will sort the "ThenBy" items. So just loop until we are done because we are already sorted
                 return this.PreviousExpression.Next();
+            }
+
+            public AsyncSerializedFunc(): Array<KeyValuePair<string, string>> {
+                return null;
             }
 
             //#endregion
@@ -2940,7 +3309,7 @@ module ToracTechnologies {
                     //throw the dictionary into a variable so we have access to it in the 
 
                     //parse reviver needs to be in a closure so we can access the dictionary
-                    return <any>JSON.parse(KeyValue, (key, value) => {
+                    return <any>JSON.parse(KeyValue,(key, value) => {
 
                         //is this a date item
                         if (this.DatePropertiesForMultiKey != null && this.DatePropertiesForMultiKey.ContainsKey(key)) {
@@ -3071,6 +3440,244 @@ module ToracTechnologies {
 
         //#endregion
 
+        //#region Async Tree Builders
+
+        export function RebuildTree(ParsedJsonQuery) {
+    
+            //now we need to copy all the base methods for each level of the tree
+            //flatten the tree
+            var FlatTree = ToracTechnologies.JLinq.Iterator.ChainableTreeWalker(ParsedJsonQuery);
+
+            //queryable with the array
+            var Queryable: ToracTechnologies.JLinq.Iterator<any>;
+  
+            //we need to get the collection souce.
+            for (var j = 0; j < FlatTree.length; j++) {
+
+                //grab the node
+                var Node = FlatTree[j];
+
+                //is this a queryable?
+                if (Node.TypeOfObject == 'Queryable') {
+
+                    //set this queryable
+                    Queryable = new ToracTechnologies.JLinq.Queryable((<ToracTechnologies.JLinq.Queryable<any>>Node).CollectionSource);
+                    break;
+                }
+                else if (Node.PreviousExpression != null && Node.PreviousExpression.TypeOfObject == 'Queryable') {
+
+                    //set this queryable
+                    Queryable = new ToracTechnologies.JLinq.Queryable((<ToracTechnologies.JLinq.Queryable<any>>Node.PreviousExpression).CollectionSource);
+                    break;
+                }
+            }
+
+            //make sure we have an iterator
+            if (Queryable == null) {
+                throw "Couldn't Find A Starting Point For Querable In RebuildTree";
+            }
+
+            //loop through the tree (going backwards starting with queryable)
+            for (var i = FlatTree.length - 1; i >= 0; i--) {
+                    
+                //grab the current item
+                var CurrentLevelOfTree = FlatTree[i];
+
+                //go rebuild the tree...and reset the queryable
+                var RebuildTreeNode = RebuildSingleTreeNode(CurrentLevelOfTree, Queryable);
+
+                //is it null? (null if its handles in a different manor. ie: orderthenby)
+                if (RebuildTreeNode != null) {
+                    Queryable = RebuildTreeNode;
+                }
+            }
+
+            //return the queryable
+            return Queryable;
+        }
+
+        export function RebuildSingleTreeNode(CurrentLevelOfTree, Queryable: ToracTechnologies.JLinq.Iterator<any>): any {
+
+            //order by handles this guy
+            if (CurrentLevelOfTree.TypeOfObject === 'OrderThenByIterator') {
+                return null;
+            }
+
+            if (CurrentLevelOfTree.TypeOfObject === 'WhereIterator') {
+                return Queryable.Where(ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(x => x.Key == 'WhereClausePredicate').Value));
+            }
+
+            if (CurrentLevelOfTree.TypeOfObject === 'First') {
+                return Queryable.First(ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(x => x.Key == 'WhereClausePredicate').Value));
+            }
+
+            if (CurrentLevelOfTree.TypeOfObject === 'FirstOrDefaultIterator') {
+                return Queryable.FirstOrDefault(ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(x => x.Key == 'WhereClausePredicate').Value));
+            }
+
+            if (CurrentLevelOfTree.TypeOfObject === 'SingleIterator') {
+                return Queryable.Single(ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(x => x.Key == 'WhereClausePredicate').Value));
+            }
+
+            if (CurrentLevelOfTree.TypeOfObject === 'SingleOrDefaultIterator') {
+                return Queryable.Single(ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(x => x.Key == 'WhereClausePredicate').Value));
+            }
+
+            if (CurrentLevelOfTree.TypeOfObject === 'SelectIterator') {
+                return Queryable.Select(ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(x => x.Key == 'SelectPredicate').Value));
+            }
+
+            if (CurrentLevelOfTree.TypeOfObject === 'SelectManyIterator') {
+                return Queryable.SelectMany(ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(x => x.Key == 'CollectionPropertySelector').Value));
+            }
+
+            if (CurrentLevelOfTree.TypeOfObject === 'DistinctIterator') {
+                return Queryable.Distinct(ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(x => x.Key == 'PropertySelector').Value));
+            }
+
+            if (CurrentLevelOfTree.TypeOfObject === 'TakeIterator') {
+                return Queryable.Take((<ToracTechnologies.JLinq.TakeIterator<any>>CurrentLevelOfTree).HowManyToTake);
+            }
+
+            if (CurrentLevelOfTree.TypeOfObject === 'TakeWhileIterator') {
+                return Queryable.TakeWhile(ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(x => x.Key == 'PredicateToTakeWhile').Value));
+            }
+
+            if (CurrentLevelOfTree.TypeOfObject === 'SkipIterator') {
+                return Queryable.Skip((<ToracTechnologies.JLinq.SkipIterator<any>>CurrentLevelOfTree).HowManyToSkip);
+            }
+
+            if (CurrentLevelOfTree.TypeOfObject === 'SkipWhileIterator') {
+                return Queryable.SkipWhile(ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(x => x.Key == 'PredicateSkipUntil').Value));
+            }
+
+            if (CurrentLevelOfTree.TypeOfObject === 'AggregateIterator') {
+                return Queryable.Aggregate(ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(x => x.Key == 'PredicateAggregate').Value));
+            }
+
+            if (CurrentLevelOfTree.TypeOfObject === 'AllIterator') {
+                return Queryable.All(ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(x => x.Key == 'WhereClausePredicate').Value));
+            }
+
+            if (CurrentLevelOfTree.TypeOfObject === 'AnyIterator') {
+                return Queryable.Any(ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(x => x.Key == 'WhereClausePredicate').Value));
+            }
+
+            if (CurrentLevelOfTree.TypeOfObject === 'LastIterator') {
+                return Queryable.Last(ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(x => x.Key == 'WhereClausePredicate').Value));
+            }
+
+            if (CurrentLevelOfTree.TypeOfObject === 'CountIterator') {
+                return Queryable.Count(ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(x => x.Key == 'WhereClausePredicate').Value));
+            }
+
+            if (CurrentLevelOfTree.TypeOfObject === 'MinIterator') {
+                return Queryable.Min();
+            }
+
+            if (CurrentLevelOfTree.TypeOfObject === 'MaxIterator') {
+                return Queryable.Max();
+            }
+
+            if (CurrentLevelOfTree.TypeOfObject === 'SumIterator') {
+                return Queryable.Sum();
+            }
+
+            if (CurrentLevelOfTree.TypeOfObject === 'AverageIterator') {
+                return Queryable.Average();
+            }
+
+            if (CurrentLevelOfTree.TypeOfObject === 'GroupIterator') {
+                return Queryable.GroupBy(ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(x => x.Key == 'GroupBySelector').Value));
+            }
+
+            if (CurrentLevelOfTree.TypeOfObject === 'OrderByIterator') {
+
+                //then by to set
+                var ThenByToSet = new Array<IThenByPropertySelectorParameters<any>>();
+
+                //cast the queryable
+                var CastedOrderBy = (<ToracTechnologies.JLinq.OrderByIterator<any>>CurrentLevelOfTree);
+
+                //loop through the then by settings (if we have some)
+                var ThenBySettings = CastedOrderBy.AsyncSerialized.FirstOrDefault(x => x.Key == 'ThenBySortPropertySelectors');
+
+                //do we have any settings to serialize back? (for the then by settings)?
+                if (ThenBySettings != null) {
+
+                    //cast it back to a key value pair
+                    var CastedSelectors = <Array<string>> JSON.parse(ThenBySettings.Value);
+
+                    //loop through the selectors
+                    for (var i = 0; i < CastedSelectors.length; i++) {
+
+                        //push the then by properties
+                        ThenByToSet.push(
+                            {
+                                ThenBySortOrder: CastedOrderBy.ThenBySortPropertySelectors[i].ThenBySortOrder,
+                                PropertySelector: ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CastedSelectors[i])
+                            });
+                    }
+                }
+
+                //return a new order by iterator
+                return new OrderByIterator(Queryable, CastedOrderBy.SortDirection, ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(x => x.Key == 'SortPropertySelector').Value), ThenByToSet);
+            }
+
+            if (CurrentLevelOfTree.TypeOfObject === 'ConcatArrayIterator') {
+       
+                //cast the queryable
+                var CastedConcat = (<ToracTechnologies.JLinq.ConcatIterator<any>>CurrentLevelOfTree);
+        
+                //we need to go rebuild the concat query tree...then pass it in
+                return Queryable.ConcatQuery(RebuildTree(CastedConcat.ConcatThisQuery));
+            }
+
+            if (CurrentLevelOfTree.TypeOfObject === 'ConcatQueryIterator') {
+
+                //cast the queryable
+                var CastedConcatQuery = RebuildTree((<ToracTechnologies.JLinq.ConcatIterator<any>>CurrentLevelOfTree).ConcatThisQuery);
+        
+                //we need to go rebuild the concat query tree...then pass it in
+                return Queryable.ConcatQuery(CastedConcatQuery);
+            }
+
+            if (CurrentLevelOfTree.TypeOfObject === 'UnionArrayIterator') {
+
+                //cast the queryable
+                var CastedUnion = (<ToracTechnologies.JLinq.UnionIterator<any>>CurrentLevelOfTree);
+        
+                //we need to go rebuild the union query tree...then pass it in
+                return Queryable.UnionQuery(RebuildTree(CastedUnion.UnionThisQuery));
+            }
+
+            if (CurrentLevelOfTree.TypeOfObject === 'UnionQueryIterator') {
+
+                //cast the queryable
+                var CastedUnionQuery = RebuildTree((<ToracTechnologies.JLinq.UnionIterator<any>>CurrentLevelOfTree).UnionThisQuery);
+        
+                //we need to go rebuild the union query tree...then pass it in
+                return Queryable.UnionQuery(CastedUnionQuery);
+            }
+
+            if (CurrentLevelOfTree.TypeOfObject === 'Queryable') {
+
+                //we need to go rebuild the concat query tree...then pass it in
+                return new ToracTechnologies.JLinq.Queryable((<ToracTechnologies.JLinq.Queryable<any>>CurrentLevelOfTree).CollectionSource);
+            }
+
+
+            //if (CurrentLevelOfTree.TypeOfObject == 'UnionIterator') {
+            //    return Queryable.Union(ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(x => x.Key == 'WhereClausePredicate').Value));
+            //}
+
+            //throw an error, in a web worker you can't display any alerts or console
+            throw 'Level Not Implemented: ' + CurrentLevelOfTree.TypeOfObject;
+
+        }
+
+        //#endregion
+
     }
 
 }
@@ -3131,7 +3738,7 @@ interface Array<T> {
 
 //#region Prototypes
 
-Array.prototype.AsQueryable = function<T>(): ToracTechnologies.JLinq.Queryable<T> {
+Array.prototype.AsQueryable = function <T>(): ToracTechnologies.JLinq.Queryable<T> {
     return new ToracTechnologies.JLinq.Queryable<T>(this);
 }
 

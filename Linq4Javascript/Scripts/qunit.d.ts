@@ -1,4 +1,4 @@
-// Type definitions for QUnit 1.10
+// Type definitions for QUnit v1.16
 // Project: http://qunitjs.com/
 // Definitions by: Diullei Gomes <https://github.com/diullei>
 // Definitions: https://github.com/borisyankov/DefinitelyTyped
@@ -8,160 +8,169 @@ interface DoneCallbackObject {
 	/**
 	* The number of failed assertions
 	*/
-	failed: number;
+    failed: number;
 
 	/**
 	* The number of passed assertions
 	*/
-	passed: number;
+    passed: number;
 
 	/**
 	* The total number of assertions
 	*/
-	total: number;
+    total: number;
 
 	/**
 	* The time in milliseconds it took tests to run from start to finish.
 	*/
-	runtime: number;
+    runtime: number;
 }
 
 interface LogCallbackObject {
 	/**
 	* The boolean result of an assertion, true means passed, false means failed.
 	*/
-	result: boolean;
+    result: boolean;
 
 	/**
 	* One side of a comparision assertion. Can be undefined when ok() is used.
 	*/
-	actual: Object;
+    actual: Object;
 
 	/**
 	* One side of a comparision assertion. Can be undefined when ok() is used.
 	*/
-	expected: Object;
+    expected: Object;
 
 	/**
 	* A string description provided by the assertion.
 	*/
-	message: string;
+    message: string;
 
 	/**
 	* The associated stacktrace, either from an exception or pointing to the source 
 	* of the assertion. Depends on browser support for providing stacktraces, so can be 
 	* undefined.
 	*/
-	source: string;
+    source: string;
 }
 
 interface ModuleStartCallbackObject {
 	/**
 	* Name of the next module to run
 	*/
-	name: string;
+    name: string;
 }
 
 interface ModuleDoneCallbackObject {
 	/**
 	* Name of this module
 	*/
-	name: string;
+    name: string;
 
 	/**
 	* The number of failed assertions
 	*/
-	failed: number;
+    failed: number;
 
 	/**
 	* The number of passed assertions
 	*/
-	passed: number;
+    passed: number;
 
 	/**
 	* The total number of assertions
 	*/
-	total: number;
+    total: number;
 }
 
 interface TestDoneCallbackObject {
 	/**
 	* TName of the next test to run
 	*/
-	name: string;
+    name: string;
 
 	/**
 	* Name of the current module
 	*/
-	module: string;
+    module: string;
 
 	/**
 	* The number of failed assertions
 	*/
-	failed: number;
+    failed: number;
 
 	/**
 	* The number of passed assertions
 	*/
-	passed: number;
+    passed: number;
 
 	/**
 	* The total number of assertions
 	*/
-	total: number;
+    total: number;
 
 	/**
 	* The total runtime, including setup and teardown
 	*/
-	duration: number;
+    duration: number;
 }
 
 interface TestStartCallbackObject {
 	/**
 	* Name of the next test to run
 	*/
-	name: string;
+    name: string;
 
 	/**
 	* Name of the current module
 	*/
-	module: string;
+    module: string;
 }
 
 interface Config {
-	altertitle: boolean;
-	autostart: boolean;
-	current: Object;
-	reorder: boolean;
-	requireExpects: boolean;
-	testTimeout: number;
-	urlConfig: Array<URLConfigItem>;
-	done: any;
+    altertitle: boolean;
+    autostart: boolean;
+    current: Object;
+    reorder: boolean;
+    requireExpects: boolean;
+    testTimeout: number;
+    urlConfig: Array<URLConfigItem>;
+    done: any;
 }
 
 interface URLConfigItem {
-	id: string;
-	label: string;
-	tooltip: string;
+    id: string;
+    label: string;
+    tooltip: string;
 }
 
 interface LifecycleObject {
 	/**
 	* Runs before each test
 	*/
-	setup?: () => any;
+    setup?: () => any;
 
 	/**
 	* Runs after each test
 	*/
-	teardown?: () => any;
+    teardown?: () => any;
 }
 
 interface QUnitAssert {
-	/* ASSERT */
-	assert: any;
-	current_testEnvironment: any;
-	jsDump: any;
+    /* ASSERT */
+    assert: any;
+    current_testEnvironment: any;
+    jsDump: any;
+
+    /**
+    * Instruct QUnit to wait for an asynchronous operation.
+    * 
+    * When your test has any asynchronous exit points, call assert.async() to get a unique
+    * resolution callback for each async operation. The callback returned from assert.async()
+    * will throw an Error if is invoked more than once.
+    */
+    async(): () => void;
 
 	/**
 	* A deep recursive comparison assertion, working on primitive types, arrays, objects, 
@@ -175,7 +184,7 @@ interface QUnitAssert {
 	* @param expected Known comparison value
 	* @param message A short description of the assertion
 	*/
-	deepEqual(actual: any, expected: any, message?: string): any;
+    deepEqual(actual: any, expected: any, message?: string): any;
 
 	/** 
 	* A non-strict comparison assertion, roughly equivalent to JUnit assertEquals.
@@ -189,7 +198,18 @@ interface QUnitAssert {
 	* @param expected Known comparison value
 	* @param message A short description of the assertion
 	*/
-	equal(actual: any, expected: any, message?: string): any;
+    equal(actual: any, expected: any, message?: string): any;
+
+    /**
+    * Specify how many assertions are expected to run within a test.
+    *
+    * To ensure that an explicit number of assertions are run within any test, use 
+    * expect( number ) to register an expected count. If the number of assertions 
+    * run does not match the expected count, the test will fail.
+    *
+    * @param amount Number of assertions in this test.
+    */
+    expect(amount: number): any;
 
 	/**
 	* An inverted deep recursive comparison assertion, working on primitive types, 
@@ -203,7 +223,7 @@ interface QUnitAssert {
 	* @param expected Known comparison value
 	* @param message A short description of the assertion
 	*/
-	notDeepEqual(actual: any, expected: any, message?: string): any;
+    notDeepEqual(actual: any, expected: any, message?: string): any;
 
 	/**
 	* A non-strict comparison assertion, checking for inequality.
@@ -217,11 +237,11 @@ interface QUnitAssert {
 	* @param expected Known comparison value
 	* @param message A short description of the assertion
 	*/
-	notEqual(actual: any, expected: any, message?: string): any;
+    notEqual(actual: any, expected: any, message?: string): any;
 
-	notPropEqual(actual: any, expected: any, message?: string): any;
+    notPropEqual(actual: any, expected: any, message?: string): any;
 
-	propEqual(actual: any, expected: any, message?: string): any;
+    propEqual(actual: any, expected: any, message?: string): any;
 
 	/**
 	* A non-strict comparison assertion, checking for inequality.
@@ -235,7 +255,7 @@ interface QUnitAssert {
 	* @param expected Known comparison value
 	* @param message A short description of the assertion
 	*/
-	notStrictEqual(actual: any, expected: any, message?: string): any;
+    notStrictEqual(actual: any, expected: any, message?: string): any;
 
 	/**
 	* A boolean assertion, equivalent to CommonJS’s assert.ok() and JUnit’s assertTrue(). 
@@ -248,7 +268,7 @@ interface QUnitAssert {
 	* @param state Expression being tested
 	* @param message A short description of the assertion
 	*/
-	ok(state: any, message?: string): any;
+    ok(state: any, message?: string): any;
 
 	/**
 	* A strict type and value comparison assertion.
@@ -260,7 +280,7 @@ interface QUnitAssert {
 	* @param expected Known comparison value
 	* @param message A short description of the assertion
 	*/
-	strictEqual(actual: any, expected: any, message?: string): any;
+    strictEqual(actual: any, expected: any, message?: string): any;
 
 	/**
 	* Assertion to test if a callback throws an exception when run.
@@ -272,17 +292,42 @@ interface QUnitAssert {
 	* @param expected Error Object to compare
 	* @param message A short description of the assertion
 	*/
-	throws(block: () => any, expected: any, message?: string): any;
+    throws(block: () => any, expected: any, message?: string): any;
 
 	/**
 	* @param block Function to execute
 	* @param message A short description of the assertion
 	*/
-	throws(block: () => any, message?: string): any;
+    throws(block: () => any, message?: string): any;
+
+    /**
+    * Alias of throws.
+    * 
+    * In very few environments, like Closure Compiler, throws is considered a reserved word
+    * and will cause an error. For that case, an alias is bundled called raises. It has the
+    * same signature and behaviour, just a different name.
+    * 
+    * @param block Function to execute
+    * @param expected Error Object to compare
+    * @param message A short description of the assertion
+    */
+    raises(block: () => any, expected: any, message?: string): any;
+
+    /**
+    * Alias of throws.
+    * 
+    * In very few environments, like Closure Compiler, throws is considered a reserved word
+    * and will cause an error. For that case, an alias is bundled called raises. It has the
+    * same signature and behaviour, just a different name.
+    * 
+    * @param block Function to execute
+    * @param message A short description of the assertion
+    */
+    raises(block: () => any, message?: string): any;
 }
 
-interface QUnitStatic extends QUnitAssert{	
-	/* ASYNC CONTROL */
+interface QUnitStatic extends QUnitAssert {	
+    /* ASYNC CONTROL */
 
 	/**
 	* Start running tests again after the testrunner was stopped. See stop().
@@ -291,7 +336,7 @@ interface QUnitStatic extends QUnitAssert{
 	* 
 	* @param decrement Optional argument to merge multiple start() calls into one. Use with multiple corrsponding stop() calls.
 	*/
-	start(decrement?: number): any;
+    start(decrement?: number): any;
 
 	/**
 	* Stop the testrunner to wait for async tests to run. Call start() to continue.
@@ -302,9 +347,9 @@ interface QUnitStatic extends QUnitAssert{
 	*
 	* @param decrement Optional argument to merge multiple stop() calls into one. Use with multiple corrsponding start() calls.
 	*/
-	stop(increment? : number): any;
+    stop(increment?: number): any;
 	
-	/* CALLBACKS */
+    /* CALLBACKS */
 
 	/**
 	* Register a callback to fire whenever the test suite begins.
@@ -314,14 +359,14 @@ interface QUnitStatic extends QUnitAssert{
 	*
 	* @param callback Callback to execute
 	*/
-	begin(callback: () => any): any;
+    begin(callback: () => any): any;
 
 	/**
 	* Register a callback to fire whenever the test suite ends.
 	*
 	* @param callback Callback to execute.
 	*/
-	done(callback: (details: DoneCallbackObject) => any): any;
+    done(callback: (details: DoneCallbackObject) => any): any;
 
 	/**
 	* Register a callback to fire whenever an assertion completes.
@@ -331,45 +376,45 @@ interface QUnitStatic extends QUnitAssert{
 	*
 	* @param callback Callback to execute.
 	*/
-	log(callback: (details: LogCallbackObject) => any): any;
+    log(callback: (details: LogCallbackObject) => any): any;
 
 	/**
 	* Register a callback to fire whenever a module ends.
 	*
 	* @param callback Callback to execute.
 	*/
-	moduleDone(callback: (details: ModuleDoneCallbackObject) => any): any;
+    moduleDone(callback: (details: ModuleDoneCallbackObject) => any): any;
 
 	/**
 	* Register a callback to fire whenever a module begins.
 	*
 	* @param callback Callback to execute.
 	*/
-	moduleStart(callback: (details: ModuleStartCallbackObject) => any): any;
+    moduleStart(callback: (details: ModuleStartCallbackObject) => any): any;
 
 	/**
 	* Register a callback to fire whenever a test ends.
 	*
 	* @param callback Callback to execute.
 	*/
-	testDone(callback: (details: TestDoneCallbackObject) => any): any;
+    testDone(callback: (details: TestDoneCallbackObject) => any): any;
 
 	/**
 	* Register a callback to fire whenever a test begins.
 	*
 	* @param callback Callback to execute.
 	*/
-	testStart(callback: (details: TestStartCallbackObject) => any): any;
+    testStart(callback: (details: TestStartCallbackObject) => any): any;
 	
-	/* CONFIGURATION */
+    /* CONFIGURATION */
 
 	/**
 	* QUnit has a bunch of internal configuration defaults, some of which are 
 	* useful to override. Check the description for each option for details.
 	*/
-	config: Config;
+    config: Config;
 	
-	/* TEST */
+    /* TEST */
 
 	/**
 	* Add an asynchronous test to run. The test must include a call to start().
@@ -381,7 +426,7 @@ interface QUnitStatic extends QUnitAssert{
 	* @param expected Number of assertions in this test
 	* @param test Function to close over assertions
 	*/
-	asyncTest(name: string, expected: number, test: (assert: QUnitAssert) => any): any;
+    asyncTest(name: string, expected: number, test: (assert: QUnitAssert) => any): any;
 
 	/**
 	* Add an asynchronous test to run. The test must include a call to start().
@@ -392,7 +437,7 @@ interface QUnitStatic extends QUnitAssert{
 	* @param name Title of unit being tested
 	* @param test Function to close over assertions
 	*/
-	asyncTest(name: string, test: (assert: QUnitAssert) => any): any;
+    asyncTest(name: string, test: (assert: QUnitAssert) => any): any;
 
 	/**
 	* Specify how many assertions are expected to run within a test.
@@ -402,8 +447,9 @@ interface QUnitStatic extends QUnitAssert{
 	* run does not match the expected count, the test will fail.
 	*
 	* @param amount Number of assertions in this test.
+	* @depricated since version 1.16
 	*/
-	expect(amount: number): any;
+    expect(amount: number): any;
 
 	/**
 	* Group related tests under a single label.
@@ -415,7 +461,7 @@ interface QUnitStatic extends QUnitAssert{
 	* @param name Label for this group of tests
 	* @param lifecycle Callbacks to run before and after each test
 	*/
-	module(name: string, lifecycle?: LifecycleObject): any;
+    module(name: string, lifecycle?: LifecycleObject): any;
 
 	/**
 	* Add a test to run.
@@ -429,31 +475,28 @@ interface QUnitStatic extends QUnitAssert{
 	* @param expected Number of assertions in this test
 	* @param test Function to close over assertions
 	*/
-	test(title: string, expected: number, test: (assert: QUnitAssert) => any): any;
+    test(title: string, expected: number, test: (assert: QUnitAssert) => any): any;
 
 	/**
 	* @param title Title of unit being tested
 	* @param test Function to close over assertions
 	*/
-	test(title: string, test: (assert: QUnitAssert) => any): any;
+    test(title: string, test: (assert: QUnitAssert) => any): any;
 
 	/**
 	* https://github.com/jquery/qunit/blob/master/qunit/qunit.js#L1568
 	*/
-	equiv(a: any, b: any): any;
-
-	// https://github.com/jquery/qunit/blob/master/qunit/qunit.js#L661
-	raises: any;
+    equiv(a: any, b: any): any;
 
 	/**
 	* https://github.com/jquery/qunit/blob/master/qunit/qunit.js#L897
 	*/
-	push(result: any, actual: any, expected: any, message: string): any;
+    push(result: any, actual: any, expected: any, message: string): any;
 
 	/**
 	* https://github.com/jquery/qunit/blob/master/qunit/qunit.js#L839
 	*/
-	reset(): any;
+    reset(): any;
 }
 
 /* ASSERT */
@@ -591,7 +634,7 @@ declare function start(decrement?: number): any;
 *
 * @param decrement Optional argument to merge multiple stop() calls into one. Use with multiple corrsponding start() calls.
 */
-declare function stop(increment? : number): any;
+declare function stop(increment?: number): any;
 	
 /* CALLBACKS */
 
@@ -683,6 +726,7 @@ declare function asyncTest(name: string, test: (assert: QUnitAssert) => any): an
 * run does not match the expected count, the test will fail.
 *
 * @param amount Number of assertions in this test.
+* @depricated since version 1.16
 */
 declare function expect(amount: number): any;
 

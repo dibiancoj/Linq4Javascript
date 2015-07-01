@@ -127,3 +127,7 @@
  2.5.4 - 6/19/2015
 		-Moved to GitHub
 		-Removed Depreciated Items (LastItem & AnyItem)
+
+3.0.0 - 7/2/2015
+		-Added the entire async framework. Public method is Query.ToArrayAsync(); Uses html 5 web workers - falls back to regular ToArray() when web workers is not available.
+		-IE 10 has issues building web worker from inline text [security issue / bug]. IE 10 will fallback to ToArray()
