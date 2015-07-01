@@ -9,6 +9,11 @@ I wanted to learn TypeScript along with building a linq library which had method
 * Complete lazy evaluation to reduce memory footprint while improving performance
 * You can use the Typescript file for type safety or use the .js version for plain old Javascript.
 * Drastically outperforms Underscore.js in Chrome, Firefox, and Safari
+ 
+**Setup**
+* Import the JLinq.js file into your html page (Or JLinq.ts - if using TypeScript)
+
+           <script src="/Scripts/JLinq.js"></script>
 
 **Basic Example**
 
