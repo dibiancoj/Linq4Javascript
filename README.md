@@ -8,6 +8,7 @@ I wanted to learn TypeScript along with building a linq library which had method
 * Implement's .Net Linq methods with the same syntax
 * Complete lazy evaluation to reduce memory footprint while improving performance
 * You can use the Typescript file for type safety or use the .js version for plain old Javascript.
+* Contains async functionality to offload work off of the UI thread. Prevents freezing on long running methods.
 * Drastically outperforms Underscore.js in Chrome, Firefox, and Safari
  
 **Setup**
