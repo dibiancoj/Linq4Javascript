@@ -12,7 +12,7 @@ I wanted to learn TypeScript along with building a linq library which had method
 * Drastically outperforms Underscore.js in Chrome, Firefox, and Safari
  
 **Setup**
-* Import the JLinq.js file into your html page (Bring JLinq.ts into solution if you are using TypeScript)
+* Import the JLinq.js file into your html page. Or bring JLinq.ts into solution if you are using TypeScript. These files are located in the following path of the project: 'Linq4Javascript/Scripts'
 
            <script src="/Scripts/JLinq.js"></script>
 
