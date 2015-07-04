@@ -19,7 +19,7 @@ I wanted to learn TypeScript along with building a linq library which had method
 **Basic Example**
 
     //declare my array that I will represent my data source  
-    var _Array= [];`    
+    var _Array= [];    
 
     //let's throw some sample data into my array  
     for (var i = 0; i < 10; i++)    
