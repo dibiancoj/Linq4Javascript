@@ -126,9 +126,7 @@ asyncTest('JLinq.SelectMany.Test.3', function () {
     };
     //this is a select many with a where before it and then a select after it
     //go build the query
-    var QueryToRun = UnitTestFramework._Array.Where(function (x) { return x.Id === 4; }).SelectMany(function (x) { return x.lst; }).Select(function (x) {
-        return { mapId: x };
-    });
+    var QueryToRun = UnitTestFramework._Array.Where(function (x) { return x.Id === 4; }).SelectMany(function (x) { return x.lst; }).Select(function (x) { return { mapId: x }; });
     //go run the async operation
     QueryToRun.ToArrayAsync(callBack, ErrorCallBack('SelectMany.Test.3'), JLinqUrlPath);
 });
@@ -250,6 +248,7 @@ asyncTest('JLinq.Concat.FallBack.TestOffOfQueryWithArray.1', function () {
 asyncTest('JLinq.Concat.TestOffOfArrayWithArray.1', function () {
     expect(15);
     var callBack = function (Result) {
+        //****To-UnitTestFramework._Array Test****
         for (var i = 0; i < Result.length; i++) {
             //since we are mergeing 2 arrays...when we get to the 2nd array (i>=5...then we subtract 5 to get back to 0)
             var IntTest = i >= 5 ? i - 5 : i;
@@ -267,6 +266,7 @@ asyncTest('JLinq.Concat.TestOffOfArrayWithArray.1', function () {
 asyncTest('JLinq.Concat.FallBack.TestOffOfArrayWithArray.1', function () {
     expect(15);
     var callBack = function (Result) {
+        //****To-UnitTestFramework._Array Test****
         for (var i = 0; i < Result.length; i++) {
             //since we are mergeing 2 arrays...when we get to the 2nd array (i>=5...then we subtract 5 to get back to 0)
             var IntTest = i >= 5 ? i - 5 : i;
@@ -336,6 +336,7 @@ asyncTest('JLinq.ConcatQuery.TestOffOfQueryWithQuery.2', function () {
 asyncTest('JLinq.ConcatQuery.TestOffOfArrayWithQuery.1', function () {
     expect(12);
     var callBack = function (Result) {
+        //****To-UnitTestFramework._Array Test****
         for (var i = 0; i < Result.length; i++) {
             if (i === 5) {
                 equal(Result[i].Id, 1);
@@ -356,6 +357,7 @@ asyncTest('JLinq.ConcatQuery.TestOffOfArrayWithQuery.1', function () {
 asyncTest('JLinq.ConcatQuery.FallBack.TestOffOfArrayWithQuery.1', function () {
     expect(12);
     var callBack = function (Result) {
+        //****To-UnitTestFramework._Array Test****
         for (var i = 0; i < Result.length; i++) {
             if (i === 5) {
                 equal(Result[i].Id, 1);
@@ -414,6 +416,7 @@ asyncTest('JLinq.Union.FallBack.TestOffOfQueryWithArray.1', function () {
 asyncTest('JLinq.Union.TestOffOfArrayWithArray.1', function () {
     expect(6);
     var callBack = function (Result) {
+        //****To-UnitTestFramework._Array Test****
         for (var i = 0; i < Result.length; i++) {
             equal(Result[i], i);
         }
@@ -428,6 +431,7 @@ asyncTest('JLinq.Union.TestOffOfArrayWithArray.1', function () {
 asyncTest('JLinq.Union.FallBack.TestOffOfArrayWithArray.1', function () {
     expect(6);
     var callBack = function (Result) {
+        //****To-UnitTestFramework._Array Test****
         for (var i = 0; i < Result.length; i++) {
             equal(Result[i], i);
         }
@@ -476,6 +480,7 @@ asyncTest('JLinq.UnionQuery.FallBack.TestOffOfQueryWithQuery.1', function () {
 asyncTest('JLinq.UnionQuery.TestOffOfArrayWithQuery.1', function () {
     expect(6);
     var callBack = function (Result) {
+        //****To-UnitTestFramework._Array Test****
         for (var i = 0; i < Result.length; i++) {
             equal(Result[i], i);
         }
@@ -490,6 +495,7 @@ asyncTest('JLinq.UnionQuery.TestOffOfArrayWithQuery.1', function () {
 asyncTest('JLinq.UnionQuery.FallBack.TestOffOfArrayWithQuery.1', function () {
     expect(6);
     var callBack = function (Result) {
+        //****To-UnitTestFramework._Array Test****
         for (var i = 0; i < Result.length; i++) {
             equal(Result[i], i);
         }
@@ -829,9 +835,7 @@ asyncTest('JLinq.Select.Test.1', function () {
         start();
     };
     //go build the query
-    var QueryToRun = UnitTestFramework._Array.Select(function (x) {
-        return { newId: x.Id, newTxt: x.Id + 1 };
-    });
+    var QueryToRun = UnitTestFramework._Array.Select(function (x) { return { newId: x.Id, newTxt: x.Id + 1 }; });
     //go run the async operation
     QueryToRun.ToArrayAsync(callBack, ErrorCallBack('Select.Test.1'), JLinqUrlPath);
 });
@@ -1049,6 +1053,7 @@ asyncTest('JLinq.Distinct.FallBack.ChainTest.1', function () {
 asyncTest('JLinq.OrderBy.Asc.Number.Test.1', function () {
     expect(5);
     var callBack = function (Result) {
+        //go test the results
         for (var i = 0; i < Result.length; i++) {
             //just make sure the results are whatever i is
             equal(Result[i].Id, i);
@@ -1063,6 +1068,7 @@ asyncTest('JLinq.OrderBy.Asc.Number.Test.1', function () {
 asyncTest('JLinq.OrderBy.Asc.Number.ChainTest.1', function () {
     expect(5);
     var callBack = function (Result) {
+        //go test the results
         for (var i = 0; i < Result.length; i++) {
             //just make sure the results are whatever i is
             equal(Result[i], i);
@@ -1079,6 +1085,7 @@ asyncTest('JLinq.OrderBy.Desc.Number.Test.1', function () {
     var callBack = function (Result) {
         //initialize to 1 so we can just subtract the length
         var IdLengthCalculator = 1;
+        //go test the results
         for (var i = 0; i < Result.length; i++) {
             //subtract the length from the index we are up to (starting at 1)
             equal(Result[i].Id, Result.length - IdLengthCalculator);
@@ -1097,6 +1104,7 @@ asyncTest('JLinq.OrderBy.Desc.Number.ChainTest.1', function () {
     var callBack = function (Result) {
         //initialize to 1 so we can just subtract the length
         var IdLengthCalculator = 1;
+        //go test the results
         for (var i = 0; i < Result.length; i++) {
             //subtract the length from the index we are up to (starting at 1)
             equal(Result[i], Result.length - IdLengthCalculator);
@@ -1115,6 +1123,7 @@ asyncTest('JLinq.OrderBy.Desc.Number.FallBack.ChainTest.1', function () {
     var callBack = function (Result) {
         //initialize to 1 so we can just subtract the length
         var IdLengthCalculator = 1;
+        //go test the results
         for (var i = 0; i < Result.length; i++) {
             //subtract the length from the index we are up to (starting at 1)
             equal(Result[i], Result.length - IdLengthCalculator);

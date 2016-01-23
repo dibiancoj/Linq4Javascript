@@ -9,6 +9,7 @@ function RunQuery() {
         var SecondsToWait = .6;
         //what time do we want to go until
         var TimeToGoUntil = new Date().getTime() + (SecondsToWait * 1000);
+        //keep looping until we get to the time
         while (new Date().getTime() <= TimeToGoUntil) {
         }
         //then finally return the real result

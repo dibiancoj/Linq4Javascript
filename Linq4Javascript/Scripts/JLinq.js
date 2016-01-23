@@ -4,11 +4,10 @@
 //Current Version: 3.0.0                                                                  *
 //Release History In JLinqChangeLog.txt                                                   *
 //*****************************************************************************************
-var __extends = this.__extends || function (d, b) {
+var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 //* Change Log Is In It's Own Text File. I want to keep the js file as small as possible
 /*Example of how to call this
@@ -35,7 +34,7 @@ var __extends = this.__extends || function (d, b) {
                                             //do something with the result array
                                       }, function(errorMessageObject){
                                             //do something if there is an error. Web worker produces silent error without handler
-                                      }, 'http://MyWebSite/Scripts/JLinq.js);
+                                      }, 'http://MyWebSite/Scripts/JLinq.js');
 */
 var ToracTechnologies;
 (function (ToracTechnologies) {
@@ -260,10 +259,12 @@ var ToracTechnologies;
             Iterator.prototype.Paginate = function (CurrentPageNumber, HowManyRecordsPerPage) {
                 //just make sure we have a current page number and how many records in a valid range
                 if (CurrentPageNumber < 1) {
+                    //we can't have a page number less then 1 so throw an error
                     throw 'Current Page Number Has To Be Greater Than 0';
                 }
                 //make sure how many records per page is greater than 0
                 if (HowManyRecordsPerPage < 1) {
+                    //we can't have less then 1 record on a page so throw an error
                     throw 'How Many Records Per Page Has To Be Greater Than 0';
                 }
                 //go skip x amount of pages and only take however amount of records you want on a page. 
@@ -272,12 +273,12 @@ var ToracTechnologies;
             //order by from data source
             Iterator.prototype.OrderBy = function (SortPropertySelector) {
                 //go build the iterator (which is really lazy loaded, its more to give them the order "then by" functionality
-                return new OrderByIterator(this, 0 /* Ascending */, SortPropertySelector, null);
+                return new OrderByIterator(this, SortOrder.Ascending, SortPropertySelector, null);
             };
             //order by descending from the data source
             Iterator.prototype.OrderByDescending = function (SortPropertySelector) {
                 //go build the iterator (which is really lazy loaded, its more to give them the order "then by" functionality
-                return new OrderByIterator(this, 1 /* Descending */, SortPropertySelector, null);
+                return new OrderByIterator(this, SortOrder.Descending, SortPropertySelector, null);
             };
             //#endregion
             //#region Public Non Linq Iterator Functionality Methods
@@ -289,7 +290,8 @@ var ToracTechnologies;
                 var ArrayToBeReturned = new Array();
                 //holds the item we are currently up to
                 var CurrentItem;
-                while ((CurrentItem = this.Next()).CurrentStatus !== 2 /* Completed */) {
+                //loop through the array until we are done (the last call to next will reset the iterator for the next calls)
+                while ((CurrentItem = this.Next()).CurrentStatus !== ToracTechnologies.JLinq.IteratorStatus.Completed) {
                     //add the item to the array
                     ArrayToBeReturned.push(CurrentItem.CurrentItem);
                 }
@@ -318,6 +320,7 @@ var ToracTechnologies;
                 }
                 //web worker to run
                 var WorkerToRun = null;
+                //let's try to build the worker. This should already be good. Incase there are any reason's why (even after AsyncIsAvailable tried to do this)...to is a double check
                 try {
                     //try to build the web worker.
                     WorkerToRun = Iterator.BuildWebWorker(JLinqJsUrlPath);
@@ -355,25 +358,11 @@ var ToracTechnologies;
                     CallBackWhenQueryIsComplete(this.ToArray());
                 }
             };
-            //this is an abstract method
-            Iterator.prototype.Next = function () {
-                throw new Error('This method is abstract');
-            };
-            //this is an abstract method (this should be considered private)
-            Iterator.prototype.ResetIterator = function () {
-                throw new Error('This method is abstract');
-            };
             //if you traverse the results (not calling ToArray()). we need to reset all the variables if you want to run the query again. this will do it
             //ToArray() automatically resets this
             Iterator.prototype.ResetQuery = function () {
                 //go reset the iterator
                 ResetIterator(this);
-            };
-            //#endregion
-            //#region Public Instance Methods
-            //should be treated as an abstract method
-            Iterator.prototype.AsyncSerializedFunc = function () {
-                throw new Error('This method is abstract');
             };
             //serializes a method to a string. So pass in x => x.Id;...will return the function in a string (serialized function)
             Iterator.prototype.SerializeMethod = function (MethodToSerialize) {
@@ -394,7 +383,15 @@ var ToracTechnologies;
                 //did we already build the web worker?
                 if (Iterator.WebWorkerBlobToCache == null) {
                     //let's build the function text now
-                    var FunctionScript = "self.addEventListener('message', function(e) { \n" + " importScripts('" + JLinqJsUrlPath + "') \n" + " var Query = JSON.parse(e.data); \n" + " var TreeRebuilt = ToracTechnologies.JLinq.RebuildTree(Query); \n" + " self.postMessage(TreeRebuilt.ToArray(), null, null); }, false);";
+                    var FunctionScript = "self.addEventListener('message', function(e) { \n" +
+                        //let's import the jlinq library
+                        " importScripts('" + JLinqJsUrlPath + "') \n" +
+                        //let's go parse the json which is the query
+                        " var Query = JSON.parse(e.data); \n" +
+                        //let's rebuild the tree
+                        " var TreeRebuilt = ToracTechnologies.JLinq.RebuildTree(Query); \n" +
+                        //go build up the results and pass back the array
+                        " self.postMessage(TreeRebuilt.ToArray(), null, null); }, false);";
                     //go set the blob...
                     this.WebWorkerBlobToCache = new Blob([FunctionScript]);
                 }
@@ -405,6 +402,8 @@ var ToracTechnologies;
             Iterator.AsyncIsAvailableCheck = function (JLinqJsUrlPath) {
                 //do we have a web worker?
                 if (typeof (Worker) !== 'undefined') {
+                    //we have a web worker...we need to make sure we can create a blob into a web worker now
+                    //IE 10 has issues with creating a web worker from a blob. So we need to check that and we can create a web worker
                     try {
                         //try to build the web worker.
                         Iterator.BuildWebWorker(JLinqJsUrlPath);
@@ -423,6 +422,7 @@ var ToracTechnologies;
             Iterator.BuildAsyncTree = function (Query) {
                 //flatten the tree
                 var FlatTree = Iterator.ChainableTreeWalker(Query);
+                //loop through the tree
                 for (var i = 0, len = FlatTree.length; i < len; i++) {
                     //grab the current item
                     var CurrentLevelOfTree = FlatTree[i];
@@ -445,6 +445,7 @@ var ToracTechnologies;
                     //now set the previous expression
                     PreviousLambdaExpression = Query.PreviousExpression;
                 }
+                //loop until we get to the end
                 while (PreviousLambdaExpression != null && PreviousLambdaExpression.PreviousExpression != null) {
                     //throw the variable into the array
                     IChainablesToReturn.push(PreviousLambdaExpression);
@@ -458,6 +459,7 @@ var ToracTechnologies;
             Iterator.SerializeAsyncFuncToStringTree = function (Query) {
                 //flatten the tree
                 var FlatTree = Iterator.ChainableTreeWalker(Query);
+                //loop through the tree
                 for (var i = 0, len = FlatTree.length; i < len; i++) {
                     //grab the current item
                     var CurrentLevelOfTree = FlatTree[i];
@@ -492,6 +494,8 @@ var ToracTechnologies;
             //if (Expression.PreviousExpression != null) {
             //grab the queryable's next expression
             var PreviousLambdaExpression = Expression.PreviousExpression;
+            //}
+            //loop until we get to the queryable
             while (PreviousLambdaExpression != null && PreviousLambdaExpression.PreviousExpression != null) {
                 //let's go call the reset Iterator on each method
                 PreviousLambdaExpression.ResetIterator();
@@ -609,11 +613,11 @@ var ToracTechnologies;
                 //are we at the end of the array?
                 if (this.Index === this.CollectionLength) {
                     //let's return a null to kill the loop...
-                    return new IteratorResult(null, 2 /* Completed */);
+                    return new IteratorResult(null, IteratorStatus.Completed);
                 }
                 else {
                     //grab the next item in the collection and increment the index
-                    return new IteratorResult(this.CollectionSource[this.Index++], 1 /* Running */);
+                    return new IteratorResult(this.CollectionSource[this.Index++], IteratorStatus.Running);
                 }
             };
             Queryable.prototype.AsyncSerializedFunc = function () {
@@ -646,12 +650,13 @@ var ToracTechnologies;
             WhereIterator.prototype.Next = function () {
                 //holds the next available item
                 var NextItem;
+                //just keep looping as we recurse through the CollectionSource which contains all the calls down the tree
                 while (true) {
                     //grab the next level and then the next guy for that level
                     NextItem = this.PreviousExpression.Next();
                     //if its null or we want to grab this guy because he meets the criteria then jump out of the loop
                     //if it doesnt match the filter then we just keep going in the loop
-                    if (NextItem.CurrentStatus === 2 /* Completed */ || this.WhereClausePredicate(NextItem.CurrentItem)) {
+                    if (NextItem.CurrentStatus === IteratorStatus.Completed || this.WhereClausePredicate(NextItem.CurrentItem)) {
                         //we found this guy so return it...after we return this method we will jump a level to the next level down the tree
                         return NextItem;
                     }
@@ -687,12 +692,13 @@ var ToracTechnologies;
             FirstOrDefaultIterator.prototype.Next = function () {
                 //holds the next available item
                 var NextItem;
+                //just keep looping as we recurse through the CollectionSource which contains all the calls down the tree
                 while (true) {
                     //grab the next level and then the next guy for that level
                     NextItem = this.PreviousExpression.Next();
                     //if its null or we want to grab this guy because he meets the criteria then jump out of the loop
                     //if it doesnt match the filter then we just keep going in the loop
-                    if (NextItem.CurrentStatus === 2 /* Completed */ || this.HasNullWhereClause || this.WhereClausePredicate(NextItem.CurrentItem)) {
+                    if (NextItem.CurrentStatus === IteratorStatus.Completed || this.HasNullWhereClause || this.WhereClausePredicate(NextItem.CurrentItem)) {
                         //we found this guy so return it...after we return this method we will jump a level to the next level down the tree
                         return NextItem;
                     }
@@ -732,12 +738,14 @@ var ToracTechnologies;
                 var WeHaveAMatch = false;
                 //holds the next available item
                 var NextItem;
-                while ((NextItem = this.PreviousExpression.Next()).CurrentStatus !== 2 /* Completed */) {
+                //we are going to keep looping until the previous expression is complete
+                while ((NextItem = this.PreviousExpression.Next()).CurrentStatus !== ToracTechnologies.JLinq.IteratorStatus.Completed) {
                     //do we match the predicate?
                     if (this.HasNullWhereClause || this.WhereClausePredicate(NextItem.CurrentItem)) {
                         //we have a match...now we only want 1 item, otherwise we raise an error (that is the single logic)
                         //do we already have a match?
                         if (WeHaveAMatch) {
+                            //we already have a match..throw an error
                             throw 'We Already Have A Match. SingleOrDefault Must Only Have 1 or 0 Items Returned. Use FirstOrDefault If You Are Expecting Multiple Items And Just Want To Grab The First Item';
                         }
                         else {
@@ -749,7 +757,7 @@ var ToracTechnologies;
                     }
                 }
                 //we are done iterating through the previous expression, just return the result
-                return new IteratorResult(CurrentSelectedItem, 2 /* Completed */);
+                return new IteratorResult(CurrentSelectedItem, IteratorStatus.Completed);
             };
             SingleOrDefaultIterator.prototype.AsyncSerializedFunc = function () {
                 return [new KeyValuePair('WhereClausePredicate', _super.prototype.SerializeMethod.call(this, this.WhereClausePredicate))];
@@ -779,16 +787,17 @@ var ToracTechnologies;
             SelectIterator.prototype.Next = function () {
                 //holds the next available item
                 var NextItem;
+                //just keep looping as we recurse through the CollectionSource which contains all the calls down the tree
                 while (true) {
                     //grab the next level and then the next guy for that level
                     NextItem = this.PreviousExpression.Next();
                     //if the previous call has no more records then return null
-                    if (NextItem.CurrentStatus === 2 /* Completed */) {
+                    if (NextItem.CurrentStatus === IteratorStatus.Completed) {
                         //exit the chain because we have no more records
-                        return new IteratorResult(null, 2 /* Completed */);
+                        return new IteratorResult(null, IteratorStatus.Completed);
                     }
                     //now create this guy and return it
-                    return new IteratorResult(this.SelectPredicate(NextItem.CurrentItem), 1 /* Running */);
+                    return new IteratorResult(this.SelectPredicate(NextItem.CurrentItem), IteratorStatus.Running);
                 }
             };
             SelectIterator.prototype.AsyncSerializedFunc = function () {
@@ -833,13 +842,14 @@ var ToracTechnologies;
             SelectManyIterator.prototype.Next = function () {
                 //holds the next available item
                 var NextItem;
+                //just keep looping as we recurse through the CollectionSource which contains all the calls down the tree
                 while (true) {
                     //do we have any guys to be returned?
                     if (this.CollectionItemsToReturn != null) {
                         //holds the sub property next value
                         var SubCollectionItem = this.CollectionItemsToReturn.Next();
                         //is this sub collection done iterating through the sub collection?
-                        if (SubCollectionItem.CurrentStatus === 2 /* Completed */) {
+                        if (SubCollectionItem.CurrentStatus === IteratorStatus.Completed) {
                             //we are done with the sub collection...set the queryable to null
                             this.CollectionItemsToReturn = null;
                         }
@@ -851,9 +861,9 @@ var ToracTechnologies;
                     //grab the next level and then the next guy for that level
                     NextItem = this.PreviousExpression.Next();
                     //if the previous call has no more records then return null
-                    if (NextItem.CurrentStatus === 2 /* Completed */) {
+                    if (NextItem.CurrentStatus === IteratorStatus.Completed) {
                         //exit the chain because we have no more records
-                        return new IteratorResult(null, 2 /* Completed */);
+                        return new IteratorResult(null, IteratorStatus.Completed);
                     }
                     //let's grab the collection...this way we can iterate through it and flatten it out
                     var SubCollectionToFlatten = this.CollectionPropertySelector(NextItem.CurrentItem);
@@ -895,20 +905,21 @@ var ToracTechnologies;
             DistinctIterator.prototype.Next = function () {
                 //holds the next available item
                 var NextItem;
+                //just keep looping as we recurse through the CollectionSource which contains all the calls down the tree
                 while (true) {
                     //grab the next level and then the next guy for that level
                     NextItem = this.PreviousExpression.Next();
                     //if this record is null then return it
-                    if (NextItem.CurrentStatus === 2 /* Completed */) {
+                    if (NextItem.CurrentStatus === IteratorStatus.Completed) {
                         //we don't have any more records...
-                        return new IteratorResult(null, 2 /* Completed */);
+                        return new IteratorResult(null, IteratorStatus.Completed);
                     }
                     //let's grab the property value of this item now
                     var PropertyValue = this.PropertySelector(NextItem.CurrentItem);
                     //let's check if its in the list
                     if (PropertyValue != null && this.DistinctLookup.Add(PropertyValue)) {
                         //if we get a true from the Hashset.Add() method then it means its a new item...so return it now because it's distinct
-                        return new IteratorResult(PropertyValue, 1 /* Running */);
+                        return new IteratorResult(PropertyValue, IteratorStatus.Running);
                     }
                 }
             };
@@ -944,18 +955,19 @@ var ToracTechnologies;
                 //if we are already at the max number we want to return, the just return null
                 if (this.WeReturnedWhatWeWantedAlready()) {
                     //we have what we want just return null
-                    return new IteratorResult(null, 2 /* Completed */);
+                    return new IteratorResult(null, IteratorStatus.Completed);
                 }
                 //holds the next available item
                 var NextItem;
+                //just keep looping as we recurse through the CollectionSource which contains all the calls down the tree
                 while (true) {
                     //grab the next level and then the next guy for that level
                     NextItem = this.PreviousExpression.Next();
                     //if its null or we want to grab this guy because he meets the criteria then jump out of the loop
                     //if it doesnt match the filter then we just keep going in the loop
-                    if (NextItem.CurrentStatus === 2 /* Completed */ || !this.WeReturnedWhatWeWantedAlready()) {
+                    if (NextItem.CurrentStatus === IteratorStatus.Completed || !this.WeReturnedWhatWeWantedAlready()) {
                         //incase someone is using this property...we will check for not null and increment it
-                        if (NextItem.CurrentStatus !== 2 /* Completed */) {
+                        if (NextItem.CurrentStatus !== IteratorStatus.Completed) {
                             //it's a value we are returning, so increment the counter
                             this.HowManyHaveWeReturned++;
                         }
@@ -994,16 +1006,17 @@ var ToracTechnologies;
             TakeWhileIterator.prototype.Next = function () {
                 //holds the next available item
                 var NextItem;
+                //just keep looping as we recurse through the CollectionSource which contains all the calls down the tree
                 while (true) {
                     //grab the next level and then the next guy for that level
                     NextItem = this.PreviousExpression.Next();
                     //if we have no more records OR we match the predicate then return the iterator result
-                    if (NextItem.CurrentStatus === 2 /* Completed */ || this.PredicateToTakeWhile(NextItem.CurrentItem)) {
+                    if (NextItem.CurrentStatus === IteratorStatus.Completed || this.PredicateToTakeWhile(NextItem.CurrentItem)) {
                         //we have no more items, just return the completed iterator
                         return NextItem;
                     }
                     //if we get here then the predicate doesn't match...so at that point we don't want to take any more and we want to return the complete iterator
-                    return new IteratorResult(null, 2 /* Completed */);
+                    return new IteratorResult(null, IteratorStatus.Completed);
                 }
             };
             TakeWhileIterator.prototype.AsyncSerializedFunc = function () {
@@ -1037,11 +1050,12 @@ var ToracTechnologies;
             SkipIterator.prototype.Next = function () {
                 //holds the next available item
                 var NextItem;
+                //just keep looping as we recurse through the CollectionSource which contains all the calls down the tree
                 while (true) {
                     //grab the next level and then the next guy for that level
                     NextItem = this.PreviousExpression.Next();
                     //if its null or we want to grab this guy because he meets the criteria then jump out of the loop
-                    if (NextItem.CurrentStatus === 2 /* Completed */) {
+                    if (NextItem.CurrentStatus === IteratorStatus.Completed) {
                         //we are done, just return nextitem which is null
                         return NextItem;
                     }
@@ -1085,11 +1099,12 @@ var ToracTechnologies;
             SkipWhileIterator.prototype.Next = function () {
                 //holds the next available item
                 var NextItem;
+                //just keep looping as we recurse through the CollectionSource which contains all the calls down the tree
                 while (true) {
                     //grab the next level and then the next guy for that level
                     NextItem = this.PreviousExpression.Next();
                     //did we complete the data source? Or did we already find a false condition from a previous item (that means return everything after the false condition)?
-                    if (this.ReturnRestOfElements || NextItem.CurrentStatus === 2 /* Completed */) {
+                    if (this.ReturnRestOfElements || NextItem.CurrentStatus === IteratorStatus.Completed) {
                         //we already found a false condition, so we are going to return this guy until the end of collection
                         return NextItem;
                     }
@@ -1099,7 +1114,7 @@ var ToracTechnologies;
                         //flip the flag 
                         this.ReturnRestOfElements = true;
                         //now return this item
-                        return new IteratorResult(NextItem.CurrentItem, 1 /* Running */);
+                        return new IteratorResult(NextItem.CurrentItem, IteratorStatus.Running);
                     }
                 }
             };
@@ -1133,13 +1148,14 @@ var ToracTechnologies;
                 var NextItem;
                 //working T
                 var WorkingT = null;
+                //just keep looping as we recurse through the CollectionSource which contains all the calls down the tree
                 while (true) {
                     //grab the next level and then the next guy for that level
                     NextItem = this.PreviousExpression.Next();
                     //if we are done, then return the current T
-                    if (NextItem.CurrentStatus === 2 /* Completed */) {
+                    if (NextItem.CurrentStatus === IteratorStatus.Completed) {
                         //we make it all the way through so return the working T
-                        return new IteratorResult(WorkingT, 2 /* Completed */);
+                        return new IteratorResult(WorkingT, IteratorStatus.Completed);
                     }
                     //if the working T is null then set it and keep going
                     if (WorkingT == null) {
@@ -1180,19 +1196,20 @@ var ToracTechnologies;
             AllIterator.prototype.Next = function () {
                 //holds the next available item
                 var NextItem;
+                //just keep looping as we recurse through the CollectionSource which contains all the calls down the tree
                 while (true) {
                     //grab the next level and then the next guy for that level
                     NextItem = this.PreviousExpression.Next();
                     //if its null or we want to grab this guy because he meets the criteria then jump out of the loop
                     //if it doesnt match the filter then we just keep going in the loop
-                    if (NextItem.CurrentStatus === 2 /* Completed */) {
+                    if (NextItem.CurrentStatus === IteratorStatus.Completed) {
                         //we make it all the way through so return true
-                        return new IteratorResult(true, 2 /* Completed */);
+                        return new IteratorResult(true, IteratorStatus.Completed);
                     }
                     //if it doesn't match then return null right away
                     if (!this.WhereClausePredicate(NextItem.CurrentItem)) {
                         //this item doens't match so we exit right away
-                        return new IteratorResult(false, 2 /* Completed */);
+                        return new IteratorResult(false, IteratorStatus.Completed);
                     }
                 }
             };
@@ -1226,19 +1243,20 @@ var ToracTechnologies;
             AnyIterator.prototype.Next = function () {
                 //holds the next available item
                 var NextItem;
+                //just keep looping as we recurse through the CollectionSource which contains all the calls down the tree
                 while (true) {
                     //grab the next level and then the next guy for that level
                     NextItem = this.PreviousExpression.Next();
                     //are we done looping through the dataset?
-                    if (NextItem.CurrentStatus === 2 /* Completed */) {
+                    if (NextItem.CurrentStatus === IteratorStatus.Completed) {
                         //we never found a match so return false
-                        return new IteratorResult(false, 2 /* Completed */);
+                        return new IteratorResult(false, IteratorStatus.Completed);
                     }
                     //if this is the form where we don't pass in a predicate then we just pass back the object
                     //or if we have a predicate and it matches the predicate
                     if (this.HasNullWhereClause || this.WhereClausePredicate(NextItem.CurrentItem)) {
                         //we  have an item its either going to be null or an object. the method that calls this will check to see if its null to determine the result
-                        return new IteratorResult(true, 2 /* Completed */);
+                        return new IteratorResult(true, IteratorStatus.Completed);
                     }
                 }
             };
@@ -1273,13 +1291,14 @@ var ToracTechnologies;
             LastIterator.prototype.Next = function () {
                 //holds the next available item
                 var NextItem;
+                //just keep looping as we recurse through the CollectionSource which contains all the calls down the tree
                 while (true) {
                     //grab the next level and then the next guy for that level
                     NextItem = this.PreviousExpression.Next();
                     //are we done looping through the data set?
-                    if (NextItem.CurrentStatus === 2 /* Completed */) {
+                    if (NextItem.CurrentStatus === IteratorStatus.Completed) {
                         //we don't have any more records...so let's return the last item variable
-                        return new IteratorResult(this.LastItemFound, 2 /* Completed */);
+                        return new IteratorResult(this.LastItemFound, IteratorStatus.Completed);
                     }
                     //if this is the form where we don't pass in a predicate then we just pass back the object
                     //or if we have a predicate then run it and if it passes then store it in the last item variable
@@ -1318,15 +1337,17 @@ var ToracTechnologies;
             ConcatIterator.prototype.Next = function () {
                 //holds the next available item
                 var NextItem;
+                //just keep looping as we recurse through the CollectionSource which contains all the calls down the tree
                 while (true) {
                     //grab the first level next item.
                     NextItem = this.PreviousExpression.Next();
                     //are we done with the first iterator? if so, we need to move on to the 2nd iterator / array that we are going to combine
-                    if (NextItem.CurrentStatus !== 2 /* Completed */) {
+                    if (NextItem.CurrentStatus !== IteratorStatus.Completed) {
                         //we are not complete, so return this guy. (once we are done with the first iterator we will start the second)
                         return NextItem;
                     }
                     else {
+                        //we are done with the first query, so start looping through the 2nd query
                         while (true) {
                             //grab the previous expression for this guy and just keep returning this guy
                             return this.ConcatThisQuery.Next();
@@ -1372,20 +1393,22 @@ var ToracTechnologies;
             UnionIterator.prototype.Next = function () {
                 //holds the next available item
                 var NextItem;
+                //just keep looping as we recurse through the CollectionSource which contains all the calls down the tree
                 while (true) {
                     //grab the first level next item.
                     NextItem = this.PreviousExpression.Next();
                     //are we done with the first iterator? if so, we need to move on to the 2nd iterator / array that we are going to combine
-                    if (NextItem.CurrentStatus !== 2 /* Completed */ && this.HashSetStore.Add(NextItem.CurrentItem)) {
+                    if (NextItem.CurrentStatus !== IteratorStatus.Completed && this.HashSetStore.Add(NextItem.CurrentItem)) {
                         //we are not complete and we just added this guy, so return this guy. (once we are done with the first iterator we will start the second)
                         return NextItem;
                     }
                     else {
+                        //we are done with the first query, so start looping through the 2nd query
                         while (true) {
                             //go grab the next item
                             NextItem = this.UnionThisQuery.Next();
                             //are we done looping through the 2nd array
-                            if (NextItem.CurrentStatus === 2 /* Completed */) {
+                            if (NextItem.CurrentStatus === IteratorStatus.Completed) {
                                 //we are done, just return the item
                                 return NextItem;
                             }
@@ -1434,13 +1457,14 @@ var ToracTechnologies;
                 var NumberOfItems = 0;
                 //holds the next available item
                 var NextItem;
+                //just keep looping as we recurse through the CollectionSource which contains all the calls down the tree
                 while (true) {
                     //grab the next level and then the next guy for that level
                     NextItem = this.PreviousExpression.Next();
                     //go grab the next item...is it null? which means we are done with the record set
-                    if (NextItem.CurrentStatus === 2 /* Completed */) {
+                    if (NextItem.CurrentStatus === IteratorStatus.Completed) {
                         //no more items. return the count of items
-                        return new IteratorResult(NumberOfItems, 2 /* Completed */);
+                        return new IteratorResult(NumberOfItems, IteratorStatus.Completed);
                     }
                     else if (this.HasNullWhereClause || this.WhereClausePredicate(NextItem.CurrentItem)) {
                         //we either have no where clause or we have a where clause and it matches the where clause
@@ -1477,13 +1501,14 @@ var ToracTechnologies;
             MinIterator.prototype.Next = function () {
                 //holds the next available item
                 var NextItem;
+                //just keep looping as we recurse through the CollectionSource which contains all the calls down the tree
                 while (true) {
                     //grab the next level and then the next guy for that level
                     NextItem = this.PreviousExpression.Next();
                     //if its null or we want to grab this guy because he meets the criteria then jump out of the loop
-                    if (NextItem.CurrentStatus === 2 /* Completed */) {
+                    if (NextItem.CurrentStatus === IteratorStatus.Completed) {
                         //if we get here we have no more records...just pass back the lowest number
-                        return new IteratorResult(this.CurrentLowestNumber, 2 /* Completed */);
+                        return new IteratorResult(this.CurrentLowestNumber, IteratorStatus.Completed);
                     }
                     else if (this.CurrentLowestNumber === null || NextItem.CurrentItem < this.CurrentLowestNumber) {
                         //is the current lowest number not set yet? Or is the set current lowest number not lower then the next item..
@@ -1521,13 +1546,14 @@ var ToracTechnologies;
             MaxIterator.prototype.Next = function () {
                 //holds the next available item
                 var NextItem;
+                //just keep looping as we recurse through the CollectionSource which contains all the calls down the tree
                 while (true) {
                     //grab the next level and then the next guy for that level
                     NextItem = this.PreviousExpression.Next();
                     //if its null or we want to grab this guy because he meets the criteria then jump out of the loop
-                    if (NextItem.CurrentStatus === 2 /* Completed */) {
+                    if (NextItem.CurrentStatus === IteratorStatus.Completed) {
                         //if we get here we have no more records...just pass back the largest number
-                        return new IteratorResult(this.CurrentLargestNumber, 2 /* Completed */);
+                        return new IteratorResult(this.CurrentLargestNumber, IteratorStatus.Completed);
                     }
                     else if (this.CurrentLargestNumber === null || NextItem.CurrentItem > this.CurrentLargestNumber) {
                         //is the current largest number not set yet...or is this number greater then the largest number which is set
@@ -1565,13 +1591,14 @@ var ToracTechnologies;
             SumIterator.prototype.Next = function () {
                 //holds the next available item
                 var NextItem;
+                //just keep looping as we recurse through the CollectionSource which contains all the calls down the tree
                 while (true) {
                     //grab the next level and then the next guy for that level
                     NextItem = this.PreviousExpression.Next();
                     //if its null or we want to grab this guy because he meets the criteria then jump out of the loop
-                    if (NextItem.CurrentStatus === 2 /* Completed */) {
+                    if (NextItem.CurrentStatus === IteratorStatus.Completed) {
                         //if we get here we have no more records...just pass back the sum
-                        return new IteratorResult(this.CurrentSumTally, 2 /* Completed */);
+                        return new IteratorResult(this.CurrentSumTally, IteratorStatus.Completed);
                     }
                     else {
                         //if the number is not null then add it to the tally
@@ -1612,13 +1639,14 @@ var ToracTechnologies;
             AverageIterator.prototype.Next = function () {
                 //holds the next available item
                 var NextItem;
+                //just keep looping as we recurse through the CollectionSource which contains all the calls down the tree
                 while (true) {
                     //grab the next level and then the next guy for that level
                     NextItem = this.PreviousExpression.Next();
                     //if its null or we want to grab this guy because he meets the criteria then jump out of the loop
-                    if (NextItem.CurrentStatus === 2 /* Completed */) {
+                    if (NextItem.CurrentStatus === IteratorStatus.Completed) {
                         //if we get here we have no more records...just pass back the sum
-                        return new IteratorResult(this.CurrentSumTally / this.CurrentItemCountTally, 2 /* Completed */);
+                        return new IteratorResult(this.CurrentSumTally / this.CurrentItemCountTally, IteratorStatus.Completed);
                     }
                     else {
                         //if the number is not null then add it to the tally  
@@ -1659,15 +1687,14 @@ var ToracTechnologies;
                 var NextItem;
                 //declare the internal dictionary we used to hold the values
                 var DictionaryOfGroupings = new Dictionary();
+                //just keep looping as we recurse through the CollectionSource which contains all the calls down the tree
                 while (true) {
                     //grab the next level and then the next guy for that level
                     NextItem = this.PreviousExpression.Next();
                     //if its null or we want to grab this guy because he meets the criteria then jump out of the loop
-                    if (NextItem.CurrentStatus === 2 /* Completed */) {
+                    if (NextItem.CurrentStatus === IteratorStatus.Completed) {
                         //we are all done, return the array now
-                        return new IteratorResult(DictionaryOfGroupings.GetAllItems().Select(function (x) {
-                            return { Key: x.Key, Items: x.Value };
-                        }).ToArray(), 2 /* Completed */);
+                        return new IteratorResult(DictionaryOfGroupings.GetAllItems().Select(function (x) { return { Key: x.Key, Items: x.Value }; }).ToArray(), IteratorStatus.Completed);
                     }
                     //let's grab this item's key
                     var NextItemKey = this.GroupBySelector(NextItem.CurrentItem);
@@ -1735,24 +1762,26 @@ var ToracTechnologies;
                 var CompactedThenBySettings = new Array();
                 //loop through the then by sort property selectors
                 if (this.ThenBySortPropertySelectors != null) {
+                    //loop through the property selectors
                     for (var i = 0; i < this.ThenBySortPropertySelectors.length; i++) {
                         //add the method to the array
                         CompactedThenBySettings.push(_super.prototype.SerializeMethod.call(this, this.ThenBySortPropertySelectors[i].PropertySelector));
                     }
                 }
-                return [new KeyValuePair('SortPropertySelector', _super.prototype.SerializeMethod.call(this, this.SortPropertySelector)), new KeyValuePair('ThenBySortPropertySelectors', JSON.stringify(CompactedThenBySettings))];
+                return [new KeyValuePair('SortPropertySelector', _super.prototype.SerializeMethod.call(this, this.SortPropertySelector)),
+                    new KeyValuePair('ThenBySortPropertySelectors', JSON.stringify(CompactedThenBySettings))];
             };
             //#endregion
             //#region ThenBy and ThenByDescending Methods
             //additional order by "ThenBy"
             OrderByIterator.prototype.ThenBy = function (SortPropertySelector) {
                 //go create the OrderThenByIterator
-                return new OrderThenByIterator(this, SortPropertySelector, 0 /* Ascending */);
+                return new OrderThenByIterator(this, SortPropertySelector, SortOrder.Ascending);
             };
             //additional order by "ThenByDescending"
             OrderByIterator.prototype.ThenByDescending = function (SortPropertySelector) {
                 //go create the OrderThenByIterator
-                return new OrderThenByIterator(this, SortPropertySelector, 1 /* Descending */);
+                return new OrderThenByIterator(this, SortPropertySelector, SortOrder.Descending);
             };
             //#endregion
             //#endregion
@@ -1773,18 +1802,19 @@ var ToracTechnologies;
                     ThenBySelectorCount = ThenBySortPropertySelectors.Count();
                 }
                 //are we sorting asc
-                var SortAsc = OrderToSort === 0 /* Ascending */;
+                var SortAsc = OrderToSort === SortOrder.Ascending;
                 //go sort ascending
                 Collection.sort(function (FirstItem, SecondItem) {
                     //grab the difference between the items (using the first order by property selector)
                     var ResultOfComparison = _this.DetermineSortIndex(FirstItem, SecondItem, SortPropertySelector, SortAsc);
                     //if they are equal then we want to go to the additional sort by property selectors (thats really only scenario where then "ThenBy" selectors come into play)
                     if (ResultOfComparison === 0 && HasThenBySelectors) {
+                        //we have "ThenBy"...so let's run through them until we get a final answer
                         for (var i = 0; i < ThenBySelectorCount; i++) {
                             //grab the guy we are up to
                             var CurrentSelector = ThenBySortPropertySelectors[i];
                             //go run the next comparison property selector
-                            ResultOfComparison = _this.DetermineSortIndex(FirstItem, SecondItem, CurrentSelector.PropertySelector, CurrentSelector.ThenBySortOrder === 0 /* Ascending */);
+                            ResultOfComparison = _this.DetermineSortIndex(FirstItem, SecondItem, CurrentSelector.PropertySelector, CurrentSelector.ThenBySortOrder === SortOrder.Ascending);
                             //if we have something other then 0...return it, otherwise move onto the next "ThenBy" selector
                             if (ResultOfComparison !== 0) {
                                 //we have a "should be before or after"...return it
@@ -1895,12 +1925,12 @@ var ToracTechnologies;
             //additional order by "ThenBy"
             OrderThenByIterator.prototype.ThenBy = function (SortPropertySelector) {
                 //go create the OrderThenByIterator
-                return new OrderThenByIterator(this, SortPropertySelector, 0 /* Ascending */);
+                return new OrderThenByIterator(this, SortPropertySelector, SortOrder.Ascending);
             };
             //additional order by "ThenByDescending"
             OrderThenByIterator.prototype.ThenByDescending = function (SortPropertySelector) {
                 //go create the OrderThenByIterator
-                return new OrderThenByIterator(this, SortPropertySelector, 1 /* Descending */);
+                return new OrderThenByIterator(this, SortPropertySelector, SortOrder.Descending);
             };
             //#endregion
             //#endregion
@@ -1910,6 +1940,7 @@ var ToracTechnologies;
                 var FirstOrderByIterator = Iterator.ChainableTreeWalker(WorkingQuery).FirstOrDefault(function (x) { return x.TypeOfObject === 'OrderByIterator'; });
                 //did we find it?
                 if (FirstOrderByIterator == null) {
+                    //throw an error because we can't find the order by
                     throw "Can't Find Order By Statement. Set An 'OrderBy' Or 'OrderByDescending' Before Calling 'ThenBy' / 'ThenByDescending'";
                 }
                 //we have a sort iterator. So let's add the additional order by's (first check to make sure it's not null)
@@ -1983,6 +2014,7 @@ var ToracTechnologies;
             Dictionary.prototype.Keys = function () {
                 //keys to return
                 var KeysToReturn = new Array();
+                //let's loop through the dictionary and add the items
                 for (var thisKey in this.InternalDictionary) {
                     //we need to make sure we are touching the base object and not any prototype properties
                     if (this.InternalDictionary.hasOwnProperty(thisKey)) {
@@ -1997,6 +2029,7 @@ var ToracTechnologies;
             Dictionary.prototype.Values = function () {
                 //keys to return
                 var ValuesToReturn = new Array();
+                //let's loop through the dictionary and add the items
                 for (var thisKey in this.InternalDictionary) {
                     //we need to make sure we are just looping through the properties and not the prototype properties / methods
                     if (this.InternalDictionary.hasOwnProperty(thisKey)) {
@@ -2018,7 +2051,8 @@ var ToracTechnologies;
                 var CurrentIteratorResult;
                 //let's just reset this iterator first
                 DictionaryDataSource.ResetQuery();
-                while ((CurrentIteratorResult = DictionaryDataSource.Next()).CurrentStatus !== 2 /* Completed */) {
+                //let's start iterating through the data source (this way we don't have to materialize the data source to another array)
+                while ((CurrentIteratorResult = DictionaryDataSource.Next()).CurrentStatus !== IteratorStatus.Completed) {
                     //add the item to the dictionary (the value is item)
                     this.Add(KeySelector(CurrentIteratorResult.CurrentItem), CurrentIteratorResult.CurrentItem);
                 }
@@ -2029,6 +2063,7 @@ var ToracTechnologies;
             Dictionary.prototype.Count = function () {
                 //holds the count of items
                 var CountOfItems = 0;
+                //loop through each of the items
                 for (var thisKey in this.InternalDictionary) {
                     //we need to make sure we are just looping through the properties and not the prototype properties / methods
                     if (this.InternalDictionary.hasOwnProperty(thisKey)) {
@@ -2043,6 +2078,7 @@ var ToracTechnologies;
             Dictionary.prototype.GetAllItems = function () {
                 //declare our array to be returned
                 var ArrayToBeReturned = new Array();
+                //loop through each of the items
                 for (var thisKey in this.InternalDictionary) {
                     //we need to make sure we are just looping through the properties and not the prototype properties / methods
                     if (this.InternalDictionary.hasOwnProperty(thisKey)) {
@@ -2100,6 +2136,7 @@ var ToracTechnologies;
             Dictionary.prototype.DateColumnsInMultiKeyObject = function (KeyValue) {
                 //this is a multi key (object) item. Declare the new dictionary so we can keep track if there are any date columns in this array
                 var DatePropertiesInMultiObjectKey = new Dictionary();
+                //loop through all the properties and grab just the dates
                 for (var thisPropertyInKey in KeyValue) {
                     //make sure we have this property
                     if (this.IsDateProperty(KeyValue[thisPropertyInKey])) {
@@ -2157,7 +2194,8 @@ var ToracTechnologies;
                 var CurrentIteratorResult;
                 //let's just reset this iterator first
                 HashSetDataSource.ResetQuery();
-                while ((CurrentIteratorResult = HashSetDataSource.Next()).CurrentStatus !== 2 /* Completed */) {
+                //let's start iterating through the data source (this way we don't have to materialize the data source to another array)
+                while ((CurrentIteratorResult = HashSetDataSource.Next()).CurrentStatus !== IteratorStatus.Completed) {
                     //add the item to the dictionary (the value is item)
                     this.Add(CurrentIteratorResult.CurrentItem);
                 }
@@ -2180,6 +2218,7 @@ var ToracTechnologies;
             var FlatTree = ToracTechnologies.JLinq.Iterator.ChainableTreeWalker(ParsedJsonQuery);
             //queryable with the array
             var Queryable;
+            //we need to get the collection souce.
             for (var j = 0; j < FlatTree.length; j++) {
                 //grab the node
                 var Node = FlatTree[j];
@@ -2199,6 +2238,7 @@ var ToracTechnologies;
             if (Queryable == null) {
                 throw "Couldn't Find A Starting Point For Querable In RebuildTree";
             }
+            //loop through the tree (going backwards starting with queryable)
             for (var i = FlatTree.length - 1; i >= 0; i--) {
                 //grab the current item
                 var CurrentLevelOfTree = FlatTree[i];
@@ -2295,6 +2335,7 @@ var ToracTechnologies;
                 if (ThenBySettings != null) {
                     //cast it back to a key value pair
                     var CastedSelectors = JSON.parse(ThenBySettings.Value);
+                    //loop through the selectors
                     for (var i = 0; i < CastedSelectors.length; i++) {
                         //push the then by properties
                         ThenByToSet.push({
@@ -2334,6 +2375,10 @@ var ToracTechnologies;
                 //we need to go rebuild the concat query tree...then pass it in
                 return new ToracTechnologies.JLinq.Queryable(CurrentLevelOfTree.CollectionSource);
             }
+            //if (CurrentLevelOfTree.TypeOfObject == 'UnionIterator') {
+            //    return Queryable.Union(ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(x => x.Key == 'WhereClausePredicate').Value));
+            //}
+            //throw an error, in a web worker you can't display any alerts or console
             throw 'Level Not Implemented: ' + CurrentLevelOfTree.TypeOfObject;
         }
         JLinq.RebuildSingleTreeNode = RebuildSingleTreeNode;

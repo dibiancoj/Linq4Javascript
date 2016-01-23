@@ -8,6 +8,7 @@ var UnitTestFramework;
     function BuildArray(howManyItems) {
         //declare the array which we will populate
         var lst = new Array();
+        //loop through each of the items to add an object into the list
         for (var i = 0; i < howManyItems; i++) {
             //we will also test sub list's. so we will build a new number array insIde this object
             var SubList;

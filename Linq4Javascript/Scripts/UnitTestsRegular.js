@@ -36,7 +36,8 @@ test('JLinq.SelectMany.Test.1', function () {
     //****Lazy Execution Test****
     var CurrentResult;
     var ItemCount = 0;
-    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== 2 /* Completed */) {
+    //loop through the results 1 record at a time. this will never materialize an array
+    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== ToracTechnologies.JLinq.IteratorStatus.Completed) {
         switch (ItemCount) {
             case 0:
                 equal(CurrentResult.CurrentItem, 2);
@@ -76,7 +77,8 @@ test('JLinq.SelectMany.Test.2', function () {
     //****Lazy Execution Test****
     var CurrentResult;
     var ItemCount = 0;
-    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== 2 /* Completed */) {
+    //loop through the results 1 record at a time. this will never materialize an array
+    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== ToracTechnologies.JLinq.IteratorStatus.Completed) {
         if (ItemCount === 0) {
             equal(CurrentResult.CurrentItem, 4);
         }
@@ -90,9 +92,7 @@ test('JLinq.SelectMany.Test.2', function () {
 test('JLinq.SelectMany.Test.3', function () {
     //this is a select many with a where before it and then a select after it
     //go build the query
-    var QueryToRun = UnitTestFramework._Array.Where(function (x) { return x.Id === 4; }).SelectMany(function (x) { return x.lst; }).Select(function (x) {
-        return { mapId: x };
-    });
+    var QueryToRun = UnitTestFramework._Array.Where(function (x) { return x.Id === 4; }).SelectMany(function (x) { return x.lst; }).Select(function (x) { return { mapId: x }; });
     //go materialize the results into an array
     var QueryToRunResults = QueryToRun.ToArray();
     //****To-UnitTestFramework._Array Test**** (we * 2 because we always set in our test...2 items per collection)
@@ -102,7 +102,8 @@ test('JLinq.SelectMany.Test.3', function () {
     //****Lazy Execution Test****
     var CurrentResult;
     var ItemCount = 0;
-    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== 2 /* Completed */) {
+    //loop through the results 1 record at a time. this will never materialize an array
+    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== ToracTechnologies.JLinq.IteratorStatus.Completed) {
         if (ItemCount === 0) {
             equal(CurrentResult.CurrentItem.mapId, 4);
         }
@@ -138,9 +139,7 @@ test('JLinq.GroupBy.Test.1', function () {
 test('JLinq.GroupBy.Test.2', function () {
     //*** Group by doesn't have a lazy iterator...so we don't need to check that
     //go build the query
-    var QueryToRun = UnitTestFramework._Array.GroupBy(function (x) {
-        return { key1: x.GroupByKey, key2: x.GroupByKey2 };
-    });
+    var QueryToRun = UnitTestFramework._Array.GroupBy(function (x) { return { key1: x.GroupByKey, key2: x.GroupByKey2 }; });
     equal(QueryToRun.length, 3);
     equal(JSON.stringify(QueryToRun[0].Key), JSON.stringify({ key1: 'test', key2: 'z1' }));
     equal(JSON.stringify(QueryToRun[1].Key), JSON.stringify({ key1: 'test', key2: 'z2' }));
@@ -162,9 +161,7 @@ test('JLinq.GroupBy.Test.2', function () {
 test('JLinq.GroupBy.ChainTest.1', function () {
     //*** Group by doesn't have a lazy iterator...so we don't need to check that
     //go build the query
-    var QueryToRun = UnitTestFramework._Array.Where(function (x) { return x.Id > 2; }).GroupBy(function (x) {
-        return { key1: x.GroupByKey, key2: x.GroupByKey2 };
-    });
+    var QueryToRun = UnitTestFramework._Array.Where(function (x) { return x.Id > 2; }).GroupBy(function (x) { return { key1: x.GroupByKey, key2: x.GroupByKey2 }; });
     equal(QueryToRun.length, 1);
     equal(QueryToRun[0].Key.key1, "test1");
     equal(QueryToRun[0].Key.key2, "z2");
@@ -188,7 +185,8 @@ test('JLinq.Where.Test.1', function () {
     //****Lazy Execution Test****
     var CurrentResult;
     var ItemCount = 0;
-    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== 2 /* Completed */) {
+    //loop through the results 1 record at a time. this will never materialize an array
+    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== ToracTechnologies.JLinq.IteratorStatus.Completed) {
         if (ItemCount === 0) {
             equal(CurrentResult.CurrentItem.Id, 1);
             equal(CurrentResult.CurrentItem.Txt, '1');
@@ -211,7 +209,8 @@ test('JLinq.Where.Test.2', function () {
     //****Lazy Execution Test****
     var CurrentResult;
     var ItemCount = 0;
-    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== 2 /* Completed */) {
+    //loop through the results 1 record at a time. this will never materialize an array
+    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== ToracTechnologies.JLinq.IteratorStatus.Completed) {
         if (ItemCount === 0) {
             equal(CurrentResult.CurrentItem.Id, 1);
             equal(CurrentResult.CurrentItem.Txt, '1');
@@ -259,7 +258,8 @@ test('JLinq.Concat.TestOffOfQueryWithArray.1', function () {
     //****Lazy Execution Test****
     var CurrentResult;
     var ItemCount = 0;
-    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== 2 /* Completed */) {
+    //loop through the results 1 record at a time. this will never materialize an array
+    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== ToracTechnologies.JLinq.IteratorStatus.Completed) {
         if (ItemCount === 0) {
             equal(CurrentResult.CurrentItem.Id, 1);
             equal(CurrentResult.CurrentItem.Txt, '1');
@@ -283,6 +283,7 @@ test('JLinq.Concat.TestOffOfArrayWithArray.1', function () {
     var QueryToRun = UnitTestFramework._Array.Concat(UnitTestFramework.BuildArray(2));
     //go materialize the results into an array
     var QueryToRunResults = QueryToRun.ToArray();
+    //****To-UnitTestFramework._Array Test****
     for (var i = 0; i < QueryToRunResults.length; i++) {
         //since we are mergeing 2 arrays...when we get to the 2nd array (i>=5...then we subtract 5 to get back to 0)
         var IntTest = i >= 5 ? i - 5 : i;
@@ -293,7 +294,8 @@ test('JLinq.Concat.TestOffOfArrayWithArray.1', function () {
     //****Lazy Execution Test****
     var CurrentResult;
     var ItemCount = 0;
-    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== 2 /* Completed */) {
+    //loop through the results 1 record at a time. this will never materialize an array
+    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== ToracTechnologies.JLinq.IteratorStatus.Completed) {
         var IntTest = ItemCount >= 5 ? ItemCount - 5 : ItemCount;
         equal(QueryToRunResults[IntTest].Id, IntTest);
         equal(QueryToRunResults[IntTest].Txt, IntTest.toString());
@@ -319,7 +321,8 @@ test('JLinq.ConcatQuery.TestOffOfQueryWithQuery.1', function () {
     //****Lazy Execution Test****
     var CurrentResult;
     var ItemCount = 0;
-    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== 2 /* Completed */) {
+    //loop through the results 1 record at a time. this will never materialize an array
+    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== ToracTechnologies.JLinq.IteratorStatus.Completed) {
         if (ItemCount === 0) {
             equal(CurrentResult.CurrentItem.Id, 1);
             equal(CurrentResult.CurrentItem.Txt, '1');
@@ -344,7 +347,8 @@ test('JLinq.ConcatQuery.TestOffOfQueryWithQuery.2', function () {
     //****Lazy Execution Test****
     var CurrentResult;
     var ItemCount = 0;
-    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== 2 /* Completed */) {
+    //loop through the results 1 record at a time. this will never materialize an array
+    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== ToracTechnologies.JLinq.IteratorStatus.Completed) {
         if (ItemCount === 0) {
             equal(CurrentResult.CurrentItem.Id, 4);
             equal(CurrentResult.CurrentItem.Txt, '4');
@@ -360,6 +364,7 @@ test('JLinq.ConcatQuery.TestOffOfArrayWithQuery.1', function () {
     var QueryToRun = UnitTestFramework._Array.ConcatQuery(UnitTestFramework.BuildArray(2).Where(function (x) { return x.Id === 1; }));
     //go materialize the results into an array
     var QueryToRunResults = QueryToRun.ToArray();
+    //****To-UnitTestFramework._Array Test****
     for (var i = 0; i < QueryToRunResults.length; i++) {
         if (i === 5) {
             equal(QueryToRunResults[i].Id, 1);
@@ -374,7 +379,8 @@ test('JLinq.ConcatQuery.TestOffOfArrayWithQuery.1', function () {
     //****Lazy Execution Test****
     var CurrentResult;
     var ItemCount = 0;
-    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== 2 /* Completed */) {
+    //loop through the results 1 record at a time. this will never materialize an array
+    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== ToracTechnologies.JLinq.IteratorStatus.Completed) {
         if (ItemCount < 5) {
             equal(QueryToRunResults[ItemCount].Id, ItemCount);
             equal(QueryToRunResults[ItemCount].Txt, ItemCount.toString());
@@ -405,7 +411,8 @@ test('JLinq.Union.TestOffOfQueryWithArray.1', function () {
     //****Lazy Execution Test****
     var CurrentResult;
     var ItemCount = 0;
-    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== 2 /* Completed */) {
+    //loop through the results 1 record at a time. this will never materialize an array
+    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== ToracTechnologies.JLinq.IteratorStatus.Completed) {
         if (ItemCount === 0) {
             equal(CurrentResult.CurrentItem, 1);
         }
@@ -423,6 +430,7 @@ test('JLinq.Union.TestOffOfArrayWithArray.1', function () {
     var QueryToRun = UnitTestFramework._Array.Select(function (x) { return x.Id; }).ToArray().Union(UnitTestFramework.BuildArray(2).Select(function (x) { return x.Id; }).ToArray());
     //go materialize the results into an array
     var QueryToRunResults = QueryToRun.ToArray();
+    //****To-UnitTestFramework._Array Test****
     for (var i = 0; i < QueryToRunResults.length; i++) {
         equal(QueryToRunResults[i], i);
     }
@@ -430,7 +438,8 @@ test('JLinq.Union.TestOffOfArrayWithArray.1', function () {
     //****Lazy Execution Test****
     var CurrentResult;
     var ItemCount = 0;
-    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== 2 /* Completed */) {
+    //loop through the results 1 record at a time. this will never materialize an array
+    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== ToracTechnologies.JLinq.IteratorStatus.Completed) {
         equal(QueryToRunResults[ItemCount], ItemCount);
         ItemCount++;
     }
@@ -452,7 +461,8 @@ test('JLinq.UnionQuery.TestOffOfQueryWithQuery.1', function () {
     //****Lazy Execution Test****
     var CurrentResult;
     var ItemCount = 0;
-    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== 2 /* Completed */) {
+    //loop through the results 1 record at a time. this will never materialize an array
+    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== ToracTechnologies.JLinq.IteratorStatus.Completed) {
         if (ItemCount === 0) {
             equal(CurrentResult.CurrentItem, 1);
         }
@@ -470,6 +480,7 @@ test('JLinq.UnionQuery.TestOffOfArrayWithQuery.1', function () {
     var QueryToRun = UnitTestFramework._Array.Select(function (x) { return x.Id; }).ToArray().UnionQuery(UnitTestFramework.BuildArray(2).Where(function (x) { return x.Id === 1; }).Select(function (x) { return x.Id; }));
     //go materialize the results into an array
     var QueryToRunResults = QueryToRun.ToArray();
+    //****To-UnitTestFramework._Array Test****
     for (var i = 0; i < QueryToRunResults.length; i++) {
         equal(QueryToRunResults[i], i);
     }
@@ -477,7 +488,8 @@ test('JLinq.UnionQuery.TestOffOfArrayWithQuery.1', function () {
     //****Lazy Execution Test****
     var CurrentResult;
     var ItemCount = 0;
-    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== 2 /* Completed */) {
+    //loop through the results 1 record at a time. this will never materialize an array
+    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== ToracTechnologies.JLinq.IteratorStatus.Completed) {
         equal(QueryToRunResults[ItemCount], ItemCount);
         ItemCount++;
     }
@@ -500,7 +512,8 @@ test('JLinq.Take.Test.1', function () {
     //****Lazy Execution Test****
     var CurrentResult;
     var ItemCount = 0;
-    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== 2 /* Completed */) {
+    //loop through the results 1 record at a time. this will never materialize an array
+    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== ToracTechnologies.JLinq.IteratorStatus.Completed) {
         if (ItemCount === 0) {
             equal(CurrentResult.CurrentItem.Id, 0);
             equal(CurrentResult.CurrentItem.Txt, '0');
@@ -526,7 +539,8 @@ test('JLinq.Take.ChainTest.1', function () {
     //****Lazy Execution Test****
     var CurrentResult;
     var ItemCount = 0;
-    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== 2 /* Completed */) {
+    //loop through the results 1 record at a time. this will never materialize an array
+    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== ToracTechnologies.JLinq.IteratorStatus.Completed) {
         if (ItemCount === 0) {
             equal(CurrentResult.CurrentItem.Id, 2);
             equal(CurrentResult.CurrentItem.Txt, '2');
@@ -557,7 +571,8 @@ test('JLinq.TakeWhile.Test.1', function () {
     //****Lazy Execution Test****
     var CurrentResult;
     var ItemCount = 0;
-    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== 2 /* Completed */) {
+    //loop through the results 1 record at a time. this will never materialize an array
+    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== ToracTechnologies.JLinq.IteratorStatus.Completed) {
         //if its 0 or 1 then just check 3
         if (ItemCount === 0 || ItemCount === 1) {
             //check against 1
@@ -589,7 +604,8 @@ test('JLinq.TakeWhile.ChainTest.1', function () {
     //****Lazy Execution Test****
     var CurrentResult;
     var ItemCount = 0;
-    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== 2 /* Completed */) {
+    //loop through the results 1 record at a time. this will never materialize an array
+    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== ToracTechnologies.JLinq.IteratorStatus.Completed) {
         //if its 0 or 1 then just check 3
         if (ItemCount === 0 || ItemCount === 1) {
             //check against 1
@@ -625,7 +641,8 @@ test('JLinq.Skip.Test.1', function () {
     //****Lazy Execution Test****
     var CurrentResult;
     var ItemCount = 0;
-    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== 2 /* Completed */) {
+    //loop through the results 1 record at a time. this will never materialize an array
+    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== ToracTechnologies.JLinq.IteratorStatus.Completed) {
         equal(CurrentResult.CurrentItem.Id, ItemCount + 1);
         equal(CurrentResult.CurrentItem.Txt, (ItemCount + 1).toString());
         ItemCount++;
@@ -644,7 +661,8 @@ test('JLinq.Skip.ChainTest.1', function () {
     equal(QueryToRunResults[1].Txt, '4');
     var CurrentResult;
     var ItemCount = 0;
-    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== 2 /* Completed */) {
+    //loop through the results 1 record at a time. this will never materialize an array
+    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== ToracTechnologies.JLinq.IteratorStatus.Completed) {
         equal(CurrentResult.CurrentItem.Id, ItemCount + 3);
         equal(CurrentResult.CurrentItem.Txt, (ItemCount + 3).toString());
         ItemCount++;
@@ -668,7 +686,8 @@ test('JLinq.SkipWhile.Test.1', function () {
     //****Lazy Execution Test****
     var CurrentResult;
     var ItemCount = 0;
-    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== 2 /* Completed */) {
+    //loop through the results 1 record at a time. this will never materialize an array
+    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== ToracTechnologies.JLinq.IteratorStatus.Completed) {
         //if its 0 then just check 1
         if (ItemCount === 0) {
             //check against 1
@@ -700,7 +719,8 @@ test('JLinq.SkipWhile.ChainTest.1', function () {
     //****Lazy Execution Test****
     var CurrentResult;
     var ItemCount = 0;
-    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== 2 /* Completed */) {
+    //loop through the results 1 record at a time. this will never materialize an array
+    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== ToracTechnologies.JLinq.IteratorStatus.Completed) {
         //if its 0 then just check 1
         if (ItemCount === 0) {
             //check against 1
@@ -764,7 +784,8 @@ test('JLinq.Paginate.Test.1', function () {
     //****Lazy Execution Test****
     var CurrentResult;
     var ItemCount = 0;
-    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== 2 /* Completed */) {
+    //loop through the results 1 record at a time. this will never materialize an array
+    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== ToracTechnologies.JLinq.IteratorStatus.Completed) {
         equal(CurrentResult.CurrentItem.Id, ItemCount);
         equal(CurrentResult.CurrentItem.Txt, ItemCount.toString());
         ItemCount++;
@@ -791,7 +812,8 @@ test('JLinq.Paginate.Test.1', function () {
     //****Lazy Execution Test****
     var CurrentResult;
     var ItemCount = 0;
-    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== 2 /* Completed */) {
+    //loop through the results 1 record at a time. this will never materialize an array
+    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== ToracTechnologies.JLinq.IteratorStatus.Completed) {
         equal(CurrentResult.CurrentItem.Id, ItemCount);
         equal(CurrentResult.CurrentItem.Txt, ItemCount.toString());
         ItemCount++;
@@ -814,7 +836,8 @@ test('JLinq.Paginate.Test.3', function () {
     //****Lazy Execution Test****
     var CurrentResult;
     var ItemCount = 0;
-    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== 2 /* Completed */) {
+    //loop through the results 1 record at a time. this will never materialize an array
+    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== ToracTechnologies.JLinq.IteratorStatus.Completed) {
         equal(CurrentResult.CurrentItem.Id, ItemCount + 3);
         equal(CurrentResult.CurrentItem.Txt, (ItemCount + 3).toString());
         ItemCount++;
@@ -837,7 +860,8 @@ test('JLinq.Paginate.ChainTest.1', function () {
     //****Lazy Execution Test****
     var CurrentResult;
     var ItemCount = 0;
-    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== 2 /* Completed */) {
+    //loop through the results 1 record at a time. this will never materialize an array
+    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== ToracTechnologies.JLinq.IteratorStatus.Completed) {
         equal(CurrentResult.CurrentItem.Id, ItemCount + 2);
         equal(CurrentResult.CurrentItem.Txt, (ItemCount + 2).toString());
         ItemCount++;
@@ -863,9 +887,7 @@ test('JLinq.First.Test.2', function () {
 test('JLinq.First.Test.3', function () {
     throws(function () {
         //go run the method that should blow up
-        UnitTestFramework._Array.First(function (x) {
-            return x.Id === 'test';
-        });
+        UnitTestFramework._Array.First(function (x) { return x.Id === 'test'; });
     }, "Can't Find First Item. Query Returned 0 Rows");
 });
 test('JLinq.First.TestWithNoPredicate.1', function () {
@@ -922,9 +944,7 @@ test('JLinq.FirstOrDefault.Test.2', function () {
 test('JLinq.FirstOrDefault.Test.3', function () {
     //***First or default doesn't have a lazy iterator. It returns the first item right away
     //go materialize the results.
-    var QueryToRunResults = UnitTestFramework._Array.FirstOrDefault(function (x) {
-        return x.Id === 'test';
-    });
+    var QueryToRunResults = UnitTestFramework._Array.FirstOrDefault(function (x) { return x.Id === 'test'; });
     equal(QueryToRunResults, null);
 });
 test('JLinq.FirstOrDefault.TestWithNoPredicate.1', function () {
@@ -1072,9 +1092,7 @@ test('JLinq.SingleOrDefault.TestWithNoPredicate.3', function () {
 //#region Select
 test('JLinq.Select.Test.1', function () {
     //go build the query
-    var QueryToRun = UnitTestFramework._Array.Select(function (x) {
-        return { newId: x.Id, newTxt: x.Id + 1 };
-    });
+    var QueryToRun = UnitTestFramework._Array.Select(function (x) { return { newId: x.Id, newTxt: x.Id + 1 }; });
     //go materialize the results into an array
     var QueryToRunResults = QueryToRun.ToArray();
     //****To-UnitTestFramework._Array Test****
@@ -1087,7 +1105,8 @@ test('JLinq.Select.Test.1', function () {
     //****Lazy Execution Test****
     var CurrentResult;
     var ItemCount = 0;
-    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== 2 /* Completed */) {
+    //loop through the results 1 record at a time. this will never materialize an array
+    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== ToracTechnologies.JLinq.IteratorStatus.Completed) {
         if (ItemCount === 1) {
             equal(1, CurrentResult.CurrentItem.newId);
             equal(2, CurrentResult.CurrentItem.newTxt);
@@ -1111,7 +1130,8 @@ test('JLinq.Select.ChainTest.1', function () {
     //****Lazy Execution Test****
     var CurrentResult;
     var ItemCount = 0;
-    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== 2 /* Completed */) {
+    //loop through the results 1 record at a time. this will never materialize an array
+    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== ToracTechnologies.JLinq.IteratorStatus.Completed) {
         if (ItemCount === 0) {
             equal(2, CurrentResult.CurrentItem);
         }
@@ -1259,7 +1279,8 @@ test('JLinq.Distinct.Number.Test.1', function () {
     //****Lazy Execution Test****
     var CurrentResult;
     var ItemCount = 0;
-    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== 2 /* Completed */) {
+    //loop through the results 1 record at a time. this will never materialize an array
+    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== ToracTechnologies.JLinq.IteratorStatus.Completed) {
         if (ItemCount === 0) {
             equal(CurrentResult.CurrentItem, 0);
         }
@@ -1283,7 +1304,8 @@ test('JLinq.Distinct.Number.Test.2', function () {
     //****Lazy Execution Test****
     var CurrentResult;
     var ItemCount = 0;
-    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== 2 /* Completed */) {
+    //loop through the results 1 record at a time. this will never materialize an array
+    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== ToracTechnologies.JLinq.IteratorStatus.Completed) {
         if (ItemCount === 0) {
             equal(CurrentResult.CurrentItem, 0);
         }
@@ -1313,7 +1335,8 @@ test('JLinq.Distinct.Date.Test.3', function () {
     //sort doesn't use lazy iterator...so we will just check the results in an index manner
     var CurrentResult;
     var ItemCount = 0;
-    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== 2 /* Completed */) {
+    //loop through the results 1 record at a time. this will never materialize an array
+    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== ToracTechnologies.JLinq.IteratorStatus.Completed) {
         if (ItemCount === 0) {
             equal(CurrentResult.CurrentItem, UnitTestFramework._DateOfTest);
         }
@@ -1345,7 +1368,8 @@ test('JLinq.Distinct.String.Test.2', function () {
     //****Lazy Execution Test****
     var CurrentResult;
     var ItemCount = 0;
-    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== 2 /* Completed */) {
+    //loop through the results 1 record at a time. this will never materialize an array
+    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== ToracTechnologies.JLinq.IteratorStatus.Completed) {
         if (ItemCount === 0) {
             equal(CurrentResult.CurrentItem, 0);
         }
@@ -1375,7 +1399,8 @@ test('JLinq.Distinct.ChainTest.1', function () {
     //****Lazy Execution Test****
     var CurrentResult;
     var ItemCount = 0;
-    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== 2 /* Completed */) {
+    //loop through the results 1 record at a time. this will never materialize an array
+    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== ToracTechnologies.JLinq.IteratorStatus.Completed) {
         if (ItemCount === 0) {
             equal(CurrentResult.CurrentItem, 0);
         }
@@ -1483,7 +1508,8 @@ test('JLinq.Count.ResetIteratorTest.1', function () {
     var CurrentResult;
     //declare the item count
     var ItemCount = 0;
-    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== 2 /* Completed */) {
+    //loop through the results 1 record at a time. this will never materialize an array
+    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== ToracTechnologies.JLinq.IteratorStatus.Completed) {
         //increase the count
         ItemCount++;
     }
@@ -1558,6 +1584,7 @@ test('JLinq.Dictionary.Number.Test.1', function () {
     equal(DictionaryResult.Count(), 5);
     //let's make sure the get all items works
     var GetAllItemsResult = DictionaryResult.GetAllItems();
+    //loop through all the items in the dictionary
     for (var i = 0; i < GetAllItemsResult.length; i++) {
         //check the key
         equal(GetAllItemsResult[i].Key, i);
@@ -1570,6 +1597,7 @@ test('JLinq.Dictionary.Number.Test.1', function () {
     equal(DictionaryResult.Count(), 4);
     //let's make sure the remove works
     var GetAllItemsRemoveResultTest = DictionaryResult.GetAllItems();
+    //loop through all the items in the dictionary
     for (var i = 0; i < GetAllItemsRemoveResultTest.length; i++) {
         //check the key
         equal(GetAllItemsRemoveResultTest[i].Key, i + 1);
@@ -1608,6 +1636,7 @@ test('JLinq.Dictionary.Date.Test.1', function () {
     equal(DictionaryResult.Count(), 1);
     //let's make sure the get all items works
     var GetAllItemsResult = DictionaryResult.GetAllItems();
+    //loop through all the items in the dictionary
     for (var i = 0; i < GetAllItemsResult.length; i++) {
         //check the key
         equal(GetAllItemsResult[i].Key, UnitTestFramework._FirstIndexDate);
@@ -1645,6 +1674,7 @@ test('JLinq.Dictionary.Boolean.Test.1', function () {
     equal(DictionaryResult.Count(), 1);
     //let's make sure the get all items works
     var GetAllItemsResult = DictionaryResult.GetAllItems();
+    //loop through all the items in the dictionary
     for (var i = 0; i < GetAllItemsResult.length; i++) {
         //check the key
         equal(GetAllItemsResult[i].Key, true);
@@ -1654,9 +1684,7 @@ test('JLinq.Dictionary.Boolean.Test.1', function () {
 });
 test('JLinq.Dictionary.MultiKeyObject.Test.1', function () {
     //push the list to a dictionary
-    var DictionaryResult = UnitTestFramework._Array.Where(function (x) { return x.CreatedDate === UnitTestFramework._FirstIndexDate; }).ToDictionary(function (x) {
-        return { Id: x.Id, Active: x.IsActive };
-    });
+    var DictionaryResult = UnitTestFramework._Array.Where(function (x) { return x.CreatedDate === UnitTestFramework._FirstIndexDate; }).ToDictionary(function (x) { return { Id: x.Id, Active: x.IsActive }; });
     //let's check to make sure we can find these guys in the dictionary
     equal(DictionaryResult.ContainsKey({ Id: 1, Active: true }), true);
     equal(DictionaryResult.ContainsKey({ Id: 1, Active: false }), false);
@@ -1676,6 +1704,7 @@ test('JLinq.Dictionary.MultiKeyObject.Test.1', function () {
     equal(DictionaryResult.Count(), 1);
     //let's make sure the get all items works
     var GetAllItemsResult = DictionaryResult.GetAllItems();
+    //loop through all the items in the dictionary
     for (var i = 0; i < GetAllItemsResult.length; i++) {
         //check the key
         equal(GetAllItemsResult[i].Key.Active, true);
@@ -1689,9 +1718,7 @@ test('JLinq.Dictionary.MultiKeyObject.Test.1', function () {
 });
 test('JLinq.Dictionary.MultiKeyObjectWithDatePartialKey.Test.1', function () {
     //push the list to a dictionary
-    var DictionaryResult = UnitTestFramework._Array.Take(2).ToDictionary(function (x) {
-        return { Id: x.Id, Dt: x.CreatedDate };
-    });
+    var DictionaryResult = UnitTestFramework._Array.Take(2).ToDictionary(function (x) { return { Id: x.Id, Dt: x.CreatedDate }; });
     //check to make sure the keys are found in the dictionary
     equal(DictionaryResult.ContainsKey({ Id: 0, Dt: UnitTestFramework._DateOfTest }), true);
     equal(DictionaryResult.ContainsKey({ Id: 1, Dt: UnitTestFramework._FirstIndexDate }), true);
@@ -1714,6 +1741,7 @@ test('JLinq.Dictionary.MultiKeyObjectWithDatePartialKey.Test.1', function () {
     equal(DictionaryResult.Count(), 2);
     //let's make sure the get all items works
     var GetAllItemsResult = DictionaryResult.GetAllItems();
+    //loop through all the items in the dictionary
     for (var i = 0; i < GetAllItemsResult.length; i++) {
         //is this the first item?
         if (i === 0) {
@@ -1776,6 +1804,7 @@ test('JLinq.HashSet.Number.Test.1', function () {
     equal(HashSetToTest.Count(), 5);
     //let's make sure the get all items works
     var GetAllItemsResult = HashSetToTest.Values();
+    //loop through all the items in the dictionary
     for (var i = 0; i < GetAllItemsResult.length; i++) {
         //check the hashset value
         equal(GetAllItemsResult[i], i);
@@ -1784,6 +1813,7 @@ test('JLinq.HashSet.Number.Test.1', function () {
     HashSetToTest.Remove(4);
     //check the count now
     equal(HashSetToTest.Count(), 4);
+    //loop through make sure it deleted the correct entry
     for (var i = 0; i < GetAllItemsResult.length; i++) {
         //check result with whatever i is
         equal(GetAllItemsResult[i], i);
@@ -1876,6 +1906,7 @@ test('JLinq.OrderBy.Asc.Number.Test.1', function () {
     var QueryToRun = UnitTestFramework._Array.OrderBy(function (x) { return x.Id; });
     //push the results
     var QueryToRunResults = QueryToRun.ToArray();
+    //go test the results
     for (var i = 0; i < QueryToRunResults.length; i++) {
         //just make sure the results are whatever i is
         equal(QueryToRunResults[i].Id, i);
@@ -1884,7 +1915,8 @@ test('JLinq.OrderBy.Asc.Number.Test.1', function () {
     var CurrentResult;
     //holds the current index
     var Index = 0;
-    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== 2 /* Completed */) {
+    //loop through the results 1 record at a time. this will never materialize an array
+    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== ToracTechnologies.JLinq.IteratorStatus.Completed) {
         //just make sure the results are whatever i is
         equal(CurrentResult.CurrentItem.Id, Index);
         //increase the tally
@@ -1896,6 +1928,7 @@ test('JLinq.OrderBy.Asc.Number.ChainTest.1', function () {
     var QueryToRun = UnitTestFramework._Array.Select(function (x) { return x.Id; }).OrderBy(function (x) { return x; });
     //go materialize the array
     var QueryToRunResults = QueryToRun.ToArray();
+    //go test the results
     for (var i = 0; i < QueryToRunResults.length; i++) {
         //just make sure the results are whatever i is
         equal(QueryToRunResults[i], i);
@@ -1904,7 +1937,8 @@ test('JLinq.OrderBy.Asc.Number.ChainTest.1', function () {
     var CurrentResult;
     //declare the index
     var Index = 0;
-    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== 2 /* Completed */) {
+    //loop through the results 1 record at a time. this will never materialize an array
+    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== ToracTechnologies.JLinq.IteratorStatus.Completed) {
         //just make sure the results are whatever i is
         equal(CurrentResult.CurrentItem, Index);
         //increase the index
@@ -1918,6 +1952,7 @@ test('JLinq.OrderBy.Desc.Number.Test.1', function () {
     var QueryToRunResults = QueryToRun.ToArray();
     //initialize to 1 so we can just subtract the length
     var IdLengthCalculator = 1;
+    //go test the results
     for (var i = 0; i < QueryToRunResults.length; i++) {
         //subtract the length from the index we are up to (starting at 1)
         equal(QueryToRunResults[i].Id, QueryToRunResults.length - IdLengthCalculator);
@@ -1928,7 +1963,8 @@ test('JLinq.OrderBy.Desc.Number.Test.1', function () {
     var CurrentResult;
     //reset the id
     IdLengthCalculator = 1;
-    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== 2 /* Completed */) {
+    //loop through the results 1 record at a time. this will never materialize an array
+    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== ToracTechnologies.JLinq.IteratorStatus.Completed) {
         //subtract the length from the index we are up to (starting at 1)
         equal(CurrentResult.CurrentItem.Id, QueryToRunResults.length - IdLengthCalculator);
         //increase the tally
@@ -1942,6 +1978,7 @@ test('JLinq.OrderBy.Desc.Number.ChainTest.1', function () {
     var QueryToRunResults = QueryToRun.ToArray();
     //initialize to 1 so we can just subtract the length
     var IdLengthCalculator = 1;
+    //go test the results
     for (var i = 0; i < QueryToRunResults.length; i++) {
         //subtract the length from the index we are up to (starting at 1)
         equal(QueryToRunResults[i], QueryToRunResults.length - IdLengthCalculator);
@@ -1952,7 +1989,8 @@ test('JLinq.OrderBy.Desc.Number.ChainTest.1', function () {
     IdLengthCalculator = 1;
     //****Lazy Execution Test****
     var CurrentResult;
-    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== 2 /* Completed */) {
+    //loop through the results 1 record at a time. this will never materialize an array
+    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== ToracTechnologies.JLinq.IteratorStatus.Completed) {
         //subtract the length from the index we are up to (starting at 1)
         equal(CurrentResult.CurrentItem, QueryToRunResults.length - IdLengthCalculator);
         //increase the tally
@@ -1979,7 +2017,8 @@ test('JLinq.OrderBy.Asc.String.Test.1', function () {
     var CurrentResult;
     //holds the index
     var Index = 0;
-    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== 2 /* Completed */) {
+    //loop through the results 1 record at a time. this will never materialize an array
+    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== ToracTechnologies.JLinq.IteratorStatus.Completed) {
         //is this the guys we added after we build the array?
         if (Index === 5) {
             equal(CurrentResult.CurrentItem.Id, 1000);
@@ -2016,7 +2055,8 @@ test('JLinq.OrderBy.Asc.String.Test.2', function () {
     var CurrentResult;
     //holds the index
     var Index = 0;
-    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== 2 /* Completed */) {
+    //loop through the results 1 record at a time. this will never materialize an array
+    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== ToracTechnologies.JLinq.IteratorStatus.Completed) {
         //is this the guys we added after we build the array?
         if (Index === 5) {
             equal(CurrentResult.CurrentItem.Txt, 'ABC');
@@ -2053,7 +2093,8 @@ test('JLinq.OrderBy.Asc.String.ChainTest.1', function () {
     var CurrentResult;
     //holds the index
     var Index = 0;
-    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== 2 /* Completed */) {
+    //loop through the results 1 record at a time. this will never materialize an array
+    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== ToracTechnologies.JLinq.IteratorStatus.Completed) {
         //is this the guys we added after we build the array?
         if (Index === 5) {
             equal(CurrentResult.CurrentItem, 'abc');
@@ -2086,7 +2127,8 @@ test('JLinq.OrderBy.Desc.String.Test.1', function () {
     var CurrentResult;
     //holds the index
     var Index = 0;
-    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== 2 /* Completed */) {
+    //loop through the results 1 record at a time. this will never materialize an array
+    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== ToracTechnologies.JLinq.IteratorStatus.Completed) {
         //validate against the array since we know the array is correct
         equal(CurrentResult.CurrentItem.Txt, QueryToRunResults[Index].Txt);
         //increase the index
@@ -2114,7 +2156,8 @@ test('JLinq.OrderBy.Desc.String.Test.2', function () {
     var CurrentResult;
     //holds the index
     var Index = 0;
-    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== 2 /* Completed */) {
+    //loop through the results 1 record at a time. this will never materialize an array
+    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== ToracTechnologies.JLinq.IteratorStatus.Completed) {
         //validate against the array since we know the array is correct
         equal(CurrentResult.CurrentItem.Txt, QueryToRunResults[Index].Txt);
         //increase the index
@@ -2139,7 +2182,8 @@ test('JLinq.OrderBy.Desc.String.ChainTest.1', function () {
     var CurrentResult;
     //holds the index
     var Index = 0;
-    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== 2 /* Completed */) {
+    //loop through the results 1 record at a time. this will never materialize an array
+    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== ToracTechnologies.JLinq.IteratorStatus.Completed) {
         //validate against the array since we know the array is correct
         equal(CurrentResult.CurrentItem.Txt, QueryToRunResults[Index].Txt);
         //increase the index
@@ -2211,7 +2255,8 @@ test('JLinq.ThenBy.Asc.Test.1', function () {
     var CurrentResult;
     //holds the current index
     var Index = 0;
-    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== 2 /* Completed */) {
+    //loop through the results 1 record at a time. this will never materialize an array
+    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== ToracTechnologies.JLinq.IteratorStatus.Completed) {
         //just make sure the results are whatever i is
         equal(CurrentResult.CurrentItem.Id, QueryToRunResults[Index].Id);
         //increase the tally
@@ -2232,7 +2277,8 @@ test('JLinq.ThenBy.Asc.Test.2', function () {
     var CurrentResult;
     //holds the current index
     var Index = 0;
-    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== 2 /* Completed */) {
+    //loop through the results 1 record at a time. this will never materialize an array
+    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== ToracTechnologies.JLinq.IteratorStatus.Completed) {
         //just make sure the results are whatever i is
         equal(CurrentResult.CurrentItem.Id, QueryToRunResults[Index].Id);
         //increase the tally
@@ -2253,7 +2299,8 @@ test('JLinq.ThenBy.Asc.Test.3', function () {
     var CurrentResult;
     //holds the current index
     var Index = 0;
-    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== 2 /* Completed */) {
+    //loop through the results 1 record at a time. this will never materialize an array
+    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== ToracTechnologies.JLinq.IteratorStatus.Completed) {
         //just make sure the results are whatever i is
         equal(CurrentResult.CurrentItem.Id, QueryToRunResults[Index].Id);
         //increase the tally
@@ -2273,7 +2320,8 @@ test('JLinq.ThenBy.Asc.ChainTest.1', function () {
     var CurrentResult;
     //holds the current index
     var Index = 0;
-    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== 2 /* Completed */) {
+    //loop through the results 1 record at a time. this will never materialize an array
+    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== ToracTechnologies.JLinq.IteratorStatus.Completed) {
         //just make sure the results are whatever i is
         equal(CurrentResult.CurrentItem.Id, QueryToRunResults[Index].Id);
         //increase the tally
@@ -2293,7 +2341,8 @@ test('JLinq.ThenBy.Asc.ChainTest.2', function () {
     var CurrentResult;
     //holds the current index
     var Index = 0;
-    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== 2 /* Completed */) {
+    //loop through the results 1 record at a time. this will never materialize an array
+    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== ToracTechnologies.JLinq.IteratorStatus.Completed) {
         //just make sure the results are whatever i is
         equal(CurrentResult.CurrentItem, QueryToRunResults[Index]);
         //increase the tally
@@ -2314,7 +2363,8 @@ test('JLinq.ThenBy.Desc.Test.1', function () {
     var CurrentResult;
     //holds the current index
     var Index = 0;
-    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== 2 /* Completed */) {
+    //loop through the results 1 record at a time. this will never materialize an array
+    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== ToracTechnologies.JLinq.IteratorStatus.Completed) {
         //just make sure the results are whatever i is
         equal(CurrentResult.CurrentItem.Id, QueryToRunResults[Index].Id);
         //increase the tally
@@ -2335,7 +2385,8 @@ test('JLinq.ThenBy.Desc.Test.2', function () {
     var CurrentResult;
     //holds the current index
     var Index = 0;
-    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== 2 /* Completed */) {
+    //loop through the results 1 record at a time. this will never materialize an array
+    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== ToracTechnologies.JLinq.IteratorStatus.Completed) {
         //just make sure the results are whatever i is
         equal(CurrentResult.CurrentItem.Id, QueryToRunResults[Index].Id);
         //increase the tally
@@ -2356,7 +2407,8 @@ test('JLinq.ThenBy.Desc.Test.3', function () {
     var CurrentResult;
     //holds the current index
     var Index = 0;
-    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== 2 /* Completed */) {
+    //loop through the results 1 record at a time. this will never materialize an array
+    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== ToracTechnologies.JLinq.IteratorStatus.Completed) {
         //just make sure the results are whatever i is
         equal(CurrentResult.CurrentItem.Txt, QueryToRunResults[Index].Txt);
         //increase the tally
@@ -2376,7 +2428,8 @@ test('JLinq.ThenBy.Desc.ChainTest.1', function () {
     var CurrentResult;
     //holds the current index
     var Index = 0;
-    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== 2 /* Completed */) {
+    //loop through the results 1 record at a time. this will never materialize an array
+    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== ToracTechnologies.JLinq.IteratorStatus.Completed) {
         //just make sure the results are whatever i is
         equal(CurrentResult.CurrentItem.Id, QueryToRunResults[Index].Id);
         //increase the tally
@@ -2396,7 +2449,8 @@ test('JLinq.ThenBy.Desc.ChainTest.2', function () {
     var CurrentResult;
     //holds the current index
     var Index = 0;
-    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== 2 /* Completed */) {
+    //loop through the results 1 record at a time. this will never materialize an array
+    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== ToracTechnologies.JLinq.IteratorStatus.Completed) {
         //just make sure the results are whatever i is
         equal(CurrentResult.CurrentItem, QueryToRunResults[Index]);
         //increase the tally

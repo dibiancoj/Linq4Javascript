@@ -42,7 +42,7 @@ module ToracTechnologies {
         //#region Iterator Class
 
         //Class is used to throw the methods on a common class that we can inherit from
-        export class Iterator<T> {
+        export abstract class Iterator<T> {
 
             //#region Properties
 
@@ -499,14 +499,10 @@ module ToracTechnologies {
             }
 
             //this is an abstract method
-            public Next(): IteratorResult<T> {
-                throw new Error('This method is abstract');
-            }
+            public abstract Next(): IteratorResult<T>;
 
             //this is an abstract method (this should be considered private)
-            public ResetIterator() {
-                throw new Error('This method is abstract');
-            }
+            public abstract ResetIterator();
 
             //if you traverse the results (not calling ToArray()). we need to reset all the variables if you want to run the query again. this will do it
             //ToArray() automatically resets this
@@ -521,9 +517,7 @@ module ToracTechnologies {
             //#region Public Instance Methods
 
             //should be treated as an abstract method
-            public AsyncSerializedFunc(): Array<KeyValuePair<string, string>> {
-                throw new Error('This method is abstract');
-            }
+            public abstract AsyncSerializedFunc(): Array<KeyValuePair<string, string>>;
 
             //serializes a method to a string. So pass in x => x.Id;...will return the function in a string (serialized function)
             public SerializeMethod(MethodToSerialize: any) {
