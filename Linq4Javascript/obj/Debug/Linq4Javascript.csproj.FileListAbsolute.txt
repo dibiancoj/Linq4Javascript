@@ -125,3 +125,4 @@ C:\Users\dibiancoj\Documents\Developement\Linq4JavascriptGitHub\Linq4Javascript\
 C:\Users\dibiancoj\Documents\Developement\Linq4JavascriptGitHub\Linq4Javascript\Linq4Javascript\bin\Antlr3.Runtime.pdb
 C:\Users\dibiancoj\Documents\Developement\Linq4JavascriptGitHub\Linq4Javascript\Linq4Javascript\obj\Debug\Linq4Javascript.dll
 C:\Users\dibiancoj\Documents\Developement\Linq4JavascriptGitHub\Linq4Javascript\Linq4Javascript\obj\Debug\Linq4Javascript.pdb
+C:\Users\dibiancoj\Documents\Developement\Linq4JavascriptGitHub\Linq4Javascript\Linq4Javascript\obj\Debug\Linq4Javascript.csprojResolveAssemblyReference.cache

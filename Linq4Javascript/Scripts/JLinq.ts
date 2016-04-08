@@ -371,7 +371,7 @@ module ToracTechnologies {
                 }
 
                 //go skip x amount of pages and only take however amount of records you want on a page. 
-                return new SkipIterator<T>(this,((CurrentPageNumber - 1) * HowManyRecordsPerPage)).Take(HowManyRecordsPerPage);
+                return new SkipIterator<T>(this, ((CurrentPageNumber - 1) * HowManyRecordsPerPage)).Take(HowManyRecordsPerPage);
             }
 
             //order by from data source
@@ -420,7 +420,7 @@ module ToracTechnologies {
 
             //materializes the expression to an array in a web worker so it doesn't feeze the ui. if a web worker is not available it will just call the ToArray()
             public ToArrayAsync(CallBackWhenQueryIsComplete: (Result: Array<T>) => void, OnErrorCallBack: (ErrorObject: ErrorEvent) => void, JLinqJsUrlPath: string, IsAsyncAvailable?: boolean): void {
-               
+
                 //can we use async?
                 var CanWeUseAsync: boolean;
 
@@ -430,10 +430,10 @@ module ToracTechnologies {
                     //we need to go grab the value and cache it
                     Iterator.AsyncIsAvailable = Iterator.AsyncIsAvailableCheck(JLinqJsUrlPath);
                 }
-              
+
                 //did they pass it in?
                 if (IsAsyncAvailable == null) {
-      
+
                     //use the jlinq implementation
                     CanWeUseAsync = Iterator.AsyncIsAvailable;
                 } else {
@@ -455,7 +455,7 @@ module ToracTechnologies {
 
                     //flip the flag back
                     CanWeUseAsync = false;
-                } 
+                }
 
                 //is the browser new enough to run web webworkers?
                 if (CanWeUseAsync) {
@@ -466,7 +466,7 @@ module ToracTechnologies {
 
                         //we are all done. go tell the user that the data is done with the callback
                         CallBackWhenQueryIsComplete(e.data);
-                        
+
                         //i'm going to cleanup after we run this call. I don't know how useful it is to keep it listening
                         WorkerToRun.terminate();
 
@@ -540,23 +540,23 @@ module ToracTechnologies {
             public static BuildWebWorker(JLinqJsUrlPath: string): Worker {
 
                 //we need to pass in the path incase they use bundling. We have no way of saying JLinq is in this bundle (because the names may not be JLinq.ts)
-            
+
                 //did we already build the web worker?
-                if (Iterator.WebWorkerBlobToCache == null) { 
+                if (Iterator.WebWorkerBlobToCache == null) {
 
                     //let's build the function text now
                     var FunctionScript = "self.addEventListener('message', function(e) { \n" +
 
-                    //let's import the jlinq library
+                        //let's import the jlinq library
                         " importScripts('" + JLinqJsUrlPath + "') \n" +
 
-                    //let's go parse the json which is the query
+                        //let's go parse the json which is the query
                         " var Query = JSON.parse(e.data); \n" +
 
-                    //let's rebuild the tree
+                        //let's rebuild the tree
                         " var TreeRebuilt = ToracTechnologies.JLinq.RebuildTree(Query); \n" +
 
-                    //go build up the results and pass back the array
+                        //go build up the results and pass back the array
                         " self.postMessage(TreeRebuilt.ToArray(), null, null); }, false);";
 
                     //go set the blob...
@@ -569,7 +569,7 @@ module ToracTechnologies {
 
             //check if the browser supports web workers
             public static AsyncIsAvailableCheck(JLinqJsUrlPath: string): boolean {
-          
+
                 //do we have a web worker?
                 if (typeof (Worker) !== 'undefined') {
 
@@ -589,20 +589,20 @@ module ToracTechnologies {
                         return false;
                     }
                 }
-        
+
                 //fall back to false
                 return false;
-            } 
+            }
 
             //builds an async tree from an iterator. Re-builds the entire tree by adding the methods it needs to run the query. (methods don't serialize)
             public static BuildAsyncTree<T>(Query: Iterator<T>): Iterator<T> {
-    
+
                 //flatten the tree
                 var FlatTree = Iterator.ChainableTreeWalker(Query);
 
                 //loop through the tree
                 for (var i = 0, len = FlatTree.length; i < len; i++) {
-                    
+
                     //grab the current item
                     var CurrentLevelOfTree = FlatTree[i];
 
@@ -649,13 +649,13 @@ module ToracTechnologies {
 
             //serialize the func 
             public static SerializeAsyncFuncToStringTree<T>(Query: Iterator<T>): Iterator<T> {
-       
+
                 //flatten the tree
                 var FlatTree = Iterator.ChainableTreeWalker(Query);
 
                 //loop through the tree
                 for (var i = 0, len = FlatTree.length; i < len; i++) {
-                    
+
                     //grab the current item
                     var CurrentLevelOfTree = FlatTree[i];
 
@@ -730,7 +730,7 @@ module ToracTechnologies {
             PreviousExpression: IChainable<any, T>;
             ResetIterator();
             AsyncSerializedFunc(): Array<KeyValuePair<string, string>>;
-             
+
             //holds the methods we need to serialize when we run async
             AsyncSerialized: Array<KeyValuePair<string, string>>;
         }
@@ -964,6 +964,9 @@ module ToracTechnologies {
 
             constructor(Collection: Array<T>) {
 
+                //because we inherit from Iterator we need to call the base class
+                super();
+
                 //throw the collection into a variable
                 this.CollectionSource = Collection;
 
@@ -975,9 +978,6 @@ module ToracTechnologies {
 
                 //throw this into a variable so we can debug this thing when we go from CollectionSource To CollectionSource and check the type
                 this.TypeOfObject = "Queryable";
-
-                //because we inherit from Iterator we need to call the base class
-                super();
             }
 
             //#endregion
@@ -1038,6 +1038,9 @@ module ToracTechnologies {
 
             constructor(PreviousLambdaExpression: IChainable<T, T>, WherePredicate: (ItemToTest: T) => boolean) {
 
+                //because we inherit from Iterator we need to call the base class
+                super();
+
                 //set the queryable source
                 this.PreviousExpression = PreviousLambdaExpression;
 
@@ -1046,9 +1049,6 @@ module ToracTechnologies {
 
                 //throw this into a variable so we can debug this thing when we go from CollectionSource To CollectionSource and check the type
                 this.TypeOfObject = "WhereIterator";
-
-                //because we inherit from Iterator we need to call the base class
-                super();
             }
 
             //#endregion
@@ -1102,6 +1102,9 @@ module ToracTechnologies {
 
             constructor(PreviousLambdaExpression: IChainable<T, T>, WhichTypeOfObject: string, WherePredicate?: (ItemToTest: T) => boolean) {
 
+                //because we inherit from Iterator we need to call the base class
+                super();
+
                 //set the queryable source
                 this.PreviousExpression = PreviousLambdaExpression;
 
@@ -1113,9 +1116,6 @@ module ToracTechnologies {
 
                 //throw this into a variable so we can debug this thing when we go from CollectionSource To CollectionSource and check the type
                 this.TypeOfObject = WhichTypeOfObject;
-
-                //because we inherit from Iterator we need to call the base class
-                super();
             }
 
             //#endregion
@@ -1170,6 +1170,9 @@ module ToracTechnologies {
 
             constructor(PreviousLambdaExpression: IChainable<T, T>, WhichTypeOfObject: string, WherePredicate?: (ItemToTest: T) => boolean) {
 
+                //because we inherit from Iterator we need to call the base class
+                super();
+
                 //set the queryable source
                 this.PreviousExpression = PreviousLambdaExpression;
 
@@ -1181,9 +1184,6 @@ module ToracTechnologies {
 
                 //throw this into a variable so we can debug this thing when we go from CollectionSource To CollectionSource and check the type
                 this.TypeOfObject = WhichTypeOfObject;
-
-                //because we inherit from Iterator we need to call the base class
-                super();
             }
 
             //#endregion
@@ -1255,6 +1255,9 @@ module ToracTechnologies {
 
             constructor(PreviousLambdaExpression: IChainable<T, T>, SelectCreatorPredicate: (ItemToTest: T) => TNewObject) {
 
+                //because we inherit from Iterator we need to call the base class
+                super();
+
                 //set the queryable source
                 this.PreviousExpression = PreviousLambdaExpression;
 
@@ -1263,9 +1266,6 @@ module ToracTechnologies {
 
                 //throw this into a variable so we can debug this thing when we go from CollectionSource To CollectionSource and check the type
                 this.TypeOfObject = "SelectIterator";
-
-                //because we inherit from Iterator we need to call the base class
-                super();
             }
 
             //#endregion
@@ -1332,6 +1332,9 @@ module ToracTechnologies {
 
             constructor(PreviousLambdaExpression: IChainable<T, T>, CollectionPropertySelector: (ItemToGetCollectionFrom: T) => Array<TCollectionType>) {
 
+                //because we inherit from Iterator we need to call the base class
+                super();
+
                 //set the queryable source
                 this.PreviousExpression = PreviousLambdaExpression;
 
@@ -1343,9 +1346,6 @@ module ToracTechnologies {
 
                 //throw this into a variable so we can debug this thing when we go from CollectionSource To CollectionSource and check the type
                 this.TypeOfObject = "SelectManyIterator";
-
-                //because we inherit from Iterator we need to call the base class
-                super();
             }
 
             //#endregion
@@ -1435,6 +1435,9 @@ module ToracTechnologies {
 
             constructor(PreviousLambdaExpression: IChainable<T, T>, PropertySelector: (ItemToTest: T) => TPropertyType) {
 
+                //go init the base class
+                super();
+
                 //set the queryable source
                 this.PreviousExpression = PreviousLambdaExpression;
 
@@ -1446,9 +1449,6 @@ module ToracTechnologies {
 
                 //throw this into a variable so we can debug this thing when we go from CollectionSource To CollectionSource and check the type
                 this.TypeOfObject = "DistinctIterator";
-
-                //go init the base class
-                super();
             }
 
             //#endregion
@@ -1514,6 +1514,9 @@ module ToracTechnologies {
 
             constructor(PreviousLambdaExpression: IChainable<T, T>, HowManyToTake: number) {
 
+                //because we inherit from Iterator we need to call the base class
+                super();
+
                 //set the queryable source
                 this.PreviousExpression = PreviousLambdaExpression;
 
@@ -1525,9 +1528,6 @@ module ToracTechnologies {
 
                 //throw this into a variable so we can debug this thing when we go from CollectionSource To CollectionSource and check the type
                 this.TypeOfObject = "TakeIterator";
-
-                //because we inherit from Iterator we need to call the base class
-                super();
             }
 
             //#endregion
@@ -1600,6 +1600,9 @@ module ToracTechnologies {
 
             constructor(PreviousLambdaExpression: IChainable<T, T>, TakeWhilePredicate: (ItemToTest: T) => boolean) {
 
+                //because we inherit from Iterator we need to call the base class
+                super();
+
                 //set the queryable source
                 this.PreviousExpression = PreviousLambdaExpression;
 
@@ -1608,9 +1611,6 @@ module ToracTechnologies {
 
                 //throw this into a variable so we can debug this thing when we go from CollectionSource To CollectionSource and check the type
                 this.TypeOfObject = "TakeWhileIterator";
-
-                //because we inherit from Iterator we need to call the base class
-                super();
             }
 
             //#endregion
@@ -1665,6 +1665,9 @@ module ToracTechnologies {
 
             constructor(PreviousLambdaExpression: IChainable<T, T>, HowManyToSkip: number) {
 
+                //because we inherit from Iterator we need to call the base class
+                super();
+
                 //set the queryable source
                 this.PreviousExpression = PreviousLambdaExpression;
 
@@ -1676,9 +1679,6 @@ module ToracTechnologies {
 
                 //throw this into a variable so we can debug this thing when we go from CollectionSource To CollectionSource and check the type
                 this.TypeOfObject = "SkipIterator";
-
-                //because we inherit from Iterator we need to call the base class
-                super();
             }
 
             //#endregion
@@ -1742,6 +1742,9 @@ module ToracTechnologies {
 
             constructor(PreviousLambdaExpression: IChainable<T, T>, SkipUntilPredicate: (ItemToTest: T) => boolean) {
 
+                //because we inherit from Iterator we need to call the base class
+                super();
+
                 //set the queryable source
                 this.PreviousExpression = PreviousLambdaExpression;
 
@@ -1750,9 +1753,6 @@ module ToracTechnologies {
 
                 //throw this into a variable so we can debug this thing when we go from CollectionSource To CollectionSource and check the type
                 this.TypeOfObject = "SkipWhileIterator";
-
-                //because we inherit from Iterator we need to call the base class
-                super();
             }
 
             //#endregion
@@ -1820,6 +1820,9 @@ module ToracTechnologies {
 
             constructor(PreviousLambdaExpression: IChainable<T, T>, AggregatePredicate: (WorkingT: T, NextT: T) => T) {
 
+                //because we inherit from Iterator we need to call the base class
+                super();
+
                 //set the queryable source
                 this.PreviousExpression = PreviousLambdaExpression;
 
@@ -1828,9 +1831,6 @@ module ToracTechnologies {
 
                 //throw this into a variable so we can debug this thing when we go from CollectionSource To CollectionSource and check the type
                 this.TypeOfObject = "AggregateIterator";
-
-                //because we inherit from Iterator we need to call the base class
-                super();
             }
 
             //#endregion
@@ -1897,6 +1897,9 @@ module ToracTechnologies {
 
             constructor(PreviousLambdaExpression: IChainable<T, T>, WherePredicate: (ItemToTest: T) => boolean) {
 
+                //because we inherit from Iterator we need to call the base class
+                super();
+
                 //set the queryable source
                 this.PreviousExpression = PreviousLambdaExpression;
 
@@ -1905,9 +1908,6 @@ module ToracTechnologies {
 
                 //throw this into a variable so we can debug this thing when we go from CollectionSource To CollectionSource and check the type
                 this.TypeOfObject = "AllIterator";
-
-                //because we inherit from Iterator we need to call the base class
-                super();
             }
 
             //#endregion
@@ -1967,6 +1967,9 @@ module ToracTechnologies {
 
             constructor(PreviousLambdaExpression: IChainable<T, T>, WherePredicate: (ItemToTest: T) => boolean) {
 
+                //because we inherit from Iterator we need to call the base class
+                super();
+
                 //set the queryable source
                 this.PreviousExpression = PreviousLambdaExpression;
 
@@ -1978,9 +1981,6 @@ module ToracTechnologies {
 
                 //throw this into a variable so we can debug this thing when we go from CollectionSource To CollectionSource and check the type
                 this.TypeOfObject = "AnyIterator";
-
-                //because we inherit from Iterator we need to call the base class
-                super();
             }
 
             //#endregion
@@ -2040,6 +2040,9 @@ module ToracTechnologies {
 
             constructor(PreviousLambdaExpression: IChainable<T, T>, WherePredicate: (ItemToTest: T) => boolean) {
 
+                //because we inherit from Iterator we need to call the base class
+                super();
+
                 //set the queryable source
                 this.PreviousExpression = PreviousLambdaExpression;
 
@@ -2051,9 +2054,6 @@ module ToracTechnologies {
 
                 //throw this into a variable so we can debug this thing when we go from CollectionSource To CollectionSource and check the type
                 this.TypeOfObject = "LastIterator";
-
-                //because we inherit from Iterator we need to call the base class
-                super();
             }
 
             //#endregion
@@ -2117,6 +2117,9 @@ module ToracTechnologies {
 
             constructor(PreviousLambdaExpression: IChainable<T, T>, WhichTypeOfObject: string, QueryToConcat: Iterator<T>) {
 
+                //because we inherit from Iterator we need to call the base class
+                super();
+
                 //set the queryable source
                 this.PreviousExpression = PreviousLambdaExpression;
 
@@ -2125,9 +2128,6 @@ module ToracTechnologies {
 
                 //throw this into a variable so we can debug this thing when we go from CollectionSource To CollectionSource and check the type
                 this.TypeOfObject = WhichTypeOfObject;
-
-                //because we inherit from Iterator we need to call the base class
-                super();
             }
 
             //#endregion
@@ -2197,6 +2197,9 @@ module ToracTechnologies {
 
             constructor(PreviousLambdaExpression: IChainable<T, T>, WhichTypeOfObject: string, QueryToUnion: Iterator<T>) {
 
+                //because we inherit from Iterator we need to call the base class
+                super();
+
                 //set the queryable source
                 this.PreviousExpression = PreviousLambdaExpression;
 
@@ -2208,9 +2211,6 @@ module ToracTechnologies {
 
                 //create a new dictionary
                 this.HashSetStore = new HashSet<T>();
-
-                //because we inherit from Iterator we need to call the base class
-                super();
             }
 
             //#endregion
@@ -2298,6 +2298,9 @@ module ToracTechnologies {
 
             constructor(PreviousLambdaExpression: IChainable<T, T>, WherePredicate: (ItemToTest: T) => boolean) {
 
+                //because we inherit from Iterator we need to call the base class
+                super();
+
                 //set the queryable source
                 this.PreviousExpression = PreviousLambdaExpression;
 
@@ -2309,9 +2312,6 @@ module ToracTechnologies {
 
                 //throw this into a variable so we can debug this thing when we go from CollectionSource To CollectionSource and check the type
                 this.TypeOfObject = "CountIterator";
-
-                //because we inherit from Iterator we need to call the base class
-                super();
             }
 
             //#endregion
@@ -2373,6 +2373,9 @@ module ToracTechnologies {
 
             constructor(PreviousLambdaExpression: IChainable<number, number>) {
 
+                //go init the base class
+                super();
+
                 //set the queryable source
                 this.PreviousExpression = PreviousLambdaExpression;
 
@@ -2381,9 +2384,6 @@ module ToracTechnologies {
 
                 //throw this into a variable so we can debug this thing when we go from CollectionSource To CollectionSource and check the type
                 this.TypeOfObject = "MinIterator";
-
-                //go init the base class
-                super();
             }
 
             //#endregion
@@ -2443,6 +2443,9 @@ module ToracTechnologies {
 
             constructor(PreviousLambdaExpression: IChainable<number, number>) {
 
+                //go init the base class
+                super();
+
                 //set the queryable source
                 this.PreviousExpression = PreviousLambdaExpression;
 
@@ -2451,9 +2454,6 @@ module ToracTechnologies {
 
                 //throw this into a variable so we can debug this thing when we go from CollectionSource To CollectionSource and check the type
                 this.TypeOfObject = "MaxIterator";
-
-                //go init the base class
-                super();
             }
 
             //#endregion
@@ -2513,6 +2513,9 @@ module ToracTechnologies {
 
             constructor(PreviousLambdaExpression: IChainable<number, number>) {
 
+                //go init the base class
+                super();
+
                 //set the queryable source
                 this.PreviousExpression = PreviousLambdaExpression;
 
@@ -2521,9 +2524,6 @@ module ToracTechnologies {
 
                 //throw this into a variable so we can debug this thing when we go from CollectionSource To CollectionSource and check the type
                 this.TypeOfObject = "SumIterator";
-
-                //go init the base class
-                super();
             }
 
             //#endregion
@@ -2583,6 +2583,9 @@ module ToracTechnologies {
 
             constructor(PreviousLambdaExpression: IChainable<number, number>) {
 
+                //go call the base class init
+                super();
+
                 //set the queryable source
                 this.PreviousExpression = PreviousLambdaExpression;
 
@@ -2594,9 +2597,6 @@ module ToracTechnologies {
 
                 //throw this into a variable so we can debug this thing when we go from CollectionSource To CollectionSource and check the type
                 this.TypeOfObject = "AverageIterator";
-
-                //go call the base class init
-                super();
             }
 
             //#endregion
@@ -2660,6 +2660,9 @@ module ToracTechnologies {
 
             constructor(PreviousLambdaExpression: IChainable<T, IGrouping<TKey, T>>, GroupBySelector: (ItemToGetKeyFrom: T) => TKey) {
 
+                //call the super for the base class
+                super();
+
                 //set the queryable source
                 this.PreviousExpression = PreviousLambdaExpression;
 
@@ -2668,9 +2671,6 @@ module ToracTechnologies {
 
                 //throw this into a variable so we can debug this thing when we go from CollectionSource To CollectionSource and check the type
                 this.TypeOfObject = "GroupIterator";
-
-                //call the super for the base class
-                super();
             }
 
             //#endregion
@@ -2745,6 +2745,9 @@ module ToracTechnologies {
 
             constructor(PreviousLambdaExpression: IChainable<T, T>, DirectionToSort: SortOrder, PropertySortSelector: (PropertyToSortOn: T) => any, AdditionalSortPropertySelectors: Array<IThenByPropertySelectorParameters<T>>) {
 
+                //because we inherit from Iterator we need to call the base class
+                super();
+
                 //set the queryable source
                 this.PreviousExpression = PreviousLambdaExpression;
 
@@ -2762,9 +2765,6 @@ module ToracTechnologies {
 
                 //throw this into a variable so we can debug this thing when we go from CollectionSource To CollectionSource and check the type
                 this.TypeOfObject = "OrderByIterator";
-
-                //because we inherit from Iterator we need to call the base class
-                super();
             }
 
             //#endregion
@@ -3000,6 +3000,9 @@ module ToracTechnologies {
 
             constructor(PreviousLambdaExpression: IChainable<T, T>, SortPropertySelector: (PropertyToSortOn: T) => any, WhichSortOrder: SortOrder) {
 
+                //because we inherit from Iterator we need to call the base class
+                super();
+
                 //set the queryable source
                 this.PreviousExpression = PreviousLambdaExpression;
 
@@ -3008,9 +3011,6 @@ module ToracTechnologies {
 
                 //throw this into a variable so we can debug this thing when we go from CollectionSource To CollectionSource and check the type
                 this.TypeOfObject = "OrderThenByIterator";
-
-                //because we inherit from Iterator we need to call the base class
-                super();
             }
 
             //#endregion
@@ -3303,7 +3303,7 @@ module ToracTechnologies {
                     //throw the dictionary into a variable so we have access to it in the 
 
                     //parse reviver needs to be in a closure so we can access the dictionary
-                    return <any>JSON.parse(KeyValue,(key, value) => {
+                    return <any>JSON.parse(KeyValue, (key, value) => {
 
                         //is this a date item
                         if (this.DatePropertiesForMultiKey != null && this.DatePropertiesForMultiKey.ContainsKey(key)) {
@@ -3437,14 +3437,14 @@ module ToracTechnologies {
         //#region Async Tree Builders
 
         export function RebuildTree(ParsedJsonQuery) {
-    
+
             //now we need to copy all the base methods for each level of the tree
             //flatten the tree
             var FlatTree = ToracTechnologies.JLinq.Iterator.ChainableTreeWalker(ParsedJsonQuery);
 
             //queryable with the array
             var Queryable: ToracTechnologies.JLinq.Iterator<any>;
-  
+
             //we need to get the collection souce.
             for (var j = 0; j < FlatTree.length; j++) {
 
@@ -3473,7 +3473,7 @@ module ToracTechnologies {
 
             //loop through the tree (going backwards starting with queryable)
             for (var i = FlatTree.length - 1; i >= 0; i--) {
-                    
+
                 //grab the current item
                 var CurrentLevelOfTree = FlatTree[i];
 
@@ -3600,7 +3600,7 @@ module ToracTechnologies {
                 if (ThenBySettings != null) {
 
                     //cast it back to a key value pair
-                    var CastedSelectors = <Array<string>> JSON.parse(ThenBySettings.Value);
+                    var CastedSelectors = <Array<string>>JSON.parse(ThenBySettings.Value);
 
                     //loop through the selectors
                     for (var i = 0; i < CastedSelectors.length; i++) {
@@ -3619,10 +3619,10 @@ module ToracTechnologies {
             }
 
             if (CurrentLevelOfTree.TypeOfObject === 'ConcatArrayIterator') {
-       
+
                 //cast the queryable
                 var CastedConcat = (<ToracTechnologies.JLinq.ConcatIterator<any>>CurrentLevelOfTree);
-        
+
                 //we need to go rebuild the concat query tree...then pass it in
                 return Queryable.ConcatQuery(RebuildTree(CastedConcat.ConcatThisQuery));
             }
@@ -3631,7 +3631,7 @@ module ToracTechnologies {
 
                 //cast the queryable
                 var CastedConcatQuery = RebuildTree((<ToracTechnologies.JLinq.ConcatIterator<any>>CurrentLevelOfTree).ConcatThisQuery);
-        
+
                 //we need to go rebuild the concat query tree...then pass it in
                 return Queryable.ConcatQuery(CastedConcatQuery);
             }
@@ -3640,7 +3640,7 @@ module ToracTechnologies {
 
                 //cast the queryable
                 var CastedUnion = (<ToracTechnologies.JLinq.UnionIterator<any>>CurrentLevelOfTree);
-        
+
                 //we need to go rebuild the union query tree...then pass it in
                 return Queryable.UnionQuery(RebuildTree(CastedUnion.UnionThisQuery));
             }
@@ -3649,7 +3649,7 @@ module ToracTechnologies {
 
                 //cast the queryable
                 var CastedUnionQuery = RebuildTree((<ToracTechnologies.JLinq.UnionIterator<any>>CurrentLevelOfTree).UnionThisQuery);
-        
+
                 //we need to go rebuild the union query tree...then pass it in
                 return Queryable.UnionQuery(CastedUnionQuery);
             }

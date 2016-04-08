@@ -481,7 +481,7 @@ var ToracTechnologies;
             //go check if async is available (this gets cached on first call to ArrayAsync)
             Iterator.AsyncIsAvailable = null;
             return Iterator;
-        })();
+        }());
         JLinq.Iterator = Iterator;
         //#endregion
         //#region Iterator Re-Setting
@@ -527,7 +527,7 @@ var ToracTechnologies;
                 this.Value = ValueToSet;
             }
             return KeyValuePair;
-        })();
+        }());
         JLinq.KeyValuePair = KeyValuePair;
         //#endregion
         //#region Callback Iterator
@@ -561,7 +561,7 @@ var ToracTechnologies;
                 this.ExecuteResults = CollectionResultExecution;
             }
             return CallbackIterator;
-        })();
+        }());
         JLinq.CallbackIterator = CallbackIterator;
         //#endregion
         //#region Iterator Result
@@ -582,7 +582,7 @@ var ToracTechnologies;
                 this.CurrentStatus = IteratorRunningStatus;
             }
             return IteratorResult;
-        })();
+        }());
         JLinq.IteratorResult = IteratorResult;
         //#endregion
         //#region Queryable Class
@@ -591,6 +591,8 @@ var ToracTechnologies;
             __extends(Queryable, _super);
             //#region Constructor
             function Queryable(Collection) {
+                //because we inherit from Iterator we need to call the base class
+                _super.call(this);
                 //throw the collection into a variable
                 this.CollectionSource = Collection;
                 //we always loop backwards from the length to 0...so set the index to the array length
@@ -599,8 +601,6 @@ var ToracTechnologies;
                 this.CollectionLength = this.CollectionSource.length;
                 //throw this into a variable so we can debug this thing when we go from CollectionSource To CollectionSource and check the type
                 this.TypeOfObject = "Queryable";
-                //because we inherit from Iterator we need to call the base class
-                _super.call(this);
             }
             //#endregion
             //#region Methods
@@ -624,7 +624,7 @@ var ToracTechnologies;
                 return null;
             };
             return Queryable;
-        })(Iterator);
+        }(Iterator));
         JLinq.Queryable = Queryable;
         //#endregion
         //#region Linq Functionality Classes
@@ -633,14 +633,14 @@ var ToracTechnologies;
             __extends(WhereIterator, _super);
             //#region Constructor
             function WhereIterator(PreviousLambdaExpression, WherePredicate) {
+                //because we inherit from Iterator we need to call the base class
+                _super.call(this);
                 //set the queryable source
                 this.PreviousExpression = PreviousLambdaExpression;
                 //set the filter to run the where clause on
                 this.WhereClausePredicate = WherePredicate;
                 //throw this into a variable so we can debug this thing when we go from CollectionSource To CollectionSource and check the type
                 this.TypeOfObject = "WhereIterator";
-                //because we inherit from Iterator we need to call the base class
-                _super.call(this);
             }
             //#endregion
             //#region Methods
@@ -666,13 +666,15 @@ var ToracTechnologies;
                 return [new KeyValuePair('WhereClausePredicate', _super.prototype.SerializeMethod.call(this, this.WhereClausePredicate))];
             };
             return WhereIterator;
-        })(Iterator);
+        }(Iterator));
         JLinq.WhereIterator = WhereIterator;
         //Class is used to grab the first record which meets the predicate
         var FirstOrDefaultIterator = (function (_super) {
             __extends(FirstOrDefaultIterator, _super);
             //#region Constructor
             function FirstOrDefaultIterator(PreviousLambdaExpression, WhichTypeOfObject, WherePredicate) {
+                //because we inherit from Iterator we need to call the base class
+                _super.call(this);
                 //set the queryable source
                 this.PreviousExpression = PreviousLambdaExpression;
                 //set the filter to run the where clause on
@@ -681,8 +683,6 @@ var ToracTechnologies;
                 this.HasNullWhereClause = this.WhereClausePredicate == null;
                 //throw this into a variable so we can debug this thing when we go from CollectionSource To CollectionSource and check the type
                 this.TypeOfObject = WhichTypeOfObject;
-                //because we inherit from Iterator we need to call the base class
-                _super.call(this);
             }
             //#endregion
             //#region Methods
@@ -708,13 +708,15 @@ var ToracTechnologies;
                 return [new KeyValuePair('WhereClausePredicate', _super.prototype.SerializeMethod.call(this, this.WhereClausePredicate))];
             };
             return FirstOrDefaultIterator;
-        })(Iterator);
+        }(Iterator));
         JLinq.FirstOrDefaultIterator = FirstOrDefaultIterator;
         //Class is used to grab a single record which meets the predicate. It will throw an error if we have more then 1 record that meets the criteria. Will return null if nothing is found
         var SingleOrDefaultIterator = (function (_super) {
             __extends(SingleOrDefaultIterator, _super);
             //#region Constructor
             function SingleOrDefaultIterator(PreviousLambdaExpression, WhichTypeOfObject, WherePredicate) {
+                //because we inherit from Iterator we need to call the base class
+                _super.call(this);
                 //set the queryable source
                 this.PreviousExpression = PreviousLambdaExpression;
                 //set the filter to run the where clause on
@@ -723,8 +725,6 @@ var ToracTechnologies;
                 this.HasNullWhereClause = this.WhereClausePredicate == null;
                 //throw this into a variable so we can debug this thing when we go from CollectionSource To CollectionSource and check the type
                 this.TypeOfObject = WhichTypeOfObject;
-                //because we inherit from Iterator we need to call the base class
-                _super.call(this);
             }
             //#endregion
             //#region Methods
@@ -763,21 +763,21 @@ var ToracTechnologies;
                 return [new KeyValuePair('WhereClausePredicate', _super.prototype.SerializeMethod.call(this, this.WhereClausePredicate))];
             };
             return SingleOrDefaultIterator;
-        })(Iterator);
+        }(Iterator));
         JLinq.SingleOrDefaultIterator = SingleOrDefaultIterator;
         //Class is used to implement the Select Method Iterator
         var SelectIterator = (function (_super) {
             __extends(SelectIterator, _super);
             //#region Constructor
             function SelectIterator(PreviousLambdaExpression, SelectCreatorPredicate) {
+                //because we inherit from Iterator we need to call the base class
+                _super.call(this);
                 //set the queryable source
                 this.PreviousExpression = PreviousLambdaExpression;
                 //set the filter to run the where clause on
                 this.SelectPredicate = SelectCreatorPredicate;
                 //throw this into a variable so we can debug this thing when we go from CollectionSource To CollectionSource and check the type
                 this.TypeOfObject = "SelectIterator";
-                //because we inherit from Iterator we need to call the base class
-                _super.call(this);
             }
             //#endregion
             //#region Methods
@@ -804,7 +804,7 @@ var ToracTechnologies;
                 return [new KeyValuePair('SelectPredicate', _super.prototype.SerializeMethod.call(this, this.SelectPredicate))];
             };
             return SelectIterator;
-        })(Iterator);
+        }(Iterator));
         JLinq.SelectIterator = SelectIterator;
         //Class is used to implement the Select Many Method Iterator
         var SelectManyIterator = (function (_super) {
@@ -822,6 +822,8 @@ var ToracTechnologies;
              */
             //#region Constructor
             function SelectManyIterator(PreviousLambdaExpression, CollectionPropertySelector) {
+                //because we inherit from Iterator we need to call the base class
+                _super.call(this);
                 //set the queryable source
                 this.PreviousExpression = PreviousLambdaExpression;
                 //set the filter to grab the collection type
@@ -830,8 +832,6 @@ var ToracTechnologies;
                 this.CollectionItemsToReturn = null;
                 //throw this into a variable so we can debug this thing when we go from CollectionSource To CollectionSource and check the type
                 this.TypeOfObject = "SelectManyIterator";
-                //because we inherit from Iterator we need to call the base class
-                _super.call(this);
             }
             //#endregion
             //#region Methods
@@ -878,13 +878,15 @@ var ToracTechnologies;
                 return [new KeyValuePair('CollectionPropertySelector', _super.prototype.SerializeMethod.call(this, this.CollectionPropertySelector))];
             };
             return SelectManyIterator;
-        })(Iterator);
+        }(Iterator));
         JLinq.SelectManyIterator = SelectManyIterator;
         //Class is used to return all the distinct values found
         var DistinctIterator = (function (_super) {
             __extends(DistinctIterator, _super);
             //#region Constructor
             function DistinctIterator(PreviousLambdaExpression, PropertySelector) {
+                //go init the base class
+                _super.call(this);
                 //set the queryable source
                 this.PreviousExpression = PreviousLambdaExpression;
                 //set the filter to run the where clause on
@@ -893,8 +895,6 @@ var ToracTechnologies;
                 this.DistinctLookup = new HashSet();
                 //throw this into a variable so we can debug this thing when we go from CollectionSource To CollectionSource and check the type
                 this.TypeOfObject = "DistinctIterator";
-                //go init the base class
-                _super.call(this);
             }
             //#endregion
             //#region Methods
@@ -927,13 +927,15 @@ var ToracTechnologies;
                 return [new KeyValuePair('PropertySelector', _super.prototype.SerializeMethod.call(this, this.PropertySelector))];
             };
             return DistinctIterator;
-        })(Iterator);
+        }(Iterator));
         JLinq.DistinctIterator = DistinctIterator;
         //Class is used to implement the Take Method Iterator
         var TakeIterator = (function (_super) {
             __extends(TakeIterator, _super);
             //#region Constructor
             function TakeIterator(PreviousLambdaExpression, HowManyToTake) {
+                //because we inherit from Iterator we need to call the base class
+                _super.call(this);
                 //set the queryable source
                 this.PreviousExpression = PreviousLambdaExpression;
                 //set the number of items to take
@@ -942,8 +944,6 @@ var ToracTechnologies;
                 this.HowManyHaveWeReturned = 0;
                 //throw this into a variable so we can debug this thing when we go from CollectionSource To CollectionSource and check the type
                 this.TypeOfObject = "TakeIterator";
-                //because we inherit from Iterator we need to call the base class
-                _super.call(this);
             }
             //#endregion
             //#region Methods
@@ -983,21 +983,21 @@ var ToracTechnologies;
                 return this.HowManyHaveWeReturned === this.HowManyToTake;
             };
             return TakeIterator;
-        })(Iterator);
+        }(Iterator));
         JLinq.TakeIterator = TakeIterator;
         //will return all the elements before the test no longer passes. "Where" will return everything that meet the condition. TakeWhile will exit the routine wasn't it doesnt pass the expression
         var TakeWhileIterator = (function (_super) {
             __extends(TakeWhileIterator, _super);
             //#region Constructor
             function TakeWhileIterator(PreviousLambdaExpression, TakeWhilePredicate) {
+                //because we inherit from Iterator we need to call the base class
+                _super.call(this);
                 //set the queryable source
                 this.PreviousExpression = PreviousLambdaExpression;
                 //set the predicate to take while
                 this.PredicateToTakeWhile = TakeWhilePredicate;
                 //throw this into a variable so we can debug this thing when we go from CollectionSource To CollectionSource and check the type
                 this.TypeOfObject = "TakeWhileIterator";
-                //because we inherit from Iterator we need to call the base class
-                _super.call(this);
             }
             //#endregion
             //#region Methods
@@ -1023,13 +1023,15 @@ var ToracTechnologies;
                 return [new KeyValuePair('PredicateToTakeWhile', _super.prototype.SerializeMethod.call(this, this.PredicateToTakeWhile))];
             };
             return TakeWhileIterator;
-        })(Iterator);
+        }(Iterator));
         JLinq.TakeWhileIterator = TakeWhileIterator;
         //Class is used to implement the Skip Method Iterator
         var SkipIterator = (function (_super) {
             __extends(SkipIterator, _super);
             //#region Constructor
             function SkipIterator(PreviousLambdaExpression, HowManyToSkip) {
+                //because we inherit from Iterator we need to call the base class
+                _super.call(this);
                 //set the queryable source
                 this.PreviousExpression = PreviousLambdaExpression;
                 //set the number of items to skip
@@ -1038,8 +1040,6 @@ var ToracTechnologies;
                 this.HowManyHaveWeSkipped = 0;
                 //throw this into a variable so we can debug this thing when we go from CollectionSource To CollectionSource and check the type
                 this.TypeOfObject = "SkipIterator";
-                //because we inherit from Iterator we need to call the base class
-                _super.call(this);
             }
             //#endregion
             //#region Methods
@@ -1074,21 +1074,21 @@ var ToracTechnologies;
                 return null;
             };
             return SkipIterator;
-        })(Iterator);
+        }(Iterator));
         JLinq.SkipIterator = SkipIterator;
         //will Bypasses elements in a sequence as long as a specified condition is true and then returns the remaining elements. "Where" will return everything that meet the condition. SkipWhile will find the first element where the condition is met, and return the rest of the elements
         var SkipWhileIterator = (function (_super) {
             __extends(SkipWhileIterator, _super);
             //#region Constructor
             function SkipWhileIterator(PreviousLambdaExpression, SkipUntilPredicate) {
+                //because we inherit from Iterator we need to call the base class
+                _super.call(this);
                 //set the queryable source
                 this.PreviousExpression = PreviousLambdaExpression;
                 //set the predicate to skip until
                 this.PredicateSkipUntil = SkipUntilPredicate;
                 //throw this into a variable so we can debug this thing when we go from CollectionSource To CollectionSource and check the type
                 this.TypeOfObject = "SkipWhileIterator";
-                //because we inherit from Iterator we need to call the base class
-                _super.call(this);
             }
             //#endregion
             //#region Methods
@@ -1122,21 +1122,21 @@ var ToracTechnologies;
                 return [new KeyValuePair('PredicateSkipUntil', _super.prototype.SerializeMethod.call(this, this.PredicateSkipUntil))];
             };
             return SkipWhileIterator;
-        })(Iterator);
+        }(Iterator));
         JLinq.SkipWhileIterator = SkipWhileIterator;
         //  //creates a running total "T" then passes it in for each element
         var AggregateIterator = (function (_super) {
             __extends(AggregateIterator, _super);
             //#region Constructor
             function AggregateIterator(PreviousLambdaExpression, AggregatePredicate) {
+                //because we inherit from Iterator we need to call the base class
+                _super.call(this);
                 //set the queryable source
                 this.PreviousExpression = PreviousLambdaExpression;
                 //set the filter to run the running set clause
                 this.PredicateAggregate = AggregatePredicate;
                 //throw this into a variable so we can debug this thing when we go from CollectionSource To CollectionSource and check the type
                 this.TypeOfObject = "AggregateIterator";
-                //because we inherit from Iterator we need to call the base class
-                _super.call(this);
             }
             //#endregion
             //#region Methods
@@ -1172,21 +1172,21 @@ var ToracTechnologies;
                 return [new KeyValuePair('PredicateAggregate', _super.prototype.SerializeMethod.call(this, this.PredicateAggregate))];
             };
             return AggregateIterator;
-        })(Iterator);
+        }(Iterator));
         JLinq.AggregateIterator = AggregateIterator;
         //Class is used to determine if all elements match the where predicate
         var AllIterator = (function (_super) {
             __extends(AllIterator, _super);
             //#region Constructor
             function AllIterator(PreviousLambdaExpression, WherePredicate) {
+                //because we inherit from Iterator we need to call the base class
+                _super.call(this);
                 //set the queryable source
                 this.PreviousExpression = PreviousLambdaExpression;
                 //set the filter to run the where clause on
                 this.WhereClausePredicate = WherePredicate;
                 //throw this into a variable so we can debug this thing when we go from CollectionSource To CollectionSource and check the type
                 this.TypeOfObject = "AllIterator";
-                //because we inherit from Iterator we need to call the base class
-                _super.call(this);
             }
             //#endregion
             //#region Methods
@@ -1217,13 +1217,15 @@ var ToracTechnologies;
                 return [new KeyValuePair('WhereClausePredicate', _super.prototype.SerializeMethod.call(this, this.WhereClausePredicate))];
             };
             return AllIterator;
-        })(Iterator);
+        }(Iterator));
         JLinq.AllIterator = AllIterator;
         //Class is used to determine if there are any elements in the collection
         var AnyIterator = (function (_super) {
             __extends(AnyIterator, _super);
             //#region Constructor
             function AnyIterator(PreviousLambdaExpression, WherePredicate) {
+                //because we inherit from Iterator we need to call the base class
+                _super.call(this);
                 //set the queryable source
                 this.PreviousExpression = PreviousLambdaExpression;
                 //set the filter to run the where clause on
@@ -1232,8 +1234,6 @@ var ToracTechnologies;
                 this.HasNullWhereClause = this.WhereClausePredicate == null;
                 //throw this into a variable so we can debug this thing when we go from CollectionSource To CollectionSource and check the type
                 this.TypeOfObject = "AnyIterator";
-                //because we inherit from Iterator we need to call the base class
-                _super.call(this);
             }
             //#endregion
             //#region Methods
@@ -1264,13 +1264,15 @@ var ToracTechnologies;
                 return [new KeyValuePair('WhereClausePredicate', _super.prototype.SerializeMethod.call(this, this.WhereClausePredicate))];
             };
             return AnyIterator;
-        })(Iterator);
+        }(Iterator));
         JLinq.AnyIterator = AnyIterator;
         //Class is used to determine the last item in the collection
         var LastIterator = (function (_super) {
             __extends(LastIterator, _super);
             //#region Constructor
             function LastIterator(PreviousLambdaExpression, WherePredicate) {
+                //because we inherit from Iterator we need to call the base class
+                _super.call(this);
                 //set the queryable source
                 this.PreviousExpression = PreviousLambdaExpression;
                 //set the filter to run the where clause on
@@ -1279,8 +1281,6 @@ var ToracTechnologies;
                 this.HasNullWhereClause = this.WhereClausePredicate == null;
                 //throw this into a variable so we can debug this thing when we go from CollectionSource To CollectionSource and check the type
                 this.TypeOfObject = "LastIterator";
-                //because we inherit from Iterator we need to call the base class
-                _super.call(this);
             }
             //#endregion
             //#region Methods
@@ -1312,21 +1312,21 @@ var ToracTechnologies;
                 return [new KeyValuePair('WhereClausePredicate', _super.prototype.SerializeMethod.call(this, this.WhereClausePredicate))];
             };
             return LastIterator;
-        })(Iterator);
+        }(Iterator));
         JLinq.LastIterator = LastIterator;
         //Class is used to implement concat between 2 iterator's
         var ConcatIterator = (function (_super) {
             __extends(ConcatIterator, _super);
             //#region Constructor
             function ConcatIterator(PreviousLambdaExpression, WhichTypeOfObject, QueryToConcat) {
+                //because we inherit from Iterator we need to call the base class
+                _super.call(this);
                 //set the queryable source
                 this.PreviousExpression = PreviousLambdaExpression;
                 //set query you want to concat together
                 this.ConcatThisQuery = QueryToConcat;
                 //throw this into a variable so we can debug this thing when we go from CollectionSource To CollectionSource and check the type
                 this.TypeOfObject = WhichTypeOfObject;
-                //because we inherit from Iterator we need to call the base class
-                _super.call(this);
             }
             //#endregion
             //#region Methods
@@ -1364,13 +1364,15 @@ var ToracTechnologies;
                 return null;
             };
             return ConcatIterator;
-        })(Iterator);
+        }(Iterator));
         JLinq.ConcatIterator = ConcatIterator;
         //Class is used to implement the union's between 2 iterator's
         var UnionIterator = (function (_super) {
             __extends(UnionIterator, _super);
             //#region Constructor
             function UnionIterator(PreviousLambdaExpression, WhichTypeOfObject, QueryToUnion) {
+                //because we inherit from Iterator we need to call the base class
+                _super.call(this);
                 //set the queryable source
                 this.PreviousExpression = PreviousLambdaExpression;
                 //set query you want to union together
@@ -1379,8 +1381,6 @@ var ToracTechnologies;
                 this.TypeOfObject = WhichTypeOfObject;
                 //create a new dictionary
                 this.HashSetStore = new HashSet();
-                //because we inherit from Iterator we need to call the base class
-                _super.call(this);
             }
             //#endregion
             //#region Methods
@@ -1429,13 +1429,15 @@ var ToracTechnologies;
                 return null;
             };
             return UnionIterator;
-        })(Iterator);
+        }(Iterator));
         JLinq.UnionIterator = UnionIterator;
         //Class is used to implement a count with a where predicate
         var CountIterator = (function (_super) {
             __extends(CountIterator, _super);
             //#region Constructor
             function CountIterator(PreviousLambdaExpression, WherePredicate) {
+                //because we inherit from Iterator we need to call the base class
+                _super.call(this);
                 //set the queryable source
                 this.PreviousExpression = PreviousLambdaExpression;
                 //set the filter to run the where clause on
@@ -1444,8 +1446,6 @@ var ToracTechnologies;
                 this.HasNullWhereClause = this.WhereClausePredicate == null;
                 //throw this into a variable so we can debug this thing when we go from CollectionSource To CollectionSource and check the type
                 this.TypeOfObject = "CountIterator";
-                //because we inherit from Iterator we need to call the base class
-                _super.call(this);
             }
             //#endregion
             //#region Methods
@@ -1476,21 +1476,21 @@ var ToracTechnologies;
                 return [new KeyValuePair('WhereClausePredicate', _super.prototype.SerializeMethod.call(this, this.WhereClausePredicate))];
             };
             return CountIterator;
-        })(Iterator);
+        }(Iterator));
         JLinq.CountIterator = CountIterator;
         //Class is used to determine what the lowest value number is in data source
         var MinIterator = (function (_super) {
             __extends(MinIterator, _super);
             //#region Constructor
             function MinIterator(PreviousLambdaExpression) {
+                //go init the base class
+                _super.call(this);
                 //set the queryable source
                 this.PreviousExpression = PreviousLambdaExpression;
                 //go init the current lowest number to null
                 this.CurrentLowestNumber = null;
                 //throw this into a variable so we can debug this thing when we go from CollectionSource To CollectionSource and check the type
                 this.TypeOfObject = "MinIterator";
-                //go init the base class
-                _super.call(this);
             }
             //#endregion
             //#region Methods
@@ -1521,21 +1521,21 @@ var ToracTechnologies;
                 return null;
             };
             return MinIterator;
-        })(Iterator);
+        }(Iterator));
         JLinq.MinIterator = MinIterator;
         //Class is used to determine what the largest value number is in data source
         var MaxIterator = (function (_super) {
             __extends(MaxIterator, _super);
             //#region Constructor
             function MaxIterator(PreviousLambdaExpression) {
+                //go init the base class
+                _super.call(this);
                 //set the queryable source
                 this.PreviousExpression = PreviousLambdaExpression;
                 //init the current larget number to null
                 this.CurrentLargestNumber = null;
                 //throw this into a variable so we can debug this thing when we go from CollectionSource To CollectionSource and check the type
                 this.TypeOfObject = "MaxIterator";
-                //go init the base class
-                _super.call(this);
             }
             //#endregion
             //#region Methods
@@ -1566,21 +1566,21 @@ var ToracTechnologies;
                 return null;
             };
             return MaxIterator;
-        })(Iterator);
+        }(Iterator));
         JLinq.MaxIterator = MaxIterator;
         //Class is used to calculate the sum of the data source
         var SumIterator = (function (_super) {
             __extends(SumIterator, _super);
             //#region Constructor
             function SumIterator(PreviousLambdaExpression) {
+                //go init the base class
+                _super.call(this);
                 //set the queryable source
                 this.PreviousExpression = PreviousLambdaExpression;
                 //let's init the current sum tally
                 this.CurrentSumTally = 0;
                 //throw this into a variable so we can debug this thing when we go from CollectionSource To CollectionSource and check the type
                 this.TypeOfObject = "SumIterator";
-                //go init the base class
-                _super.call(this);
             }
             //#endregion
             //#region Methods
@@ -1611,13 +1611,15 @@ var ToracTechnologies;
                 return null;
             };
             return SumIterator;
-        })(Iterator);
+        }(Iterator));
         JLinq.SumIterator = SumIterator;
         //Class is used to calculate the averge of the data source (this will skip over nulls and not use them in the formula)
         var AverageIterator = (function (_super) {
             __extends(AverageIterator, _super);
             //#region Constructor
             function AverageIterator(PreviousLambdaExpression) {
+                //go call the base class init
+                _super.call(this);
                 //set the queryable source
                 this.PreviousExpression = PreviousLambdaExpression;
                 //let's reset the sum tally
@@ -1626,8 +1628,6 @@ var ToracTechnologies;
                 this.CurrentItemCountTally = 0;
                 //throw this into a variable so we can debug this thing when we go from CollectionSource To CollectionSource and check the type
                 this.TypeOfObject = "AverageIterator";
-                //go call the base class init
-                _super.call(this);
             }
             //#endregion
             //#region Methods
@@ -1661,21 +1661,21 @@ var ToracTechnologies;
                 return null;
             };
             return AverageIterator;
-        })(Iterator);
+        }(Iterator));
         JLinq.AverageIterator = AverageIterator;
         //Class is used to group the data
         var GroupIterator = (function (_super) {
             __extends(GroupIterator, _super);
             //#region Constructor
             function GroupIterator(PreviousLambdaExpression, GroupBySelector) {
+                //call the super for the base class
+                _super.call(this);
                 //set the queryable source
                 this.PreviousExpression = PreviousLambdaExpression;
                 //set the group by selector
                 this.GroupBySelector = GroupBySelector;
                 //throw this into a variable so we can debug this thing when we go from CollectionSource To CollectionSource and check the type
                 this.TypeOfObject = "GroupIterator";
-                //call the super for the base class
-                _super.call(this);
             }
             //#endregion
             //#region Methods
@@ -1715,13 +1715,15 @@ var ToracTechnologies;
                 return [new KeyValuePair('GroupBySelector', _super.prototype.SerializeMethod.call(this, this.GroupBySelector))];
             };
             return GroupIterator;
-        })(Iterator);
+        }(Iterator));
         JLinq.GroupIterator = GroupIterator;
         //used to order a query
         var OrderByIterator = (function (_super) {
             __extends(OrderByIterator, _super);
             //#region Constructor
             function OrderByIterator(PreviousLambdaExpression, DirectionToSort, PropertySortSelector, AdditionalSortPropertySelectors) {
+                //because we inherit from Iterator we need to call the base class
+                _super.call(this);
                 //set the queryable source
                 this.PreviousExpression = PreviousLambdaExpression;
                 //set the sort order
@@ -1734,8 +1736,6 @@ var ToracTechnologies;
                 this.NeedToBuildDataSource = true;
                 //throw this into a variable so we can debug this thing when we go from CollectionSource To CollectionSource and check the type
                 this.TypeOfObject = "OrderByIterator";
-                //because we inherit from Iterator we need to call the base class
-                _super.call(this);
             }
             //#endregion
             //#region Public Methods
@@ -1893,20 +1893,20 @@ var ToracTechnologies;
                 return 0;
             };
             return OrderByIterator;
-        })(Iterator);
+        }(Iterator));
         JLinq.OrderByIterator = OrderByIterator;
         var OrderThenByIterator = (function (_super) {
             __extends(OrderThenByIterator, _super);
             //#region Constructor
             function OrderThenByIterator(PreviousLambdaExpression, SortPropertySelector, WhichSortOrder) {
+                //because we inherit from Iterator we need to call the base class
+                _super.call(this);
                 //set the queryable source
                 this.PreviousExpression = PreviousLambdaExpression;
                 //go build the dependancy on order by (so inject whatever we need in the "order by" branch
                 this.BuildDependencyOnOrderBy(PreviousLambdaExpression, SortPropertySelector, WhichSortOrder);
                 //throw this into a variable so we can debug this thing when we go from CollectionSource To CollectionSource and check the type
                 this.TypeOfObject = "OrderThenByIterator";
-                //because we inherit from Iterator we need to call the base class
-                _super.call(this);
             }
             //#endregion
             //#region Public Methods
@@ -1957,7 +1957,7 @@ var ToracTechnologies;
                 FirstOrderByIterator.ThenBySortPropertySelectors.push(AdditionalSortPropertyToAdd);
             };
             return OrderThenByIterator;
-        })(Iterator);
+        }(Iterator));
         JLinq.OrderThenByIterator = OrderThenByIterator;
         //#endregion
         //#region Dictionary Class
@@ -2148,7 +2148,7 @@ var ToracTechnologies;
                 return DatePropertiesInMultiObjectKey;
             };
             return Dictionary;
-        })();
+        }());
         JLinq.Dictionary = Dictionary;
         //#endregion
         //#region HashSet Class
@@ -2208,7 +2208,7 @@ var ToracTechnologies;
                 return this.InternalHashSet.Count();
             };
             return HashSet;
-        })();
+        }());
         JLinq.HashSet = HashSet;
         //#endregion
         //#region Async Tree Builders
