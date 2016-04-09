@@ -1,7 +1,7 @@
 //********************************Torac Technologies***************************************
 //Description: Linq Style Methods In Javascript To Manipulate Collections                 *
 //Release Date: 10/17/2013                                                                *
-//Current Version: 3.0.0                                                                  *
+//Current Version: 3.0.1                                                                  *
 //Release History In JLinqChangeLog.txt                                                   *
 //*****************************************************************************************
 
