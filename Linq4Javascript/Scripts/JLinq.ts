@@ -1,7 +1,7 @@
 //********************************Torac Technologies***************************************
 //Description: Linq Style Methods In Javascript To Manipulate Collections                 *
 //Release Date: 10/17/2013                                                                *
-//Current Version: 3.0.1                                                                  *
+//Current Version: 3.0.2                                                                  *
 //Release History In JLinqChangeLog.txt                                                   *
 //*****************************************************************************************
 
@@ -386,6 +386,39 @@ module ToracTechnologies {
 
                 //go build the iterator (which is really lazy loaded, its more to give them the order "then by" functionality
                 return new OrderByIterator(this, SortOrder.Descending, SortPropertySelector, null);
+            }
+
+            //find an element at a specific index. Mainly added for when you have an iterator and want to find a specific index
+            public ElementAt(Index: number): T {
+
+                //current record
+                var CurrentRecord: IteratorResult<T>;
+
+                //number we are currently on
+                var Tally: number = 0;
+
+                //keep looping through
+                while ((CurrentRecord = this.Next()).CurrentStatus !== ToracTechnologies.JLinq.IteratorStatus.Completed) {
+
+                    //index we are looking for?
+                    if (Tally == Index) {
+
+                        //reset the iterator before we return
+                        this.ResetQuery();
+
+                        //exit the method and return what we have
+                        return CurrentRecord.CurrentItem;
+                    }
+
+                    //increase the tally
+                    Tally++;
+                }
+
+                //reset the iterator
+                this.ResetQuery();
+
+                //now element found (returning null)
+                return null;
             }
 
             //#endregion
@@ -3726,6 +3759,8 @@ interface Array<T> {
 
     OrderBy<TSortPropertyType>(SortPropertySelector: (thisPropertyToSortOn: T) => TSortPropertyType): ToracTechnologies.JLinq.OrderByIterator<T>;
     OrderByDescending<TSortPropertyType>(SortPropertySelector: (thisPropertyToSortOn: T) => TSortPropertyType): ToracTechnologies.JLinq.OrderByIterator<T>;
+
+    ElementAt(Index: number): T;
 }
 
 //#endregion
@@ -3865,6 +3900,10 @@ Array.prototype.OrderBy = function <T, TSortPropertyType>(SortPropertySelector: 
 
 Array.prototype.OrderByDescending = function <T, TSortPropertyType>(SortPropertySelector: (PropertyToSortOn: T) => TSortPropertyType): ToracTechnologies.JLinq.OrderByIterator<T> {
     return new ToracTechnologies.JLinq.Queryable<T>(this).OrderByDescending<TSortPropertyType>(SortPropertySelector);
+};
+
+Array.prototype.ElementAt = function <T>(Index: number): T {
+    return new ToracTechnologies.JLinq.Queryable<T>(this).ElementAt(Index);
 };
 
 //#endregion

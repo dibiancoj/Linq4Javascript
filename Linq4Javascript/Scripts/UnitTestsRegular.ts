@@ -15,7 +15,7 @@ test('JLinq.AsQueryable.Test.1', function () {
 
     //results
     var results = asQueryableResults.ToArray();
-    
+
     //check the length
     equal(results.length, 2);
 
@@ -485,7 +485,7 @@ test('JLinq.ConcatQuery.TestOffOfQueryWithQuery.1', function () {
 test('JLinq.ConcatQuery.TestOffOfQueryWithQuery.2', function () {
 
     //go build the query
-    var QueryToRun = UnitTestFramework._Array.Where(x => x.Id > 1).ConcatQuery(UnitTestFramework.BuildArray(2).Where(x => x.Id === 1)).Where(x=> x.Id === 4);
+    var QueryToRun = UnitTestFramework._Array.Where(x => x.Id > 1).ConcatQuery(UnitTestFramework.BuildArray(2).Where(x => x.Id === 1)).Where(x => x.Id === 4);
 
     //go materialize the results into an array
     var QueryToRunResults = QueryToRun.ToArray();
@@ -607,7 +607,7 @@ test('JLinq.Union.TestOffOfQueryWithArray.1', function () {
 test('JLinq.Union.TestOffOfArrayWithArray.1', function () {
 
     //go build the query
-    var QueryToRun = UnitTestFramework._Array.Select(x => x.Id).ToArray().Union(UnitTestFramework.BuildArray(2).Select(x=> x.Id).ToArray());
+    var QueryToRun = UnitTestFramework._Array.Select(x => x.Id).ToArray().Union(UnitTestFramework.BuildArray(2).Select(x => x.Id).ToArray());
 
     //go materialize the results into an array
     var QueryToRunResults = QueryToRun.ToArray();
@@ -1773,8 +1773,8 @@ test('JLinq.Any.ChainTest.1', function () {
     //*** all just returns a boolean, there is no lazy iterator
 
     //go materialize the results into an array
-    equal(UnitTestFramework._Array.Where(x=> x.Id > 1).Any(x => x.Id === 2), true);
-    equal(UnitTestFramework._Array.Where(x=> x.Id === 1).Any(x => x.Id === 2), false);
+    equal(UnitTestFramework._Array.Where(x => x.Id > 1).Any(x => x.Id === 2), true);
+    equal(UnitTestFramework._Array.Where(x => x.Id === 1).Any(x => x.Id === 2), false);
 });
 
 //#endregion
@@ -2047,7 +2047,7 @@ test('JLinq.Distinct.ChainTest.1', function () {
     arrayToTestAgainst.push({ Id: 1, Txt: "100", IsActive: true, GroupByKey: "1", GroupByKey2: "1", lst: null, CreatedDate: UnitTestFramework._DateOfTest });
 
     //go build the query
-    var QueryToRun = arrayToTestAgainst.Where(x => x.Id >= 0).Distinct(x=> x.Id);
+    var QueryToRun = arrayToTestAgainst.Where(x => x.Id >= 0).Distinct(x => x.Id);
 
     //go materialize the results into an array
     var QueryToRunResults = QueryToRun.ToArray();
@@ -2911,7 +2911,7 @@ test('JLinq.OrderBy.Desc.Number.Test.1', function () {
 test('JLinq.OrderBy.Desc.Number.ChainTest.1', function () {
 
     //go materialize the results into the result
-    var QueryToRun = UnitTestFramework._Array.Select(x=> x.Id).OrderByDescending(x => x);
+    var QueryToRun = UnitTestFramework._Array.Select(x => x.Id).OrderByDescending(x => x);
 
     //go materialize the array
     var QueryToRunResults = QueryToRun.ToArray();
@@ -3598,6 +3598,56 @@ test('JLinq.ThenBy.Desc.ChainTest.2', function () {
         //increase the tally
         Index++;
     }
+});
+
+//#endregion
+
+//#region Element At
+
+test('JLinq.ElementAt.Test.1', function () {
+
+    //*** ElementAt doens't have a lazy iterator...it just returns the element.
+   
+    //go build the query
+    var ElementAt0 = UnitTestFramework._Array.ElementAt(0);
+    var ElementAt1 = UnitTestFramework._Array.ElementAt(1);
+    var ElementAt100 = UnitTestFramework._Array.ElementAt(100);
+
+    //****To-UnitTestFramework._Array Test****
+
+    //element at 0...should be 0
+    equal(ElementAt0.Id, 0);
+    equal(ElementAt0.Txt, '0');
+
+    //element at 1...should be 1
+    equal(ElementAt1.Id, 1);
+    equal(ElementAt1.Txt, '1');
+
+    //element at 100...there aren't 100 elements so this should return null
+    equal(ElementAt100, null);
+});
+
+test('JLinq.ElementAt.ChainTest.1', function () {
+
+    //*** ElementAt doens't have a lazy iterator...it just returns the element.
+
+    //go build the query
+    var ElementAt0 = UnitTestFramework._Array.Where(x => x.Id > 1).ElementAt(0);
+    var ElementAt1 = UnitTestFramework._Array.Where(x => x.Id > 1).ElementAt(1);
+    var ElementAt100 = UnitTestFramework._Array.Where(x => x.Id > 1).ElementAt(100);
+
+    //****To-UnitTestFramework._Array Test****
+
+    //element at 0...should be 2
+    equal(ElementAt0.Id, 2);
+    equal(ElementAt0.Txt, '2');
+
+    //element at 1...should be 2
+    equal(ElementAt1.Id, 3);
+    equal(ElementAt1.Txt, '3');
+
+    //element at 100...there aren't 100 elements so this should return null
+    equal(ElementAt100, null);
 });
 
 //#endregion

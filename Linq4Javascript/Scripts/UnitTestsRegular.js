@@ -2458,4 +2458,38 @@ test('JLinq.ThenBy.Desc.ChainTest.2', function () {
     }
 });
 //#endregion
+//#region Element At
+test('JLinq.ElementAt.Test.1', function () {
+    //*** ElementAt doens't have a lazy iterator...it just returns the element.
+    //go build the query
+    var ElementAt0 = UnitTestFramework._Array.ElementAt(0);
+    var ElementAt1 = UnitTestFramework._Array.ElementAt(1);
+    var ElementAt100 = UnitTestFramework._Array.ElementAt(100);
+    //****To-UnitTestFramework._Array Test****
+    //element at 0...should be 0
+    equal(ElementAt0.Id, 0);
+    equal(ElementAt0.Txt, '0');
+    //element at 1...should be 1
+    equal(ElementAt1.Id, 1);
+    equal(ElementAt1.Txt, '1');
+    //element at 100...there aren't 100 elements so this should return null
+    equal(ElementAt100, null);
+});
+test('JLinq.ElementAt.ChainTest.1', function () {
+    //*** ElementAt doens't have a lazy iterator...it just returns the element.
+    //go build the query
+    var ElementAt0 = UnitTestFramework._Array.Where(function (x) { return x.Id > 1; }).ElementAt(0);
+    var ElementAt1 = UnitTestFramework._Array.Where(function (x) { return x.Id > 1; }).ElementAt(1);
+    var ElementAt100 = UnitTestFramework._Array.Where(function (x) { return x.Id > 1; }).ElementAt(100);
+    //****To-UnitTestFramework._Array Test****
+    //element at 0...should be 2
+    equal(ElementAt0.Id, 2);
+    equal(ElementAt0.Txt, '2');
+    //element at 1...should be 2
+    equal(ElementAt1.Id, 3);
+    equal(ElementAt1.Txt, '3');
+    //element at 100...there aren't 100 elements so this should return null
+    equal(ElementAt100, null);
+});
+//#endregion
 //#endregion 

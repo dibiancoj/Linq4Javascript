@@ -1,7 +1,7 @@
 //********************************Torac Technologies***************************************
 //Description: Linq Style Methods In Javascript To Manipulate Collections                 *
 //Release Date: 10/17/2013                                                                *
-//Current Version: 3.0.1                                                                  *
+//Current Version: 3.0.2                                                                  *
 //Release History In JLinqChangeLog.txt                                                   *
 //*****************************************************************************************
 var __extends = (this && this.__extends) || function (d, b) {
@@ -279,6 +279,29 @@ var ToracTechnologies;
             Iterator.prototype.OrderByDescending = function (SortPropertySelector) {
                 //go build the iterator (which is really lazy loaded, its more to give them the order "then by" functionality
                 return new OrderByIterator(this, SortOrder.Descending, SortPropertySelector, null);
+            };
+            //find an element at a specific index. Mainly added for when you have an iterator and want to find a specific index
+            Iterator.prototype.ElementAt = function (Index) {
+                //current record
+                var CurrentRecord;
+                //number we are currently on
+                var Tally = 0;
+                //keep looping through
+                while ((CurrentRecord = this.Next()).CurrentStatus !== ToracTechnologies.JLinq.IteratorStatus.Completed) {
+                    //index we are looking for?
+                    if (Tally == Index) {
+                        //reset the iterator before we return
+                        this.ResetQuery();
+                        //exit the method and return what we have
+                        return CurrentRecord.CurrentItem;
+                    }
+                    //increase the tally
+                    Tally++;
+                }
+                //reset the iterator
+                this.ResetQuery();
+                //now element found (returning null)
+                return null;
             };
             //#endregion
             //#region Public Non Linq Iterator Functionality Methods
@@ -2486,6 +2509,9 @@ Array.prototype.OrderBy = function (SortPropertySelector) {
 };
 Array.prototype.OrderByDescending = function (SortPropertySelector) {
     return new ToracTechnologies.JLinq.Queryable(this).OrderByDescending(SortPropertySelector);
+};
+Array.prototype.ElementAt = function (Index) {
+    return new ToracTechnologies.JLinq.Queryable(this).ElementAt(Index);
 };
 //#endregion
 //#endregion 
