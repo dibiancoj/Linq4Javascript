@@ -2458,13 +2458,12 @@ test('JLinq.ThenBy.Desc.ChainTest.2', function () {
     }
 });
 //#endregion
-//#region Element At
+//#region ElementAt
 test('JLinq.ElementAt.Test.1', function () {
     //*** ElementAt doens't have a lazy iterator...it just returns the element.
     //go build the query
     var ElementAt0 = UnitTestFramework._Array.ElementAt(0);
     var ElementAt1 = UnitTestFramework._Array.ElementAt(1);
-    var ElementAt100 = UnitTestFramework._Array.ElementAt(100);
     //****To-UnitTestFramework._Array Test****
     //element at 0...should be 0
     equal(ElementAt0.Id, 0);
@@ -2472,15 +2471,17 @@ test('JLinq.ElementAt.Test.1', function () {
     //element at 1...should be 1
     equal(ElementAt1.Id, 1);
     equal(ElementAt1.Txt, '1');
-    //element at 100...there aren't 100 elements so this should return null
-    equal(ElementAt100, null);
+    //element at 5...there aren't 5 elements so this should blow up. I want to run an edge case to ensure the less then and equals is working
+    throws(function () {
+        //go run the method that should blow up
+        UnitTestFramework._Array.ElementAt(5);
+    }, 'ArgumentOutOfRangeException. The size of the collection is less then the index specified. There are only ' + UnitTestFramework._Array.length + ' elements in the query.');
 });
 test('JLinq.ElementAt.ChainTest.1', function () {
     //*** ElementAt doens't have a lazy iterator...it just returns the element.
     //go build the query
     var ElementAt0 = UnitTestFramework._Array.Where(function (x) { return x.Id > 1; }).ElementAt(0);
     var ElementAt1 = UnitTestFramework._Array.Where(function (x) { return x.Id > 1; }).ElementAt(1);
-    var ElementAt100 = UnitTestFramework._Array.Where(function (x) { return x.Id > 1; }).ElementAt(100);
     //****To-UnitTestFramework._Array Test****
     //element at 0...should be 2
     equal(ElementAt0.Id, 2);
@@ -2488,8 +2489,44 @@ test('JLinq.ElementAt.ChainTest.1', function () {
     //element at 1...should be 2
     equal(ElementAt1.Id, 3);
     equal(ElementAt1.Txt, '3');
-    //element at 100...there aren't 100 elements so this should return null
-    equal(ElementAt100, null);
+    //element at 5...there aren't 5 elements so this should blow up. I want to run an edge case to ensure the less then and equals is working
+    throws(function () {
+        //go run the method that should blow up
+        UnitTestFramework._Array.Where(function (x) { return x.Id > 1; }).ElementAt(5);
+    }, 'ArgumentOutOfRangeException. The size of the collection is less then the index specified. There are only ' + UnitTestFramework._Array.Where(function (x) { return x.Id > 1; }).Count() + ' elements in the query.');
+});
+//#endregion
+//#region ElementAtDefault
+test('JLinq.ElementAtDefault.Test.1', function () {
+    //*** ElementAt doens't have a lazy iterator...it just returns the element.
+    //go build the query
+    var ElementAtDefault0 = UnitTestFramework._Array.ElementAtDefault(0);
+    var ElementAtDefault1 = UnitTestFramework._Array.ElementAtDefault(1);
+    //****To-UnitTestFramework._Array Test****
+    //element at 0...should be 0
+    equal(ElementAtDefault0.Id, 0);
+    equal(ElementAtDefault0.Txt, '0');
+    //element at 1...should be 1
+    equal(ElementAtDefault1.Id, 1);
+    equal(ElementAtDefault1.Txt, '1');
+    //element at 5...there aren't 5 elements so this should return null
+    UnitTestFramework._Array.ElementAtDefault(5);
+});
+test('JLinq.ElementAtDefault.ChainTest.1', function () {
+    //*** ElementAt doens't have a lazy iterator...it just returns the element.
+    //go build the query
+    var ElementAtDefault0 = UnitTestFramework._Array.Where(function (x) { return x.Id > 1; }).ElementAtDefault(0);
+    var ElementAtDefault1 = UnitTestFramework._Array.Where(function (x) { return x.Id > 1; }).ElementAtDefault(1);
+    //****To-UnitTestFramework._Array Test****
+    //element at 0...should be 2
+    equal(ElementAtDefault0.Id, 2);
+    equal(ElementAtDefault0.Txt, '2');
+    //element at 1...should be 2
+    equal(ElementAtDefault1.Id, 3);
+    equal(ElementAtDefault1.Txt, '3');
+    //element at 5...there aren't 5 elements so this should return null
+    UnitTestFramework._Array.ElementAtDefault(5);
 });
 //#endregion
 //#endregion 
+//# sourceMappingURL=UnitTestsRegular.js.map

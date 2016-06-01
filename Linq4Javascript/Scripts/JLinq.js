@@ -280,8 +280,33 @@ var ToracTechnologies;
                 //go build the iterator (which is really lazy loaded, its more to give them the order "then by" functionality
                 return new OrderByIterator(this, SortOrder.Descending, SortPropertySelector, null);
             };
-            //find an element at a specific index. Mainly added for when you have an iterator and want to find a specific index
+            //#region Element At Functionality
+            //find an element at a specific index. Mainly added for when you have an iterator and want to find a specific index. Will throw an error if count of elements in higher then the Index passed in
             Iterator.prototype.ElementAt = function (Index) {
+                //go find the result of the search
+                var ResultOfSearch = this.ElementAtHelper(Index);
+                //did we find a element that matches?
+                if (ResultOfSearch.FoundElement) {
+                    //return the found element
+                    return ResultOfSearch.ElementFound;
+                }
+                //we never found it...exit the method
+                throw ElementAtHelperResult.GenerateErrorMessage(ResultOfSearch.NumberOfElementsInQuery);
+            };
+            //find an element at a specific index. Mainly added for when you have an iterator and want to find a specific index. Will return null if count of elements in higher then the Index passed in
+            Iterator.prototype.ElementAtDefault = function (Index) {
+                //go find the result of the search
+                var ResultOfSearch = this.ElementAtHelper(Index);
+                //did we find a element that matches?
+                if (ResultOfSearch.FoundElement) {
+                    //return the found element
+                    return ResultOfSearch.ElementFound;
+                }
+                //we never found it...return null
+                return null;
+            };
+            Iterator.prototype.ElementAtHelper = function (Index) {
+                //we want to prevent null meaning more then 1 thing. ie: not found versus a null object was found in that element. That is why we return ElementAtHelperResult
                 //current record
                 var CurrentRecord;
                 //number we are currently on
@@ -293,7 +318,7 @@ var ToracTechnologies;
                         //reset the iterator before we return
                         this.ResetQuery();
                         //exit the method and return what we have
-                        return CurrentRecord.CurrentItem;
+                        return ElementAtHelperResult.ElementWasFound(CurrentRecord.CurrentItem);
                     }
                     //increase the tally
                     Tally++;
@@ -301,8 +326,9 @@ var ToracTechnologies;
                 //reset the iterator
                 this.ResetQuery();
                 //now element found (returning null)
-                return null;
+                return ElementAtHelperResult.ElementWasNotFound(Tally);
             };
+            //#endregion
             //#endregion
             //#region Public Non Linq Iterator Functionality Methods
             //materializes the expression to an array
@@ -651,6 +677,29 @@ var ToracTechnologies;
         JLinq.Queryable = Queryable;
         //#endregion
         //#region Linq Functionality Classes
+        //result of the ElementAtHelper Method. Need multiple values to be returned from a method
+        var ElementAtHelperResult = (function () {
+            function ElementAtHelperResult() {
+            }
+            ElementAtHelperResult.ElementWasFound = function (ElementFoundItem) {
+                var model = new ElementAtHelperResult();
+                model.FoundElement = true;
+                model.ElementFound = ElementFoundItem;
+                return model;
+            };
+            ElementAtHelperResult.ElementWasNotFound = function (NumberOfElementsSearched) {
+                var model = new ElementAtHelperResult();
+                model.FoundElement = false;
+                model.ElementFound = null;
+                model.NumberOfElementsInQuery = NumberOfElementsSearched;
+                return model;
+            };
+            ElementAtHelperResult.GenerateErrorMessage = function (NumberOfElementsSearched) {
+                return 'ArgumentOutOfRangeException. The size of the collection is less then the index specified. There are only ' + NumberOfElementsSearched + ' elements in the query.';
+            };
+            return ElementAtHelperResult;
+        }());
+        JLinq.ElementAtHelperResult = ElementAtHelperResult;
         //Class is used to implement the Where Method Iterator
         var WhereIterator = (function (_super) {
             __extends(WhereIterator, _super);
@@ -2511,7 +2560,23 @@ Array.prototype.OrderByDescending = function (SortPropertySelector) {
     return new ToracTechnologies.JLinq.Queryable(this).OrderByDescending(SortPropertySelector);
 };
 Array.prototype.ElementAt = function (Index) {
-    return new ToracTechnologies.JLinq.Queryable(this).ElementAt(Index);
+    //make sure we have enough elements
+    if (this.length - 1 < Index) {
+        //throw an out of range exception
+        throw ToracTechnologies.JLinq.ElementAtHelperResult.GenerateErrorMessage(this.length);
+    }
+    //if you are trying to run an element at on an array...then just use the normal way for performance. Essentially we only need JLinq ElementAt off of Queryable 
+    return this[Index];
+};
+Array.prototype.ElementAtDefault = function (Index) {
+    //make sure we have enough elements
+    if (this.length - 1 < Index) {
+        //just return a null value
+        return null;
+    }
+    //if you are trying to run an element at on an array...then just use the normal way for performance. Essentially we only need JLinq ElementAt off of Queryable 
+    return this[Index];
 };
 //#endregion
 //#endregion 
+//# sourceMappingURL=JLinq.js.map
