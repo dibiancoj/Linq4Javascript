@@ -1026,6 +1026,40 @@ module ToracTechnologies {
 
         //#endregion
 
+        //#region ElementAtHelperResult
+
+        //result of the ElementAtHelper Method. Need multiple values to be returned from a method
+        export class ElementAtHelperResult<T> {
+            FoundElement: boolean;
+            ElementFound: T;
+            NumberOfElementsInQuery: number;
+
+            public static ElementWasFound<Y>(ElementFoundItem: Y): ElementAtHelperResult<Y> {
+                var model = new ElementAtHelperResult<Y>();
+
+                model.FoundElement = true;
+                model.ElementFound = ElementFoundItem;
+
+                return model;
+            }
+
+            public static ElementWasNotFound<Y>(NumberOfElementsSearched: number): ElementAtHelperResult<Y> {
+                var model = new ElementAtHelperResult<Y>();
+
+                model.FoundElement = false;
+                model.ElementFound = null;
+                model.NumberOfElementsInQuery = NumberOfElementsSearched;
+
+                return model;
+            }
+
+            public static GenerateErrorMessage<Y>(NumberOfElementsSearched: number): string {
+                return 'ArgumentOutOfRangeException. The size of the collection is less then the index specified. There are only ' + NumberOfElementsSearched + ' elements in the query.';
+            }
+        }
+
+        //#endregion
+
         //#region Queryable Class
 
         //Class used to turn a collection into something we can chain together with all the Iterator methods
@@ -1101,36 +1135,6 @@ module ToracTechnologies {
         //#endregion
 
         //#region Linq Functionality Classes
-
-        //result of the ElementAtHelper Method. Need multiple values to be returned from a method
-        export class ElementAtHelperResult<T> {
-            FoundElement: boolean;
-            ElementFound: T;
-            NumberOfElementsInQuery: number;
-
-            public static ElementWasFound<Y>(ElementFoundItem: Y): ElementAtHelperResult<Y> {
-                var model = new ElementAtHelperResult<Y>();
-
-                model.FoundElement = true;
-                model.ElementFound = ElementFoundItem;
-
-                return model;
-            }
-
-            public static ElementWasNotFound<Y>(NumberOfElementsSearched: number): ElementAtHelperResult<Y> {
-                var model = new ElementAtHelperResult<Y>();
-
-                model.FoundElement = false;
-                model.ElementFound = null;
-                model.NumberOfElementsInQuery = NumberOfElementsSearched;
-
-                return model;
-            }
-
-            public static GenerateErrorMessage<Y>(NumberOfElementsSearched: number): string {
-                return 'ArgumentOutOfRangeException. The size of the collection is less then the index specified. There are only ' + NumberOfElementsSearched + ' elements in the query.';
-            }
-        }
 
         //Class is used to implement the Where Method Iterator
         export class WhereIterator<T> extends Iterator<T>

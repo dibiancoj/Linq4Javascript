@@ -634,6 +634,31 @@ var ToracTechnologies;
         }());
         JLinq.IteratorResult = IteratorResult;
         //#endregion
+        //#region ElementAtHelperResult
+        //result of the ElementAtHelper Method. Need multiple values to be returned from a method
+        var ElementAtHelperResult = (function () {
+            function ElementAtHelperResult() {
+            }
+            ElementAtHelperResult.ElementWasFound = function (ElementFoundItem) {
+                var model = new ElementAtHelperResult();
+                model.FoundElement = true;
+                model.ElementFound = ElementFoundItem;
+                return model;
+            };
+            ElementAtHelperResult.ElementWasNotFound = function (NumberOfElementsSearched) {
+                var model = new ElementAtHelperResult();
+                model.FoundElement = false;
+                model.ElementFound = null;
+                model.NumberOfElementsInQuery = NumberOfElementsSearched;
+                return model;
+            };
+            ElementAtHelperResult.GenerateErrorMessage = function (NumberOfElementsSearched) {
+                return 'ArgumentOutOfRangeException. The size of the collection is less then the index specified. There are only ' + NumberOfElementsSearched + ' elements in the query.';
+            };
+            return ElementAtHelperResult;
+        }());
+        JLinq.ElementAtHelperResult = ElementAtHelperResult;
+        //#endregion
         //#region Queryable Class
         //Class used to turn a collection into something we can chain together with all the Iterator methods
         var Queryable = (function (_super) {
@@ -677,29 +702,6 @@ var ToracTechnologies;
         JLinq.Queryable = Queryable;
         //#endregion
         //#region Linq Functionality Classes
-        //result of the ElementAtHelper Method. Need multiple values to be returned from a method
-        var ElementAtHelperResult = (function () {
-            function ElementAtHelperResult() {
-            }
-            ElementAtHelperResult.ElementWasFound = function (ElementFoundItem) {
-                var model = new ElementAtHelperResult();
-                model.FoundElement = true;
-                model.ElementFound = ElementFoundItem;
-                return model;
-            };
-            ElementAtHelperResult.ElementWasNotFound = function (NumberOfElementsSearched) {
-                var model = new ElementAtHelperResult();
-                model.FoundElement = false;
-                model.ElementFound = null;
-                model.NumberOfElementsInQuery = NumberOfElementsSearched;
-                return model;
-            };
-            ElementAtHelperResult.GenerateErrorMessage = function (NumberOfElementsSearched) {
-                return 'ArgumentOutOfRangeException. The size of the collection is less then the index specified. There are only ' + NumberOfElementsSearched + ' elements in the query.';
-            };
-            return ElementAtHelperResult;
-        }());
-        JLinq.ElementAtHelperResult = ElementAtHelperResult;
         //Class is used to implement the Where Method Iterator
         var WhereIterator = (function (_super) {
             __extends(WhereIterator, _super);
@@ -2579,4 +2581,3 @@ Array.prototype.ElementAtDefault = function (Index) {
 };
 //#endregion
 //#endregion 
-//# sourceMappingURL=JLinq.js.map
