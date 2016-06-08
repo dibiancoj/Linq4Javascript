@@ -61,3 +61,4 @@ var UnitTestFramework;
     //sort order array
     UnitTestFramework._SortOrderArray = Object.freeze(BuildSortOrderArray());
 })(UnitTestFramework || (UnitTestFramework = {}));
+//# sourceMappingURL=unittestframework.js.map

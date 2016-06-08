@@ -138,3 +138,7 @@
 3.0.2 - 6/1/2016
 		-Added ElementAt(). Pass in an index and it will return the element at that index. If index is greater then the number of items you will get a ArgumentOutOfRangeException exception
 		-Added ElementAtOrDefault(). Pass in an index and it will return the element at that index. Will return null if the index is greater then the number of items in the query or array.
+
+3.0.3 - 6/8/2016
+		-Added Join(). This is where you combine the record set that match on the property selected. For the outer collection you can pass in an array or collection
+		-Also removed ConcatQuery and UnionQuery. You now can just use concat and union.

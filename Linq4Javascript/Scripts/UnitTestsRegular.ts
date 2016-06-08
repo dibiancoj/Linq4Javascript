@@ -449,7 +449,7 @@ test('JLinq.Concat.TestOffOfArrayWithArray.1', function () {
 test('JLinq.ConcatQuery.TestOffOfQueryWithQuery.1', function () {
 
     //go build the query
-    var QueryToRun = UnitTestFramework._Array.Where(x => x.Id === 1).ConcatQuery(UnitTestFramework.BuildArray(2).Where(x => x.Id === 1));
+    var QueryToRun = UnitTestFramework._Array.Where(x => x.Id === 1).Concat(UnitTestFramework.BuildArray(2).Where(x => x.Id === 1));
 
     //go materialize the results into an array
     var QueryToRunResults = QueryToRun.ToArray();
@@ -485,7 +485,7 @@ test('JLinq.ConcatQuery.TestOffOfQueryWithQuery.1', function () {
 test('JLinq.ConcatQuery.TestOffOfQueryWithQuery.2', function () {
 
     //go build the query
-    var QueryToRun = UnitTestFramework._Array.Where(x => x.Id > 1).ConcatQuery(UnitTestFramework.BuildArray(2).Where(x => x.Id === 1)).Where(x => x.Id === 4);
+    var QueryToRun = UnitTestFramework._Array.Where(x => x.Id > 1).Concat(UnitTestFramework.BuildArray(2).Where(x => x.Id === 1)).Where(x => x.Id === 4);
 
     //go materialize the results into an array
     var QueryToRunResults = QueryToRun.ToArray();
@@ -519,7 +519,7 @@ test('JLinq.ConcatQuery.TestOffOfQueryWithQuery.2', function () {
 test('JLinq.ConcatQuery.TestOffOfArrayWithQuery.1', function () {
 
     //go build the query
-    var QueryToRun = UnitTestFramework._Array.ConcatQuery(UnitTestFramework.BuildArray(2).Where(x => x.Id === 1));
+    var QueryToRun = UnitTestFramework._Array.Concat(UnitTestFramework.BuildArray(2).Where(x => x.Id === 1));
 
     //go materialize the results into an array
     var QueryToRunResults = QueryToRun.ToArray();
@@ -646,7 +646,7 @@ test('JLinq.Union.TestOffOfArrayWithArray.1', function () {
 test('JLinq.UnionQuery.TestOffOfQueryWithQuery.1', function () {
 
     //go build the query
-    var QueryToRun = UnitTestFramework._Array.Where(x => x.Id === 1).Select(x => x.Id).UnionQuery(UnitTestFramework.BuildArray(2).Select(x => x.Id));
+    var QueryToRun = UnitTestFramework._Array.Where(x => x.Id === 1).Select(x => x.Id).Union(UnitTestFramework.BuildArray(2).Select(x => x.Id));
 
     //go materialize the results into an array
     var QueryToRunResults = QueryToRun.ToArray();
@@ -682,7 +682,7 @@ test('JLinq.UnionQuery.TestOffOfQueryWithQuery.1', function () {
 test('JLinq.UnionQuery.TestOffOfArrayWithQuery.1', function () {
 
     //go build the query
-    var QueryToRun = UnitTestFramework._Array.Select(x => x.Id).ToArray().UnionQuery(UnitTestFramework.BuildArray(2).Where(x => x.Id === 1).Select(x => x.Id));
+    var QueryToRun = UnitTestFramework._Array.Select(x => x.Id).ToArray().Union(UnitTestFramework.BuildArray(2).Where(x => x.Id === 1).Select(x => x.Id));
 
     //go materialize the results into an array
     var QueryToRunResults = QueryToRun.ToArray();
@@ -3702,6 +3702,338 @@ test('JLinq.ElementAtDefault.ChainTest.1', function () {
 
     //element at 5...there aren't 5 elements so this should return null
     UnitTestFramework._Array.ElementAtDefault(5);
+});
+
+//#endregion
+
+//#region Join
+
+test('JLinq.Join.Test.WithOuterArray.1', function () {
+
+    var OuterJoinData = new Array<UnitTestFramework.IJoinOuter>();
+
+    OuterJoinData.push({ Id: 1, Description: 'NY' });
+    OuterJoinData.push({ Id: 3, Description: 'NJ' });
+
+    //test that the left get's returned when the id matches and we have more then 1 item per id
+    OuterJoinData.push({ Id: 3, Description: 'DuplicateState' });
+
+    //go build the query
+    var InnerArray = UnitTestFramework._Array;
+
+    //selector to join. seperating so its readable
+    var JoinSelector: (Inner: UnitTestFramework.IObject, Outer: UnitTestFramework.IJoinOuter) => UnitTestFramework.IJoinResult = function (inner, outer) { return { Id: inner.Id, StateName: outer.Description }; };
+
+    //go build the base query
+    var QueryToRun = InnerArray.Join<UnitTestFramework.IObject, UnitTestFramework.IJoinOuter, number, UnitTestFramework.IJoinResult>(OuterJoinData, x => x.Id, y => y.Id, JoinSelector);
+
+    //result to array
+    var ResultOfQuery = QueryToRun.ToArray();
+
+    //make sure we have 2 items that match
+    equal(ResultOfQuery.length, 3);
+
+    //test the Ny vs Nj
+    equal(ResultOfQuery[0].Id, 1);
+    equal(ResultOfQuery[0].StateName, 'NY');
+
+    //test the Nj
+    equal(ResultOfQuery[1].Id, 3);
+    equal(ResultOfQuery[1].StateName, 'NJ');
+
+    //test the duplicate
+    equal(ResultOfQuery[2].Id, 3);
+    equal(ResultOfQuery[2].StateName, 'DuplicateState');
+
+    //****Lazy Execution Test****
+    var CurrentResult: ToracTechnologies.JLinq.IteratorResult<UnitTestFramework.IJoinResult>;
+    var ItemCount = 0;
+
+    //loop through the results 1 record at a time. this will never materialize an array
+    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== ToracTechnologies.JLinq.IteratorStatus.Completed) {
+
+        //first item in the result set
+        if (ItemCount === 0) {
+            equal(CurrentResult.CurrentItem.Id, 1);
+            equal(CurrentResult.CurrentItem.StateName, 'NY');
+        }
+
+        //2nd item in the result set
+        if (ItemCount === 1) {
+            equal(CurrentResult.CurrentItem.Id, 3);
+            equal(CurrentResult.CurrentItem.StateName, 'NJ');
+        }
+
+        //3rd item in the result set
+        if (ItemCount === 2) {
+            equal(CurrentResult.CurrentItem.Id, 3);
+            equal(CurrentResult.CurrentItem.StateName, 'DuplicateState');
+        }
+
+        ItemCount++;
+    }
+});
+
+test('JLinq.Join.ChainTest.WithOuterArray.1', function () {
+
+    var OuterJoinData = new Array<UnitTestFramework.IJoinOuter>();
+
+    OuterJoinData.push({ Id: 1, Description: 'NY' });
+    OuterJoinData.push({ Id: 3, Description: 'NJ' });
+
+    //test that the left get's returned when the id matches and we have more then 1 item per id
+    OuterJoinData.push({ Id: 3, Description: 'DuplicateState' });
+
+    //go build the query
+    var InnerArray = UnitTestFramework._Array;
+
+    //selector to join. seperating so its readable
+    var JoinSelector: (Inner: UnitTestFramework.IObject, Outer: UnitTestFramework.IJoinOuter) => UnitTestFramework.IJoinResult = function (inner, outer) { return { Id: inner.Id, StateName: outer.Description }; };
+
+    //go build the base query
+    var QueryToRun = InnerArray.Where(x => x.Id == 3).Join<UnitTestFramework.IObject, UnitTestFramework.IJoinOuter, number, UnitTestFramework.IJoinResult>(OuterJoinData, x => x.Id, y => y.Id, JoinSelector);
+
+    //result to array
+    var ResultOfQuery = QueryToRun.ToArray();
+
+    //make sure we have 2 items that match
+    equal(ResultOfQuery.length, 2);
+
+    //test the Nj
+    equal(ResultOfQuery[0].Id, 3);
+    equal(ResultOfQuery[0].StateName, 'NJ');
+
+    equal(ResultOfQuery[1].Id, 3);
+    equal(ResultOfQuery[1].StateName, 'DuplicateState');
+
+    //****Lazy Execution Test****
+    var CurrentResult: ToracTechnologies.JLinq.IteratorResult<UnitTestFramework.IJoinResult>;
+    var ItemCount = 0;
+
+    //loop through the results 1 record at a time. this will never materialize an array
+    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== ToracTechnologies.JLinq.IteratorStatus.Completed) {
+
+        //1st item in the result set
+        if (ItemCount === 0) {
+            equal(CurrentResult.CurrentItem.Id, 3);
+            equal(CurrentResult.CurrentItem.StateName, 'NJ');
+        }
+
+        //2nd item in the result set
+        if (ItemCount === 1) {
+            equal(CurrentResult.CurrentItem.Id, 3);
+            equal(CurrentResult.CurrentItem.StateName, 'DuplicateState');
+        }
+
+        ItemCount++;
+    }
+});
+
+test('JLinq.Join.Test.WithOuterQuery.1', function () {
+
+    var OuterJoinData = new Array<UnitTestFramework.IJoinOuter>();
+
+    OuterJoinData.push({ Id: 1, Description: 'NY' });
+    OuterJoinData.push({ Id: 3, Description: 'NJ' });
+    OuterJoinData.push({ Id: 4, Description: 'MA' });
+
+    //test that the left get's returned when the id matches and we have more then 1 item per id
+    OuterJoinData.push({ Id: 4, Description: 'DuplicateState' });
+
+    //go build the query
+    var InnerArray = UnitTestFramework._Array;
+
+    //selector to join. seperating so its readable
+    var JoinSelector: (Inner: UnitTestFramework.IObject, Outer: UnitTestFramework.IJoinOuter) => UnitTestFramework.IJoinResult = function (inner, outer) { return { Id: inner.Id, StateName: outer.Description }; };
+
+    //go build the base query
+    var QueryToRun = InnerArray.Join<UnitTestFramework.IObject, UnitTestFramework.IJoinOuter, number, UnitTestFramework.IJoinResult>(OuterJoinData.Where(x => x.Description != 'MA'), x => x.Id, y => y.Id, JoinSelector);
+
+    //result to array
+    var ResultOfQuery = QueryToRun.ToArray();
+
+    //make sure we have 2 items that match
+    equal(ResultOfQuery.length, 3);
+
+    //test the Ny vs Nj
+    equal(ResultOfQuery[0].Id, 1);
+    equal(ResultOfQuery[0].StateName, 'NY');
+
+    //test the Nj
+    equal(ResultOfQuery[1].Id, 3);
+    equal(ResultOfQuery[1].StateName, 'NJ');
+
+    //test the duplicate
+    equal(ResultOfQuery[2].Id, 4);
+    equal(ResultOfQuery[2].StateName, 'DuplicateState');
+
+    //****Lazy Execution Test****
+    var CurrentResult: ToracTechnologies.JLinq.IteratorResult<UnitTestFramework.IJoinResult>;
+    var ItemCount = 0;
+
+    //loop through the results 1 record at a time. this will never materialize an array
+    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== ToracTechnologies.JLinq.IteratorStatus.Completed) {
+
+        //first item in the result set
+        if (ItemCount === 0) {
+            equal(CurrentResult.CurrentItem.Id, 1);
+            equal(CurrentResult.CurrentItem.StateName, 'NY');
+        }
+
+        //2nd item in the result set
+        if (ItemCount === 1) {
+            equal(CurrentResult.CurrentItem.Id, 3);
+            equal(CurrentResult.CurrentItem.StateName, 'NJ');
+        }
+
+        //3rd item in the result set
+        if (ItemCount === 2) {
+            equal(CurrentResult.CurrentItem.Id, 4);
+            equal(CurrentResult.CurrentItem.StateName, 'DuplicateState');
+        }
+
+        ItemCount++;
+    }
+});
+
+test('JLinq.Join.ChainTest.WithOuterQuery.1', function () {
+
+    var OuterJoinData = new Array<UnitTestFramework.IJoinOuter>();
+
+    OuterJoinData.push({ Id: 1, Description: 'NY' });
+    OuterJoinData.push({ Id: 3, Description: 'NJ' });
+    OuterJoinData.push({ Id: 4, Description: 'MA' });
+
+    //test that the left get's returned when the id matches and we have more then 1 item per id
+    OuterJoinData.push({ Id: 4, Description: 'DuplicateState' });
+
+    //go build the query
+    var InnerArray = UnitTestFramework.BuildArray(UnitTestFramework._DefaultItemsToBuild);
+
+    //selector to join. seperating so its readable
+    var JoinSelector: (Inner: UnitTestFramework.IObject, Outer: UnitTestFramework.IJoinOuter) => UnitTestFramework.IJoinResult = function (inner, outer) { return { Id: inner.Id, StateName: outer.Description }; };
+
+    //go build the base query
+    var QueryToRun = InnerArray.Where(x => x.Id == 3).Join<UnitTestFramework.IObject, UnitTestFramework.IJoinOuter, number, UnitTestFramework.IJoinResult>(OuterJoinData.Where(x => x.Description != 'MA'), x => x.Id, y => y.Id, JoinSelector);
+
+    //result to array
+    var ResultOfQuery = QueryToRun.ToArray();
+
+    //make sure we have 2 items that match
+    equal(ResultOfQuery.length, 1);
+
+    //test the Nj
+    equal(ResultOfQuery[0].Id, 3);
+    equal(ResultOfQuery[0].StateName, 'NJ');
+
+    //****Lazy Execution Test****
+    var CurrentResult: ToracTechnologies.JLinq.IteratorResult<UnitTestFramework.IJoinResult>;
+    var ItemCount = 0;
+
+    //loop through the results 1 record at a time. this will never materialize an array
+    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== ToracTechnologies.JLinq.IteratorStatus.Completed) {
+
+        //1st item in the result set
+        if (ItemCount === 1) {
+            equal(CurrentResult.CurrentItem.Id, 3);
+            equal(CurrentResult.CurrentItem.StateName, 'NJ');
+        }
+
+        //2nd item in the result set
+        if (ItemCount === 2) {
+            equal(CurrentResult.CurrentItem.Id, 4);
+            equal(CurrentResult.CurrentItem.StateName, 'DuplicateState');
+        }
+
+        ItemCount++;
+    }
+});
+
+test('JLinq.Join.Test.FunctionalWhereInnerJoinHasMultipleRecords.1', function () {
+
+    var OuterJoinData = new Array<UnitTestFramework.IJoinOuter>();
+
+    OuterJoinData.push({ Id: 1, Description: 'NY' });
+    OuterJoinData.push({ Id: 3, Description: 'NJ' });
+
+    //test that the left get's returned when the id matches and we have more then 1 item per id
+    OuterJoinData.push({ Id: 3, Description: 'DuplicateState' });
+
+    //go build the query
+    var InnerArray = UnitTestFramework.BuildArray(UnitTestFramework._DefaultItemsToBuild);
+
+    //add another item to make the duplicate
+    InnerArray.push({
+        Id: 1,
+        Txt: 'InnerJoinCollectionDuplicate',
+        CreatedDate: null,
+        GroupByKey: null,
+        GroupByKey2: null,
+        IsActive: null,
+        lst: null
+    });
+
+    //selector to join. seperating so its readable
+    var JoinSelector: (Inner: UnitTestFramework.IObject, Outer: UnitTestFramework.IJoinOuter) => UnitTestFramework.IJoinResult = function (inner, outer) { return { Id: inner.Id, StateName: outer.Description }; };
+
+    //go build the base query
+    var QueryToRun = InnerArray.Join<UnitTestFramework.IObject, UnitTestFramework.IJoinOuter, number, UnitTestFramework.IJoinResult>(OuterJoinData, x => x.Id, y => y.Id, JoinSelector);
+
+    //result to array
+    var ResultOfQuery = QueryToRun.ToArray();
+
+    //make sure we have 2 items that match
+    equal(ResultOfQuery.length, 4);
+
+    //test the Ny vs Nj
+    equal(ResultOfQuery[0].Id, 1);
+    equal(ResultOfQuery[0].StateName, 'NY');
+
+    //test the Nj
+    equal(ResultOfQuery[1].Id, 3);
+    equal(ResultOfQuery[1].StateName, 'NJ');
+
+    //test the outer duplicate
+    equal(ResultOfQuery[2].Id, 3);
+    equal(ResultOfQuery[2].StateName, 'DuplicateState');
+
+    //test the inner duplicate
+    equal(ResultOfQuery[3].Id, 1);
+    equal(ResultOfQuery[3].StateName, 'NY'); //because the state name is taken from the outer colleciton
+
+    //****Lazy Execution Test****
+    var CurrentResult: ToracTechnologies.JLinq.IteratorResult<UnitTestFramework.IJoinResult>;
+    var ItemCount = 0;
+
+    //loop through the results 1 record at a time. this will never materialize an array
+    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== ToracTechnologies.JLinq.IteratorStatus.Completed) {
+
+        //first item in the result set
+        if (ItemCount === 0) {
+            equal(CurrentResult.CurrentItem.Id, 1);
+            equal(CurrentResult.CurrentItem.StateName, 'NY');
+        }
+
+        //2nd item in the result set
+        if (ItemCount === 1) {
+            equal(CurrentResult.CurrentItem.Id, 3);
+            equal(CurrentResult.CurrentItem.StateName, 'NJ');
+        }
+
+        //3rd item in the result set
+        if (ItemCount === 2) {
+            equal(CurrentResult.CurrentItem.Id, 3);
+            equal(CurrentResult.CurrentItem.StateName, 'DuplicateState');
+        }
+
+        //4th item in the result set which is the inner duplicate
+        if (ItemCount === 3) {
+            equal(CurrentResult.CurrentItem.Id, 1);
+            equal(CurrentResult.CurrentItem.StateName, 'NY');  //because the state name is taken from the outer colleciton
+        }
+
+        ItemCount++;
+    }
 });
 
 //#endregion

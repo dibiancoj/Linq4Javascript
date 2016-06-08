@@ -283,100 +283,6 @@ asyncTest('JLinq.Concat.FallBack.TestOffOfArrayWithArray.1', function () {
 });
 //#endregion
 //#endregion
-//#region Concat Query
-//#region Concat Off Of Query With Another Query
-asyncTest('JLinq.ConcatQuery.TestOffOfQueryWithQuery.1', function () {
-    expect(5);
-    var callBack = function (Result) {
-        //****To-UnitTestFramework._Array Test****
-        equal(Result[0].Id, 1);
-        equal(Result[0].Txt, '1');
-        equal(Result[1].Id, 1);
-        equal(Result[1].Txt, '1');
-        equal(Result.length, 2);
-        start();
-    };
-    //go build the query
-    var QueryToRun = UnitTestFramework._Array.Where(function (x) { return x.Id === 1; }).ConcatQuery(UnitTestFramework.BuildArray(2).Where(function (x) { return x.Id === 1; }));
-    //go run the async operation
-    QueryToRun.ToArrayAsync(callBack, ErrorCallBack('ConcatQuery.TestOffOfQueryWithQuery.1'), JLinqUrlPath);
-});
-asyncTest('JLinq.ConcatQuery.FallBack.TestOffOfQueryWithQuery.1', function () {
-    expect(5);
-    var callBack = function (Result) {
-        //****To-UnitTestFramework._Array Test****
-        equal(Result[0].Id, 1);
-        equal(Result[0].Txt, '1');
-        equal(Result[1].Id, 1);
-        equal(Result[1].Txt, '1');
-        equal(Result.length, 2);
-        start();
-    };
-    //go build the query
-    var QueryToRun = UnitTestFramework._Array.Where(function (x) { return x.Id === 1; }).ConcatQuery(UnitTestFramework.BuildArray(2).Where(function (x) { return x.Id === 1; }));
-    //go run the async operation
-    QueryToRun.ToArrayAsync(callBack, ErrorCallBack('ConcatQuery.FallBack.TestOffOfQueryWithQuery.1'), JLinqUrlPath, false);
-});
-asyncTest('JLinq.ConcatQuery.TestOffOfQueryWithQuery.2', function () {
-    expect(3);
-    var callBack = function (Result) {
-        //****To-UnitTestFramework._Array Test****
-        equal(Result[0].Id, 4);
-        equal(Result[0].Txt, '4');
-        equal(Result.length, 1);
-        start();
-    };
-    //go build the query
-    var QueryToRun = UnitTestFramework._Array.Where(function (x) { return x.Id > 1; }).ConcatQuery(UnitTestFramework.BuildArray(2).Where(function (x) { return x.Id === 1; })).Where(function (x) { return x.Id === 4; });
-    //go run the async operation
-    QueryToRun.ToArrayAsync(callBack, ErrorCallBack('JLinq.ConcatQuery.TestOffOfQueryWithQuery.2'), JLinqUrlPath);
-});
-//#endregion
-//#region Concat Query Off Of Array With Query
-asyncTest('JLinq.ConcatQuery.TestOffOfArrayWithQuery.1', function () {
-    expect(12);
-    var callBack = function (Result) {
-        //****To-UnitTestFramework._Array Test****
-        for (var i = 0; i < Result.length; i++) {
-            if (i === 5) {
-                equal(Result[i].Id, 1);
-                equal(Result[i].Txt, '1');
-            }
-            else {
-                equal(Result[i].Id, i);
-                equal(Result[i].Txt, i.toString());
-            }
-        }
-        start();
-    };
-    //go build the query
-    var QueryToRun = UnitTestFramework._Array.ConcatQuery(UnitTestFramework.BuildArray(2).Where(function (x) { return x.Id === 1; }));
-    //go run the async operation
-    QueryToRun.ToArrayAsync(callBack, ErrorCallBack('ConcatQuery.TestOffOfArrayWithQuery.1'), JLinqUrlPath);
-});
-asyncTest('JLinq.ConcatQuery.FallBack.TestOffOfArrayWithQuery.1', function () {
-    expect(12);
-    var callBack = function (Result) {
-        //****To-UnitTestFramework._Array Test****
-        for (var i = 0; i < Result.length; i++) {
-            if (i === 5) {
-                equal(Result[i].Id, 1);
-                equal(Result[i].Txt, '1');
-            }
-            else {
-                equal(Result[i].Id, i);
-                equal(Result[i].Txt, i.toString());
-            }
-        }
-        start();
-    };
-    //go build the query
-    var QueryToRun = UnitTestFramework._Array.ConcatQuery(UnitTestFramework.BuildArray(2).Where(function (x) { return x.Id === 1; }));
-    //go run the async operation
-    QueryToRun.ToArrayAsync(callBack, ErrorCallBack('ConcatQuery.FallBack.TestOffOfArrayWithQuery.1'), JLinqUrlPath, false);
-});
-//#endregion
-//#endregion
 //#region Union
 //#region Union Off Of Query With Array
 asyncTest('JLinq.Union.TestOffOfQueryWithArray.1', function () {
@@ -442,70 +348,6 @@ asyncTest('JLinq.Union.FallBack.TestOffOfArrayWithArray.1', function () {
     var QueryToRun = UnitTestFramework._Array.Select(function (x) { return x.Id; }).ToArray().Union(UnitTestFramework.BuildArray(2).Select(function (x) { return x.Id; }).ToArray());
     //go run the async operation
     QueryToRun.ToArrayAsync(callBack, ErrorCallBack('Union.FallBack.TestOffOfArrayWithArray.1'), JLinqUrlPath, false);
-});
-//#endregion
-//#endregion
-//#region Union Query
-//#region Union Off Of Query With Another Query
-asyncTest('JLinq.UnionQuery.TestOffOfQueryWithQuery.1', function () {
-    expect(3);
-    var callBack = function (Result) {
-        //****To-UnitTestFramework._Array Test****
-        equal(Result[0], 1);
-        equal(Result[1], 0);
-        equal(Result.length, 2);
-        start();
-    };
-    //go build the query
-    var QueryToRun = UnitTestFramework._Array.Where(function (x) { return x.Id === 1; }).Select(function (x) { return x.Id; }).UnionQuery(UnitTestFramework.BuildArray(2).Select(function (x) { return x.Id; }));
-    //go run the async operation
-    QueryToRun.ToArrayAsync(callBack, ErrorCallBack('UnionQuery.TestOffOfQueryWithQuery.1'), JLinqUrlPath);
-});
-asyncTest('JLinq.UnionQuery.FallBack.TestOffOfQueryWithQuery.1', function () {
-    expect(3);
-    var callBack = function (Result) {
-        //****To-UnitTestFramework._Array Test****
-        equal(Result[0], 1);
-        equal(Result[1], 0);
-        equal(Result.length, 2);
-        start();
-    };
-    //go build the query
-    var QueryToRun = UnitTestFramework._Array.Where(function (x) { return x.Id === 1; }).Select(function (x) { return x.Id; }).UnionQuery(UnitTestFramework.BuildArray(2).Select(function (x) { return x.Id; }));
-    //go run the async operation
-    QueryToRun.ToArrayAsync(callBack, ErrorCallBack('UnionQuery.FallBack.TestOffOfQueryWithQuery.1'), JLinqUrlPath, false);
-});
-//#endregion
-//#region Union Query Off Of Array With Query
-asyncTest('JLinq.UnionQuery.TestOffOfArrayWithQuery.1', function () {
-    expect(6);
-    var callBack = function (Result) {
-        //****To-UnitTestFramework._Array Test****
-        for (var i = 0; i < Result.length; i++) {
-            equal(Result[i], i);
-        }
-        equal(Result.length, 5);
-        start();
-    };
-    //go build the query
-    var QueryToRun = UnitTestFramework._Array.Select(function (x) { return x.Id; }).ToArray().UnionQuery(UnitTestFramework.BuildArray(2).Where(function (x) { return x.Id === 1; }).Select(function (x) { return x.Id; }));
-    //go run the async operation
-    QueryToRun.ToArrayAsync(callBack, ErrorCallBack('UnionQuery.TestOffOfArrayWithQuery.1'), JLinqUrlPath);
-});
-asyncTest('JLinq.UnionQuery.FallBack.TestOffOfArrayWithQuery.1', function () {
-    expect(6);
-    var callBack = function (Result) {
-        //****To-UnitTestFramework._Array Test****
-        for (var i = 0; i < Result.length; i++) {
-            equal(Result[i], i);
-        }
-        equal(Result.length, 5);
-        start();
-    };
-    //go build the query
-    var QueryToRun = UnitTestFramework._Array.Select(function (x) { return x.Id; }).ToArray().UnionQuery(UnitTestFramework.BuildArray(2).Where(function (x) { return x.Id === 1; }).Select(function (x) { return x.Id; }));
-    //go run the async operation
-    QueryToRun.ToArrayAsync(callBack, ErrorCallBack('UnionQuery.FallBack.TestOffOfArrayWithQuery.1'), JLinqUrlPath, false);
 });
 //#endregion
 //#endregion
@@ -1566,3 +1408,4 @@ asyncTest('JLinq.ThenBy.Desc.ChainTest.2', function () {
 });
 //#endregion
 //#endregion 
+//# sourceMappingURL=UnitTestsAsync.js.map

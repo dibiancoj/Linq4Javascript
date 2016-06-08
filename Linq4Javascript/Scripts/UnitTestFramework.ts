@@ -26,6 +26,18 @@ module UnitTestFramework {
         Txt2: string;
     }
 
+    //test object for the join test units. This is mainly for the outer table
+    export interface IJoinOuter {
+        Id: number;
+        Description: string;
+    }
+
+     //test object for the join test units. This is mainly for the resuld of the join
+    export interface IJoinResult {
+        Id: number;
+        StateName: string;
+    }
+
     //method to build up the list of data
     export function BuildArray(howManyItems): Array<ITestObject> {
 

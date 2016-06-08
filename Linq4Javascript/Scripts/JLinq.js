@@ -1,7 +1,7 @@
 //********************************Torac Technologies***************************************
 //Description: Linq Style Methods In Javascript To Manipulate Collections                 *
 //Release Date: 10/17/2013                                                                *
-//Current Version: 3.0.2                                                                  *
+//Current Version: 3.0.3                                                                  *
 //Release History In JLinqChangeLog.txt                                                   *
 //*****************************************************************************************
 var __extends = (this && this.__extends) || function (d, b) {
@@ -163,25 +163,33 @@ var ToracTechnologies;
                 //now return the result
                 return ResultOfQuery;
             };
-            //go setup the iterator to concat a iterator and another query
-            Iterator.prototype.ConcatQuery = function (QueryToConcat) {
-                //just return the concat iterator
-                return new ConcatIterator(this, 'ConcatQueryIterator', QueryToConcat);
-            };
             //go setup the iterator to concat a iterator and an array
-            Iterator.prototype.Concat = function (ArrayToCombine) {
+            Iterator.prototype.Concat = function (ArrayOrIteratorToCombine) {
+                //iterator to convert into
+                var ConvertToIterator;
+                //if this is not a iterator...convert it\
+                if (this.IsIterator(ArrayOrIteratorToCombine)) {
+                    ConvertToIterator = ArrayOrIteratorToCombine;
+                }
+                else {
+                    ConvertToIterator = new Queryable(ArrayOrIteratorToCombine);
+                }
                 //just return the concat iterator
-                return new ConcatIterator(this, 'ConcatArrayIterator', new Queryable(ArrayToCombine));
-            };
-            //go setup the iterator to union a iterator and another query
-            Iterator.prototype.UnionQuery = function (QueryToUnion) {
-                //just return the union iterator
-                return new UnionIterator(this, 'UnionQueryIterator', QueryToUnion);
+                return new ConcatIterator(this, 'ConcatArrayOrQueryIterator', ConvertToIterator);
             };
             //go setup the iterator to union a iterator and an array
-            Iterator.prototype.Union = function (ArrayToCombine) {
+            Iterator.prototype.Union = function (ArrayOrIteratorToCombine) {
+                //iterator to convert into
+                var ConvertToIterator;
+                //if this is not a iterator...convert it\
+                if (this.IsIterator(ArrayOrIteratorToCombine)) {
+                    ConvertToIterator = ArrayOrIteratorToCombine;
+                }
+                else {
+                    ConvertToIterator = new Queryable(ArrayOrIteratorToCombine);
+                }
                 //just return the union iterator
-                return new UnionIterator(this, 'UnionArrayIterator', new Queryable(ArrayToCombine));
+                return new UnionIterator(this, 'UnionArrayOrQueryIterator', ConvertToIterator);
             };
             //counts the number of items that match the predicate
             Iterator.prototype.Count = function (WhereClauseSelector) {
@@ -329,6 +337,19 @@ var ToracTechnologies;
                 return ElementAtHelperResult.ElementWasNotFound(Tally);
             };
             //#endregion
+            //join 2 recordsets where the property selector matches on both collections
+            Iterator.prototype.Join = function (OuterJoinArray, InnerKeySelector, OuterKeySelector, JoinSelector) {
+                //iterator to convert into
+                var ConvertToIterator;
+                //if this is not a iterator...convert it\
+                if (this.IsIterator(OuterJoinArray)) {
+                    ConvertToIterator = OuterJoinArray;
+                }
+                else {
+                    ConvertToIterator = new Queryable(OuterJoinArray);
+                }
+                return new JoinIterator(this, ConvertToIterator, InnerKeySelector, OuterKeySelector, JoinSelector);
+            };
             //#endregion
             //#region Public Non Linq Iterator Functionality Methods
             //materializes the expression to an array
@@ -525,6 +546,12 @@ var ToracTechnologies;
                 }
                 return eval("(" + MethodCode + ")");
             };
+            //#endregion
+            //#region Private Methods
+            //Is this an array? used for type guards
+            Iterator.prototype.IsIterator = function (thingToCheck) {
+                return thingToCheck.ToArray !== undefined;
+            };
             //we are going to cache the jlinq blob
             Iterator.WebWorkerBlobToCache = null;
             //go check if async is available (this gets cached on first call to ArrayAsync)
@@ -702,6 +729,74 @@ var ToracTechnologies;
         JLinq.Queryable = Queryable;
         //#endregion
         //#region Linq Functionality Classes
+        //Class is used to implement the join method iterator. Used to essentially build a database join type iterator
+        var JoinIterator = (function (_super) {
+            __extends(JoinIterator, _super);
+            //#region Constructor
+            function JoinIterator(PreviousLambdaExpression, OuterJoinArray, InnerKeySelector, OuterKeySelector, JoinSelector) {
+                //because we inherit from Iterator we need to call the base class
+                _super.call(this);
+                //set the queryable source
+                this.PreviousExpression = PreviousLambdaExpression;
+                //i believe pushing the outer to an array is more efficient since this will be used loop after loop. This way after there is a where with a group by...we won't have to run that each time. Its going to be tough to say which one is more efficient
+                this.OuterJoinArray = OuterJoinArray.ToArray();
+                this.InnerKeyFuncSelector = InnerKeySelector;
+                this.OuterKeyFuncSelector = OuterKeySelector;
+                this.JoinFuncSelector = JoinSelector;
+                //create a new array so we don't have to deal with a null array
+                this.Matches = new Array();
+                //throw this into a variable so we can debug this thing when we go from CollectionSource To CollectionSource and check the type
+                this.TypeOfObject = "JoinIterator";
+            }
+            //#endregion
+            //#region Methods
+            JoinIterator.prototype.ResetIterator = function () {
+                //reset the match array
+                this.Matches = new Array();
+            };
+            JoinIterator.prototype.Next = function () {
+                //holds the next available item
+                var NextItem;
+                //just keep looping as we recurse through the CollectionSource which contains all the calls down the tree
+                while (true) {
+                    //loop through the matches and return it
+                    if (this.Matches.length > 0) {
+                        return new IteratorResult(this.Matches.shift(), IteratorStatus.Running);
+                    }
+                    //grab the next level and then the next guy for that level
+                    NextItem = this.PreviousExpression.Next();
+                    //are we done with the inner data set?
+                    if (NextItem.CurrentStatus === IteratorStatus.Completed) {
+                        //just return the item so we can be done
+                        return new IteratorResult(null, IteratorStatus.Completed);
+                    }
+                    else {
+                        //loop through all the outers and if we have a match then we need to return it
+                        for (var i = 0; i < this.OuterJoinArray.length; i++) {
+                            //throw the current item into a variable
+                            var CurrentItem = this.OuterJoinArray[i];
+                            //do we have a match if we try to match the properties?
+                            if (this.InnerKeyFuncSelector(NextItem.CurrentItem) == this.OuterKeyFuncSelector(CurrentItem)) {
+                                //we have a match...add it to the array
+                                this.Matches.push(this.JoinFuncSelector(NextItem.CurrentItem, CurrentItem));
+                            }
+                        }
+                    }
+                }
+            };
+            JoinIterator.prototype.AsyncSerializedFunc = function () {
+                throw 'Join Method Not Supported In Async Mode';
+                //return [
+                //    new KeyValuePair('OuterJoinArray', JSON.stringify(this.OuterJoinArray)),
+                //    new KeyValuePair('InnerKeyFuncSelector', super.SerializeMethod(this.InnerKeyFuncSelector)),
+                //    new KeyValuePair('OuterKeyFuncSelector', super.SerializeMethod(this.OuterKeyFuncSelector)),
+                //    new KeyValuePair('JoinFuncSelector', super.SerializeMethod(this.JoinFuncSelector))
+                //    //new KeyValuePair('Matches', super.SerializeMethod(this.Matches))
+                //];
+            };
+            return JoinIterator;
+        }(Iterator));
+        JLinq.JoinIterator = JoinIterator;
         //Class is used to implement the Where Method Iterator
         var WhereIterator = (function (_super) {
             __extends(WhereIterator, _super);
@@ -2421,30 +2516,33 @@ var ToracTechnologies;
                 //return a new order by iterator
                 return new OrderByIterator(Queryable, CastedOrderBy.SortDirection, ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(function (x) { return x.Key == 'SortPropertySelector'; }).Value), ThenByToSet);
             }
-            if (CurrentLevelOfTree.TypeOfObject === 'ConcatArrayIterator') {
-                //cast the queryable
-                var CastedConcat = CurrentLevelOfTree;
-                //we need to go rebuild the concat query tree...then pass it in
-                return Queryable.ConcatQuery(RebuildTree(CastedConcat.ConcatThisQuery));
+            if (CurrentLevelOfTree.TypeOfObject === 'JoinIterator') {
+                throw 'Join Iterator Not Supported In Async Mode';
             }
-            if (CurrentLevelOfTree.TypeOfObject === 'ConcatQueryIterator') {
+            //if (CurrentLevelOfTree.TypeOfObject === 'ConcatArrayIterator') {
+            //    //cast the queryable
+            //    var CastedConcat = (<ToracTechnologies.JLinq.ConcatIterator<any>>CurrentLevelOfTree);
+            //    //we need to go rebuild the concat query tree...then pass it in
+            //    return Queryable.Concat(RebuildTree(CastedConcat.ConcatThisQuery));
+            //}
+            if (CurrentLevelOfTree.TypeOfObject === 'ConcatArrayOrQueryIterator') {
                 //cast the queryable
                 var CastedConcatQuery = RebuildTree(CurrentLevelOfTree.ConcatThisQuery);
                 //we need to go rebuild the concat query tree...then pass it in
-                return Queryable.ConcatQuery(CastedConcatQuery);
+                return Queryable.Concat(CastedConcatQuery);
             }
-            if (CurrentLevelOfTree.TypeOfObject === 'UnionArrayIterator') {
+            if (CurrentLevelOfTree.TypeOfObject === 'UnionArrayOrQueryIterator') {
                 //cast the queryable
                 var CastedUnion = CurrentLevelOfTree;
                 //we need to go rebuild the union query tree...then pass it in
-                return Queryable.UnionQuery(RebuildTree(CastedUnion.UnionThisQuery));
+                return Queryable.Union(RebuildTree(CastedUnion.UnionThisQuery));
             }
-            if (CurrentLevelOfTree.TypeOfObject === 'UnionQueryIterator') {
-                //cast the queryable
-                var CastedUnionQuery = RebuildTree(CurrentLevelOfTree.UnionThisQuery);
-                //we need to go rebuild the union query tree...then pass it in
-                return Queryable.UnionQuery(CastedUnionQuery);
-            }
+            //if (CurrentLevelOfTree.TypeOfObject === 'UnionQueryIterator') {
+            //    //cast the queryable
+            //    var CastedUnionQuery = RebuildTree((<ToracTechnologies.JLinq.UnionIterator<any>>CurrentLevelOfTree).UnionThisQuery);
+            //    //we need to go rebuild the union query tree...then pass it in
+            //    return Queryable.Unionery(CastedUnionQuery);
+            //}
             if (CurrentLevelOfTree.TypeOfObject === 'Queryable') {
                 //we need to go rebuild the concat query tree...then pass it in
                 return new ToracTechnologies.JLinq.Queryable(CurrentLevelOfTree.CollectionSource);
@@ -2511,14 +2609,8 @@ Array.prototype.Any = function (WhereClauseSelector) {
 Array.prototype.Last = function (WhereClauseSelector) {
     return new ToracTechnologies.JLinq.Queryable(this).Last(WhereClauseSelector);
 };
-Array.prototype.ConcatQuery = function (QueryToConcat) {
-    return new ToracTechnologies.JLinq.Queryable(this).ConcatQuery(QueryToConcat);
-};
 Array.prototype.Concat = function (ArrayToConcat) {
     return new ToracTechnologies.JLinq.Queryable(this).Concat(ArrayToConcat);
-};
-Array.prototype.UnionQuery = function (QueryToUnion) {
-    return new ToracTechnologies.JLinq.Queryable(this).UnionQuery(QueryToUnion);
 };
 Array.prototype.Union = function (ArrayToUnion) {
     return new ToracTechnologies.JLinq.Queryable(this).Union(ArrayToUnion);
@@ -2579,5 +2671,9 @@ Array.prototype.ElementAtDefault = function (Index) {
     //if you are trying to run an element at on an array...then just use the normal way for performance. Essentially we only need JLinq ElementAt off of Queryable 
     return this[Index];
 };
+Array.prototype.Join = function (OuterJoinArray, InnerKeySelector, OuterKeySelector, JoinSelector) {
+    return new ToracTechnologies.JLinq.Queryable(this).Join(OuterJoinArray, InnerKeySelector, OuterKeySelector, JoinSelector);
+};
 //#endregion
 //#endregion 
+//# sourceMappingURL=JLinq.js.map
