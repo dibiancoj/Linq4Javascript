@@ -2479,9 +2479,11 @@ test('JLinq.ElementAt.Test.1', function () {
 });
 test('JLinq.ElementAt.ChainTest.1', function () {
     //*** ElementAt doens't have a lazy iterator...it just returns the element.
+    //build the base query
+    var BaseQuery = UnitTestFramework._Array.Where(function (x) { return x.Id > 1; });
     //go build the query
-    var ElementAt0 = UnitTestFramework._Array.Where(function (x) { return x.Id > 1; }).ElementAt(0);
-    var ElementAt1 = UnitTestFramework._Array.Where(function (x) { return x.Id > 1; }).ElementAt(1);
+    var ElementAt0 = BaseQuery.ElementAt(0);
+    var ElementAt1 = BaseQuery.ElementAt(1);
     //****To-UnitTestFramework._Array Test****
     //element at 0...should be 2
     equal(ElementAt0.Id, 2);
@@ -2493,7 +2495,7 @@ test('JLinq.ElementAt.ChainTest.1', function () {
     throws(function () {
         //go run the method that should blow up
         UnitTestFramework._Array.Where(function (x) { return x.Id > 1; }).ElementAt(5);
-    }, 'ArgumentOutOfRangeException. The size of the collection is less then the index specified. There are only ' + UnitTestFramework._Array.Where(function (x) { return x.Id > 1; }).Count() + ' elements in the query.');
+    }, 'ArgumentOutOfRangeException. The size of the collection is less then the index specified. There are only ' + BaseQuery.Count() + ' elements in the query.');
 });
 //#endregion
 //#region ElementAtDefault
@@ -2514,9 +2516,10 @@ test('JLinq.ElementAtDefault.Test.1', function () {
 });
 test('JLinq.ElementAtDefault.ChainTest.1', function () {
     //*** ElementAt doens't have a lazy iterator...it just returns the element.
+    var BaseQuery = UnitTestFramework._Array.Where(function (x) { return x.Id > 1; });
     //go build the query
-    var ElementAtDefault0 = UnitTestFramework._Array.Where(function (x) { return x.Id > 1; }).ElementAtDefault(0);
-    var ElementAtDefault1 = UnitTestFramework._Array.Where(function (x) { return x.Id > 1; }).ElementAtDefault(1);
+    var ElementAtDefault0 = BaseQuery.ElementAtDefault(0);
+    var ElementAtDefault1 = BaseQuery.ElementAtDefault(1);
     //****To-UnitTestFramework._Array Test****
     //element at 0...should be 2
     equal(ElementAtDefault0.Id, 2);
