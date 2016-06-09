@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Linq4Javascript.TestOnDotNetSide;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -12,6 +13,9 @@ namespace Linq4Javascript.Controllers
         [HttpGet]
         public ActionResult Index()
         {
+            //var regularJoin = Team.BuildTeamsLazy().Join(Sport.BuildSportsLazy(), x => x.SportId, y => y.SportId, (t, s) => new JoinResult { TeamDescription = t.TeamDescription, SportDescription = s.SportDescription }).ToArray();
+
+
             return View();
         }
 

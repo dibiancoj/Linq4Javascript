@@ -60,5 +60,25 @@ var UnitTestFramework;
     UnitTestFramework._Array = Object.freeze(BuildArray(UnitTestFramework._DefaultItemsToBuild));
     //sort order array
     UnitTestFramework._SortOrderArray = Object.freeze(BuildSortOrderArray());
+    function BuildBuildTeams() {
+        return [
+            { TeamId: 1, TeamDescription: "Mets", SportId: 1 },
+            { TeamId: 2, TeamDescription: "Yankees", SportId: 1 },
+            { TeamId: 3, TeamDescription: "Rangers", SportId: 2 },
+            { TeamId: 4, TeamDescription: "Knicks", SportId: 3 },
+            { TeamId: 5, TeamDescription: "Jets", SportId: 4 },
+            { TeamId: 6, TeamDescription: "Metro Starts", SportId: 9 },
+        ];
+    }
+    UnitTestFramework.BuildBuildTeams = BuildBuildTeams;
+    function BuildSports() {
+        return [
+            { SportId: 1, SportDescription: "Baseball" },
+            { SportId: 2, SportDescription: "Hockey" },
+            { SportId: 3, SportDescription: "Basketball" },
+            { SportId: 10, SportDescription: "Paintball" },
+        ];
+    }
+    UnitTestFramework.BuildSports = BuildSports;
 })(UnitTestFramework || (UnitTestFramework = {}));
 //# sourceMappingURL=unittestframework.js.map

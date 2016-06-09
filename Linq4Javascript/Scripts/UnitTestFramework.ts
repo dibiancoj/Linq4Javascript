@@ -26,18 +26,6 @@ module UnitTestFramework {
         Txt2: string;
     }
 
-    //test object for the join test units. This is mainly for the outer table
-    export interface IJoinOuter {
-        Id: number;
-        Description: string;
-    }
-
-     //test object for the join test units. This is mainly for the resuld of the join
-    export interface IJoinResult {
-        Id: number;
-        StateName: string;
-    }
-
     //method to build up the list of data
     export function BuildArray(howManyItems): Array<ITestObject> {
 
@@ -106,6 +94,48 @@ module UnitTestFramework {
 
     //sort order array
     export var _SortOrderArray: Array<IObject> = Object.freeze(BuildSortOrderArray());
+
+    //#endregion
+
+    //#region Test Data
+
+    //test object for the join test units. This is mainly for the outer table
+    export interface ITeam {
+        TeamId: number;
+        TeamDescription: string;
+        SportId: number;
+    }
+
+    export interface ISport {
+        SportId: number;
+        SportDescription: string;
+    }
+
+    export function BuildBuildTeams(): ITeam[] {
+        return [
+            { TeamId: 1, TeamDescription: "Mets", SportId: 1 },
+            { TeamId: 2, TeamDescription: "Yankees", SportId: 1 },
+            { TeamId: 3, TeamDescription: "Rangers", SportId: 2 },
+            { TeamId: 4, TeamDescription: "Knicks", SportId: 3 },
+            { TeamId: 5, TeamDescription: "Jets", SportId: 4 },
+            { TeamId: 6, TeamDescription: "Metro Starts", SportId: 9 },
+        ]
+    }
+
+    export function BuildSports(): ISport[] {
+        return [
+            { SportId: 1, SportDescription: "Baseball" },
+            { SportId: 2, SportDescription: "Hockey" },
+            { SportId: 3, SportDescription: "Basketball" },
+            { SportId: 10, SportDescription: "Paintball" },
+        ]
+    }
+
+    //test object for the join test units. This is mainly for the resuld of the join
+    export interface IJoinResult {
+        TeamDescription: string;
+        SportDescription: string;
+    }
 
     //#endregion
 

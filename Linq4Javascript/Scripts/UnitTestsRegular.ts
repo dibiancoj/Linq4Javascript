@@ -3713,40 +3713,36 @@ test('JLinq.ElementAtDefault.ChainTest.1', function () {
 
 test('JLinq.Join.Test.WithOuterArray.1', function () {
 
-    var OuterJoinData = new Array<UnitTestFramework.IJoinOuter>();
-
-    OuterJoinData.push({ Id: 1, Description: 'NY' });
-    OuterJoinData.push({ Id: 3, Description: 'NJ' });
-
-    //test that the left get's returned when the id matches and we have more then 1 item per id
-    OuterJoinData.push({ Id: 3, Description: 'DuplicateState' });
-
-    //go build the query
-    var InnerArray = UnitTestFramework._Array;
+    //grab the sports data
+    var OuterJoinData = UnitTestFramework.BuildSports();
 
     //selector to join. seperating so its readable
-    var JoinSelector: (Inner: UnitTestFramework.IObject, Outer: UnitTestFramework.IJoinOuter) => UnitTestFramework.IJoinResult = function (inner, outer) { return { Id: inner.Id, StateName: outer.Description }; };
+    var JoinSelector: (Inner: UnitTestFramework.ITeam, Outer: UnitTestFramework.ISport) => UnitTestFramework.IJoinResult = function (team, sport) { return { TeamDescription: team.TeamDescription, SportDescription: sport.SportDescription }; };
 
     //go build the base query
-    var QueryToRun = InnerArray.Join<UnitTestFramework.IObject, UnitTestFramework.IJoinOuter, number, UnitTestFramework.IJoinResult>(OuterJoinData, x => x.Id, y => y.Id, JoinSelector);
+    var QueryToRun = UnitTestFramework.BuildBuildTeams().Join<UnitTestFramework.ITeam, UnitTestFramework.ISport, number, UnitTestFramework.IJoinResult>(OuterJoinData, x => x.SportId, y => y.SportId, JoinSelector);
 
     //result to array
     var ResultOfQuery = QueryToRun.ToArray();
 
     //make sure we have 2 items that match
-    equal(ResultOfQuery.length, 3);
+    equal(ResultOfQuery.length, 4);
 
-    //test the Ny vs Nj
-    equal(ResultOfQuery[0].Id, 1);
-    equal(ResultOfQuery[0].StateName, 'NY');
+    //test mets
+    equal(ResultOfQuery[0].SportDescription, 'Baseball');
+    equal(ResultOfQuery[0].TeamDescription, 'Mets');
 
-    //test the Nj
-    equal(ResultOfQuery[1].Id, 3);
-    equal(ResultOfQuery[1].StateName, 'NJ');
+    //test yankees
+    equal(ResultOfQuery[1].SportDescription, 'Baseball');
+    equal(ResultOfQuery[1].TeamDescription, 'Yankees');
 
-    //test the duplicate
-    equal(ResultOfQuery[2].Id, 3);
-    equal(ResultOfQuery[2].StateName, 'DuplicateState');
+    //test Rangers
+    equal(ResultOfQuery[2].SportDescription, 'Hockey');
+    equal(ResultOfQuery[2].TeamDescription, 'Rangers');
+
+    //test knicks
+    equal(ResultOfQuery[3].SportDescription, 'Basketball');
+    equal(ResultOfQuery[3].TeamDescription, 'Knicks');
 
     //****Lazy Execution Test****
     var CurrentResult: ToracTechnologies.JLinq.IteratorResult<UnitTestFramework.IJoinResult>;
@@ -3755,22 +3751,28 @@ test('JLinq.Join.Test.WithOuterArray.1', function () {
     //loop through the results 1 record at a time. this will never materialize an array
     while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== ToracTechnologies.JLinq.IteratorStatus.Completed) {
 
-        //first item in the result set
         if (ItemCount === 0) {
-            equal(CurrentResult.CurrentItem.Id, 1);
-            equal(CurrentResult.CurrentItem.StateName, 'NY');
+            equal(CurrentResult.CurrentItem.SportDescription, 'Baseball');
+            equal(CurrentResult.CurrentItem.TeamDescription, 'Mets');
         }
 
-        //2nd item in the result set
-        if (ItemCount === 1) {
-            equal(CurrentResult.CurrentItem.Id, 3);
-            equal(CurrentResult.CurrentItem.StateName, 'NJ');
+        else if (ItemCount === 1) {
+            equal(CurrentResult.CurrentItem.SportDescription, 'Baseball');
+            equal(CurrentResult.CurrentItem.TeamDescription, 'Yankees');
         }
 
-        //3rd item in the result set
-        if (ItemCount === 2) {
-            equal(CurrentResult.CurrentItem.Id, 3);
-            equal(CurrentResult.CurrentItem.StateName, 'DuplicateState');
+        else if (ItemCount === 2) {
+            equal(CurrentResult.CurrentItem.SportDescription, 'Hockey');
+            equal(CurrentResult.CurrentItem.TeamDescription, 'Rangers');
+        }
+
+        else if (ItemCount === 3) {
+            equal(CurrentResult.CurrentItem.SportDescription, 'Basketball');
+            equal(CurrentResult.CurrentItem.TeamDescription, 'Knicks');
+        }
+
+        else {
+            throw 'Should Not Be A Record Here';
         }
 
         ItemCount++;
@@ -3779,22 +3781,14 @@ test('JLinq.Join.Test.WithOuterArray.1', function () {
 
 test('JLinq.Join.ChainTest.WithOuterArray.1', function () {
 
-    var OuterJoinData = new Array<UnitTestFramework.IJoinOuter>();
-
-    OuterJoinData.push({ Id: 1, Description: 'NY' });
-    OuterJoinData.push({ Id: 3, Description: 'NJ' });
-
-    //test that the left get's returned when the id matches and we have more then 1 item per id
-    OuterJoinData.push({ Id: 3, Description: 'DuplicateState' });
-
-    //go build the query
-    var InnerArray = UnitTestFramework._Array;
+    //grab the sports data
+    var OuterJoinData = UnitTestFramework.BuildSports();
 
     //selector to join. seperating so its readable
-    var JoinSelector: (Inner: UnitTestFramework.IObject, Outer: UnitTestFramework.IJoinOuter) => UnitTestFramework.IJoinResult = function (inner, outer) { return { Id: inner.Id, StateName: outer.Description }; };
+    var JoinSelector: (Inner: UnitTestFramework.ITeam, Outer: UnitTestFramework.ISport) => UnitTestFramework.IJoinResult = function (team, sport) { return { TeamDescription: team.TeamDescription, SportDescription: sport.SportDescription }; };
 
     //go build the base query
-    var QueryToRun = InnerArray.Where(x => x.Id == 3).Join<UnitTestFramework.IObject, UnitTestFramework.IJoinOuter, number, UnitTestFramework.IJoinResult>(OuterJoinData, x => x.Id, y => y.Id, JoinSelector);
+    var QueryToRun = UnitTestFramework.BuildBuildTeams().Where(x => x.SportId == 1).Join<UnitTestFramework.ITeam, UnitTestFramework.ISport, number, UnitTestFramework.IJoinResult>(OuterJoinData, x => x.SportId, y => y.SportId, JoinSelector);
 
     //result to array
     var ResultOfQuery = QueryToRun.ToArray();
@@ -3802,12 +3796,13 @@ test('JLinq.Join.ChainTest.WithOuterArray.1', function () {
     //make sure we have 2 items that match
     equal(ResultOfQuery.length, 2);
 
-    //test the Nj
-    equal(ResultOfQuery[0].Id, 3);
-    equal(ResultOfQuery[0].StateName, 'NJ');
+    //test mets
+    equal(ResultOfQuery[0].SportDescription, 'Baseball');
+    equal(ResultOfQuery[0].TeamDescription, 'Mets');
 
-    equal(ResultOfQuery[1].Id, 3);
-    equal(ResultOfQuery[1].StateName, 'DuplicateState');
+    //test yankees
+    equal(ResultOfQuery[1].SportDescription, 'Baseball');
+    equal(ResultOfQuery[1].TeamDescription, 'Yankees');
 
     //****Lazy Execution Test****
     var CurrentResult: ToracTechnologies.JLinq.IteratorResult<UnitTestFramework.IJoinResult>;
@@ -3816,16 +3811,18 @@ test('JLinq.Join.ChainTest.WithOuterArray.1', function () {
     //loop through the results 1 record at a time. this will never materialize an array
     while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== ToracTechnologies.JLinq.IteratorStatus.Completed) {
 
-        //1st item in the result set
         if (ItemCount === 0) {
-            equal(CurrentResult.CurrentItem.Id, 3);
-            equal(CurrentResult.CurrentItem.StateName, 'NJ');
+            equal(CurrentResult.CurrentItem.SportDescription, 'Baseball');
+            equal(CurrentResult.CurrentItem.TeamDescription, 'Mets');
         }
 
-        //2nd item in the result set
-        if (ItemCount === 1) {
-            equal(CurrentResult.CurrentItem.Id, 3);
-            equal(CurrentResult.CurrentItem.StateName, 'DuplicateState');
+        else if (ItemCount === 1) {
+            equal(CurrentResult.CurrentItem.SportDescription, 'Baseball');
+            equal(CurrentResult.CurrentItem.TeamDescription, 'Yankees');
+        }
+
+        else {
+            throw 'Should Not Be A Record Here';
         }
 
         ItemCount++;
@@ -3834,41 +3831,28 @@ test('JLinq.Join.ChainTest.WithOuterArray.1', function () {
 
 test('JLinq.Join.Test.WithOuterQuery.1', function () {
 
-    var OuterJoinData = new Array<UnitTestFramework.IJoinOuter>();
-
-    OuterJoinData.push({ Id: 1, Description: 'NY' });
-    OuterJoinData.push({ Id: 3, Description: 'NJ' });
-    OuterJoinData.push({ Id: 4, Description: 'MA' });
-
-    //test that the left get's returned when the id matches and we have more then 1 item per id
-    OuterJoinData.push({ Id: 4, Description: 'DuplicateState' });
-
-    //go build the query
-    var InnerArray = UnitTestFramework._Array;
+    //grab the sports data
+    var OuterJoinData = UnitTestFramework.BuildSports();
 
     //selector to join. seperating so its readable
-    var JoinSelector: (Inner: UnitTestFramework.IObject, Outer: UnitTestFramework.IJoinOuter) => UnitTestFramework.IJoinResult = function (inner, outer) { return { Id: inner.Id, StateName: outer.Description }; };
+    var JoinSelector: (Inner: UnitTestFramework.ITeam, Outer: UnitTestFramework.ISport) => UnitTestFramework.IJoinResult = function (team, sport) { return { TeamDescription: team.TeamDescription, SportDescription: sport.SportDescription }; };
 
     //go build the base query
-    var QueryToRun = InnerArray.Join<UnitTestFramework.IObject, UnitTestFramework.IJoinOuter, number, UnitTestFramework.IJoinResult>(OuterJoinData.Where(x => x.Description != 'MA'), x => x.Id, y => y.Id, JoinSelector);
+    var QueryToRun = UnitTestFramework.BuildBuildTeams().Join<UnitTestFramework.ITeam, UnitTestFramework.ISport, number, UnitTestFramework.IJoinResult>(OuterJoinData.Where(x => x.SportId == 1), x => x.SportId, y => y.SportId, JoinSelector);
 
     //result to array
     var ResultOfQuery = QueryToRun.ToArray();
 
     //make sure we have 2 items that match
-    equal(ResultOfQuery.length, 3);
+    equal(ResultOfQuery.length, 2);
 
-    //test the Ny vs Nj
-    equal(ResultOfQuery[0].Id, 1);
-    equal(ResultOfQuery[0].StateName, 'NY');
+    //test mets
+    equal(ResultOfQuery[0].SportDescription, 'Baseball');
+    equal(ResultOfQuery[0].TeamDescription, 'Mets');
 
-    //test the Nj
-    equal(ResultOfQuery[1].Id, 3);
-    equal(ResultOfQuery[1].StateName, 'NJ');
-
-    //test the duplicate
-    equal(ResultOfQuery[2].Id, 4);
-    equal(ResultOfQuery[2].StateName, 'DuplicateState');
+    //test yankees
+    equal(ResultOfQuery[1].SportDescription, 'Baseball');
+    equal(ResultOfQuery[1].TeamDescription, 'Yankees');
 
     //****Lazy Execution Test****
     var CurrentResult: ToracTechnologies.JLinq.IteratorResult<UnitTestFramework.IJoinResult>;
@@ -3877,22 +3861,23 @@ test('JLinq.Join.Test.WithOuterQuery.1', function () {
     //loop through the results 1 record at a time. this will never materialize an array
     while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== ToracTechnologies.JLinq.IteratorStatus.Completed) {
 
-        //first item in the result set
         if (ItemCount === 0) {
-            equal(CurrentResult.CurrentItem.Id, 1);
-            equal(CurrentResult.CurrentItem.StateName, 'NY');
+            equal(CurrentResult.CurrentItem.SportDescription, 'Baseball');
+            equal(CurrentResult.CurrentItem.TeamDescription, 'Mets');
         }
 
-        //2nd item in the result set
-        if (ItemCount === 1) {
-            equal(CurrentResult.CurrentItem.Id, 3);
-            equal(CurrentResult.CurrentItem.StateName, 'NJ');
+        else if (ItemCount === 1) {
+            equal(CurrentResult.CurrentItem.SportDescription, 'Baseball');
+            equal(CurrentResult.CurrentItem.TeamDescription, 'Yankees');
         }
 
-        //3rd item in the result set
-        if (ItemCount === 2) {
-            equal(CurrentResult.CurrentItem.Id, 4);
-            equal(CurrentResult.CurrentItem.StateName, 'DuplicateState');
+        else if (ItemCount === 2) {
+            equal(CurrentResult.CurrentItem.SportDescription, 'Hockey');
+            equal(CurrentResult.CurrentItem.TeamDescription, 'Rangers');
+        }
+
+        else {
+            throw 'Should Not Be A Record Here';
         }
 
         ItemCount++;
@@ -3901,33 +3886,28 @@ test('JLinq.Join.Test.WithOuterQuery.1', function () {
 
 test('JLinq.Join.ChainTest.WithOuterQuery.1', function () {
 
-    var OuterJoinData = new Array<UnitTestFramework.IJoinOuter>();
-
-    OuterJoinData.push({ Id: 1, Description: 'NY' });
-    OuterJoinData.push({ Id: 3, Description: 'NJ' });
-    OuterJoinData.push({ Id: 4, Description: 'MA' });
-
-    //test that the left get's returned when the id matches and we have more then 1 item per id
-    OuterJoinData.push({ Id: 4, Description: 'DuplicateState' });
-
-    //go build the query
-    var InnerArray = UnitTestFramework.BuildArray(UnitTestFramework._DefaultItemsToBuild);
+    //grab the sports data
+    var OuterJoinData = UnitTestFramework.BuildSports();
 
     //selector to join. seperating so its readable
-    var JoinSelector: (Inner: UnitTestFramework.IObject, Outer: UnitTestFramework.IJoinOuter) => UnitTestFramework.IJoinResult = function (inner, outer) { return { Id: inner.Id, StateName: outer.Description }; };
+    var JoinSelector: (Inner: UnitTestFramework.ITeam, Outer: UnitTestFramework.ISport) => UnitTestFramework.IJoinResult = function (team, sport) { return { TeamDescription: team.TeamDescription, SportDescription: sport.SportDescription }; };
 
     //go build the base query
-    var QueryToRun = InnerArray.Where(x => x.Id == 3).Join<UnitTestFramework.IObject, UnitTestFramework.IJoinOuter, number, UnitTestFramework.IJoinResult>(OuterJoinData.Where(x => x.Description != 'MA'), x => x.Id, y => y.Id, JoinSelector);
+    var QueryToRun = UnitTestFramework.BuildBuildTeams().Where(x => x.SportId == 1 || x.SportId == 2).Join<UnitTestFramework.ITeam, UnitTestFramework.ISport, number, UnitTestFramework.IJoinResult>(OuterJoinData.Where(x => x.SportId == 1 || x.SportId == 3), x => x.SportId, y => y.SportId, JoinSelector);
 
     //result to array
     var ResultOfQuery = QueryToRun.ToArray();
 
     //make sure we have 2 items that match
-    equal(ResultOfQuery.length, 1);
+    equal(ResultOfQuery.length, 2);
 
-    //test the Nj
-    equal(ResultOfQuery[0].Id, 3);
-    equal(ResultOfQuery[0].StateName, 'NJ');
+    //test mets
+    equal(ResultOfQuery[0].SportDescription, 'Baseball');
+    equal(ResultOfQuery[0].TeamDescription, 'Mets');
+
+    //test yankees
+    equal(ResultOfQuery[1].SportDescription, 'Baseball');
+    equal(ResultOfQuery[1].TeamDescription, 'Yankees');
 
     //****Lazy Execution Test****
     var CurrentResult: ToracTechnologies.JLinq.IteratorResult<UnitTestFramework.IJoinResult>;
@@ -3936,108 +3916,24 @@ test('JLinq.Join.ChainTest.WithOuterQuery.1', function () {
     //loop through the results 1 record at a time. this will never materialize an array
     while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== ToracTechnologies.JLinq.IteratorStatus.Completed) {
 
-        //1st item in the result set
-        if (ItemCount === 1) {
-            equal(CurrentResult.CurrentItem.Id, 3);
-            equal(CurrentResult.CurrentItem.StateName, 'NJ');
-        }
-
-        //2nd item in the result set
-        if (ItemCount === 2) {
-            equal(CurrentResult.CurrentItem.Id, 4);
-            equal(CurrentResult.CurrentItem.StateName, 'DuplicateState');
-        }
-
-        ItemCount++;
-    }
-});
-
-test('JLinq.Join.Test.FunctionalWhereInnerJoinHasMultipleRecords.1', function () {
-
-    var OuterJoinData = new Array<UnitTestFramework.IJoinOuter>();
-
-    OuterJoinData.push({ Id: 1, Description: 'NY' });
-    OuterJoinData.push({ Id: 3, Description: 'NJ' });
-
-    //test that the left get's returned when the id matches and we have more then 1 item per id
-    OuterJoinData.push({ Id: 3, Description: 'DuplicateState' });
-
-    //go build the query
-    var InnerArray = UnitTestFramework.BuildArray(UnitTestFramework._DefaultItemsToBuild);
-
-    //add another item to make the duplicate
-    InnerArray.push({
-        Id: 1,
-        Txt: 'InnerJoinCollectionDuplicate',
-        CreatedDate: null,
-        GroupByKey: null,
-        GroupByKey2: null,
-        IsActive: null,
-        lst: null
-    });
-
-    //selector to join. seperating so its readable
-    var JoinSelector: (Inner: UnitTestFramework.IObject, Outer: UnitTestFramework.IJoinOuter) => UnitTestFramework.IJoinResult = function (inner, outer) { return { Id: inner.Id, StateName: outer.Description }; };
-
-    //go build the base query
-    var QueryToRun = InnerArray.Join<UnitTestFramework.IObject, UnitTestFramework.IJoinOuter, number, UnitTestFramework.IJoinResult>(OuterJoinData, x => x.Id, y => y.Id, JoinSelector);
-
-    //result to array
-    var ResultOfQuery = QueryToRun.ToArray();
-
-    //make sure we have 2 items that match
-    equal(ResultOfQuery.length, 4);
-
-    //test the Ny vs Nj
-    equal(ResultOfQuery[0].Id, 1);
-    equal(ResultOfQuery[0].StateName, 'NY');
-
-    //test the Nj
-    equal(ResultOfQuery[1].Id, 3);
-    equal(ResultOfQuery[1].StateName, 'NJ');
-
-    //test the outer duplicate
-    equal(ResultOfQuery[2].Id, 3);
-    equal(ResultOfQuery[2].StateName, 'DuplicateState');
-
-    //test the inner duplicate
-    equal(ResultOfQuery[3].Id, 1);
-    equal(ResultOfQuery[3].StateName, 'NY'); //because the state name is taken from the outer colleciton
-
-    //****Lazy Execution Test****
-    var CurrentResult: ToracTechnologies.JLinq.IteratorResult<UnitTestFramework.IJoinResult>;
-    var ItemCount = 0;
-
-    //loop through the results 1 record at a time. this will never materialize an array
-    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== ToracTechnologies.JLinq.IteratorStatus.Completed) {
-
-        //first item in the result set
         if (ItemCount === 0) {
-            equal(CurrentResult.CurrentItem.Id, 1);
-            equal(CurrentResult.CurrentItem.StateName, 'NY');
+            equal(CurrentResult.CurrentItem.SportDescription, 'Baseball');
+            equal(CurrentResult.CurrentItem.TeamDescription, 'Mets');
         }
 
-        //2nd item in the result set
-        if (ItemCount === 1) {
-            equal(CurrentResult.CurrentItem.Id, 3);
-            equal(CurrentResult.CurrentItem.StateName, 'NJ');
+        else if (ItemCount === 1) {
+            equal(CurrentResult.CurrentItem.SportDescription, 'Baseball');
+            equal(CurrentResult.CurrentItem.TeamDescription, 'Yankees');
         }
 
-        //3rd item in the result set
-        if (ItemCount === 2) {
-            equal(CurrentResult.CurrentItem.Id, 3);
-            equal(CurrentResult.CurrentItem.StateName, 'DuplicateState');
-        }
-
-        //4th item in the result set which is the inner duplicate
-        if (ItemCount === 3) {
-            equal(CurrentResult.CurrentItem.Id, 1);
-            equal(CurrentResult.CurrentItem.StateName, 'NY');  //because the state name is taken from the outer colleciton
+        else {
+            throw 'Should Not Be A Record Here';
         }
 
         ItemCount++;
     }
 });
+
 
 //#endregion
 
