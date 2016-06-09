@@ -15,6 +15,11 @@ namespace Linq4Javascript.Controllers
         {
             //var regularJoin = Team.BuildTeamsLazy().Join(Sport.BuildSportsLazy(), x => x.SportId, y => y.SportId, (t, s) => new JoinResult { TeamDescription = t.TeamDescription, SportDescription = s.SportDescription }).ToArray();
 
+            //var groupJoin = Sport.BuildSportsLazy().GroupJoin(Team.BuildTeamsLazy(), x => x.SportId, y => y.SportId, (s, t) => new LeftJoinResult { SportDescription = s.SportDescription, Teams = t }).ToArray();
+
+            //var groupJoin2 = Team.BuildTeamsLazy().GroupJoin(Sport.BuildSportsLazy(), x => x.SportId, y => y.SportId, (t, s) => new { Txt = t.TeamDescription, Values = s }).ToArray();
+
+
 
             return View();
         }
