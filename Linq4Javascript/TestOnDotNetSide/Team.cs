@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Web;
 
 namespace Linq4Javascript.TestOnDotNetSide
 {
+
+    [DebuggerDisplay("Team = {TeamDescription}")]
     public class Team
     {
         public int TeamId { get; set; }

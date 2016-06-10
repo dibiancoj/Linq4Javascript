@@ -17,7 +17,9 @@ namespace Linq4Javascript.Controllers
 
             //var groupJoin = Sport.BuildSportsLazy().GroupJoin(Team.BuildTeamsLazy(), x => x.SportId, y => y.SportId, (s, t) => new LeftJoinResult { SportDescription = s.SportDescription, Teams = t }).ToArray();
 
-            //var groupJoin2 = Team.BuildTeamsLazy().GroupJoin(Sport.BuildSportsLazy(), x => x.SportId, y => y.SportId, (t, s) => new { Txt = t.TeamDescription, Values = s }).ToArray();
+            var groupby = Team.BuildTeamsLazy().GroupBy(x => x.SportId).ToArray();
+
+            var groupJoin2 = Team.BuildTeamsLazy().GroupJoin(Sport.BuildSportsLazy(), x => x.SportId, y => y.SportId, (t, s) => new { Txt = t.TeamDescription, Values = s }).ToArray();
 
 
 
