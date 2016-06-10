@@ -473,7 +473,7 @@ module ToracTechnologies {
             //#endregion
 
             //join 2 recordsets where the property selector matches on both collections
-            public Join<T, TOuterArrayType, TSelectorDataType, TJoinResult>(OuterJoinArray: TOuterArrayType[] | Iterator<TOuterArrayType>, InnerKeySelector: (InnerRecord: T) => TSelectorDataType, OuterKeySelector: (OuterRecord: TOuterArrayType) => TSelectorDataType, JoinSelector: (InnerRecord: T, OuterRecord: TOuterArrayType) => TJoinResult): JoinIterator<T, TOuterArrayType, TSelectorDataType, TJoinResult> {
+            public Join<TOuterArrayType, TSelectorDataType, TJoinResult>(OuterJoinArray: TOuterArrayType[] | Iterator<TOuterArrayType>, InnerKeySelector: (InnerRecord: T) => TSelectorDataType, OuterKeySelector: (OuterRecord: TOuterArrayType) => TSelectorDataType, JoinSelector: (InnerRecord: T, OuterRecord: TOuterArrayType) => TJoinResult): JoinIterator<T, TOuterArrayType, TSelectorDataType, TJoinResult> {
 
                 //iterator to convert into
                 var ConvertToIterator: Iterator<TOuterArrayType>;
@@ -490,7 +490,7 @@ module ToracTechnologies {
             }
 
             //join 2 recordsets where the property selector matches on both collections. The outer table returns the collection in the result selector
-            public GroupJoin<T, TOuterArrayType, TSelectorDataType, TJoinResult>(OuterJoinArray: TOuterArrayType[] | Iterator<TOuterArrayType>, InnerKeySelector: (InnerRecord: T) => TSelectorDataType, OuterKeySelector: (OuterRecord: TOuterArrayType) => TSelectorDataType, JoinSelector: (InnerRecord: T, OuterRecord: TOuterArrayType[]) => TJoinResult): GroupJoinIterator<T, TOuterArrayType, TSelectorDataType, TJoinResult> {
+            public GroupJoin<TOuterArrayType, TSelectorDataType, TJoinResult>(OuterJoinArray: TOuterArrayType[] | Iterator<TOuterArrayType>, InnerKeySelector: (InnerRecord: T) => TSelectorDataType, OuterKeySelector: (OuterRecord: TOuterArrayType) => TSelectorDataType, JoinSelector: (InnerRecord: T, OuterRecord: TOuterArrayType[]) => TJoinResult): GroupJoinIterator<T, TOuterArrayType, TSelectorDataType, TJoinResult> {
 
                 //iterator to convert into
                 var ConvertToIterator: Iterator<TOuterArrayType>;
@@ -504,6 +504,11 @@ module ToracTechnologies {
                 }
 
                 return new GroupJoinIterator<T, TOuterArrayType, TSelectorDataType, TJoinResult>(<any>this, ConvertToIterator, InnerKeySelector, OuterKeySelector, JoinSelector);
+            }
+
+            //returns the default value of T if no items exists. If T is a class it will return null. If T is a number it will return 0. bool will return false, etc.
+            public DefaultIfEmpty(DefaultValue: T): DefaultIfEmptyIterator<T> {
+                return new DefaultIfEmptyIterator<T>(this, DefaultValue);
             }
 
             //#endregion
@@ -1191,6 +1196,96 @@ module ToracTechnologies {
 
         //#region Linq Functionality Classes
 
+        //Class is used to implement the Where Method Iterator
+        export class DefaultIfEmptyIterator<T> extends Iterator<T>
+            implements IChainable<T, T> {
+
+            //#region Constructor
+
+            constructor(PreviousLambdaExpression: IChainable<T, T>, DefaultElementIfEmpty: T) {
+
+                //because we inherit from Iterator we need to call the base class
+                super();
+
+                //set the queryable source
+                this.PreviousExpression = PreviousLambdaExpression;
+
+                //set the default element if the collection before is empty
+                this.DefaultElementWhenEmpty = DefaultElementIfEmpty;
+
+                //throw this into a variable so we can debug this thing when we go from CollectionSource To CollectionSource and check the type
+                this.TypeOfObject = "DefaultIfEmptyIterator";
+            }
+
+            //#endregion
+
+            //#region Properties
+
+            private DefaultElementWhenEmpty: T;
+            private HasFirstItem: boolean = null;
+
+            //#endregion
+
+            //#region Methods
+
+            public ResetIterator() {
+                this.HasFirstItem = null;
+            }
+
+            public Next(): IteratorResult<T> {
+
+                //holds the next available item
+                var NextItem: IteratorResult<T>;
+
+                //just keep looping as we recurse through the CollectionSource which contains all the calls down the tree
+                while (true) {
+
+                    //if we have already set it to false we are done
+                    if (this.HasFirstItem != null && !this.HasFirstItem) {
+                        return new IteratorResult<T>(null, IteratorStatus.Completed);
+                    }
+
+                    //grab the next level and then the next guy for that level
+                    NextItem = this.PreviousExpression.Next();
+
+                    //if its null or we want to grab this guy because he meets the criteria then jump out of the loop
+                    //if it doesnt match the filter then we just keep going in the loop
+                    if (NextItem.CurrentStatus === IteratorStatus.Completed && !this.HasFirstItem) {
+
+                        //flip the flag to false so when we come back we know we are done
+                        this.HasFirstItem = false;
+
+                        //otherwise return what they passed in
+                        return new IteratorResult<T>(this.DefaultElementWhenEmpty, IteratorStatus.Running);
+                    }
+                    else if (NextItem.CurrentStatus === IteratorStatus.Completed) {
+
+                        //we found this guy so return it...after we return this method we will jump a level to the next level down the tree
+                        return NextItem;
+                    }
+                    else if (this.HasFirstItem == null) {
+
+                        //set that we have an item
+                        this.HasFirstItem = true;
+
+                        //return the item now
+                        return NextItem;
+                    }
+                    else {
+                        //has items...so just return it
+                        return NextItem;
+                    }
+                }
+            }
+
+            public AsyncSerializedFunc(): Array<KeyValuePair<string, string>> {
+                throw 'DefaultIfEmpty Method Not Supported In Async Mode';
+            }
+
+            //#endregion
+
+        }
+
         //Class is used to implement the join method iterator. Used to essentially build a database join type iterator
         export class JoinIterator<T, TOuterArrayType, TSelectorDataType, TJoinResult> extends Iterator<TJoinResult>
             implements IChainable<T, TJoinResult> {
@@ -1286,13 +1381,6 @@ module ToracTechnologies {
 
             public AsyncSerializedFunc(): Array<KeyValuePair<string, string>> {
                 throw 'Join Method Not Supported In Async Mode';
-                //return [
-                //    new KeyValuePair('OuterJoinArray', JSON.stringify(this.OuterJoinArray)),
-                //    new KeyValuePair('InnerKeyFuncSelector', super.SerializeMethod(this.InnerKeyFuncSelector)),
-                //    new KeyValuePair('OuterKeyFuncSelector', super.SerializeMethod(this.OuterKeyFuncSelector)),
-                //    new KeyValuePair('JoinFuncSelector', super.SerializeMethod(this.JoinFuncSelector))
-                //    //new KeyValuePair('Matches', super.SerializeMethod(this.Matches))
-                //];
             }
 
             //#endregion
@@ -1386,14 +1474,7 @@ module ToracTechnologies {
             }
 
             public AsyncSerializedFunc(): Array<KeyValuePair<string, string>> {
-                throw 'Join Method Not Supported In Async Mode';
-                //return [
-                //    new KeyValuePair('OuterJoinArray', JSON.stringify(this.OuterJoinArray)),
-                //    new KeyValuePair('InnerKeyFuncSelector', super.SerializeMethod(this.InnerKeyFuncSelector)),
-                //    new KeyValuePair('OuterKeyFuncSelector', super.SerializeMethod(this.OuterKeyFuncSelector)),
-                //    new KeyValuePair('JoinFuncSelector', super.SerializeMethod(this.JoinFuncSelector))
-                //    //new KeyValuePair('Matches', super.SerializeMethod(this.Matches))
-                //];
+                throw 'GroupJoin Method Not Supported In Async Mode';
             }
 
             //#endregion
@@ -4105,6 +4186,8 @@ interface Array<T> {
 
     Join<T, TOuterArrayType, TSelectorDataType, TResultDataType>(OuterJoinArray: TOuterArrayType[] | ToracTechnologies.JLinq.Iterator<TOuterArrayType>, InnerKeySelector: (InnerRecord: T) => TSelectorDataType, OuterKeySelector: (OuterRecord: TOuterArrayType) => TSelectorDataType, JoinSelector: (InnerRecord: T, OuterRecord: TOuterArrayType) => TResultDataType): ToracTechnologies.JLinq.JoinIterator<T, TOuterArrayType, TSelectorDataType, TResultDataType>;
     GroupJoin<T, TOuterArrayType, TSelectorDataType, TResultDataType>(OuterJoinArray: TOuterArrayType[] | ToracTechnologies.JLinq.Iterator<TOuterArrayType>, InnerKeySelector: (InnerRecord: T) => TSelectorDataType, OuterKeySelector: (OuterRecord: TOuterArrayType) => TSelectorDataType, JoinSelector: (InnerRecord: T, OuterRecord: TOuterArrayType[]) => TResultDataType): ToracTechnologies.JLinq.GroupJoinIterator<T, TOuterArrayType, TSelectorDataType, TResultDataType>;
+
+    DefaultIfEmpty<T>(DefaultValue: T): ToracTechnologies.JLinq.DefaultIfEmptyIterator<T>;
 }
 
 //#endregion
@@ -4269,6 +4352,10 @@ Array.prototype.Join = function <TInnerArrayType, TOuterArrayType, TSelectorData
 
 Array.prototype.GroupJoin = function <TInnerArrayType, TOuterArrayType, TSelectorDataType, TResultDataType>(OuterJoinArray: TOuterArrayType[] | ToracTechnologies.JLinq.Iterator<TOuterArrayType>, InnerKeySelector: (InnerRecord: TInnerArrayType) => TSelectorDataType, OuterKeySelector: (OuterRecord: TOuterArrayType) => TSelectorDataType, JoinSelector: (InnerRecord: TInnerArrayType, OuterRecord: TOuterArrayType[]) => TResultDataType): ToracTechnologies.JLinq.GroupJoinIterator<TInnerArrayType, TOuterArrayType, TSelectorDataType, TResultDataType> {
     return new ToracTechnologies.JLinq.Queryable<TInnerArrayType>(this).GroupJoin(OuterJoinArray, InnerKeySelector, OuterKeySelector, JoinSelector);
+}
+
+Array.prototype.DefaultIfEmpty = function <T>(DefaultValue: T): ToracTechnologies.JLinq.DefaultIfEmptyIterator<T> {
+    return new ToracTechnologies.JLinq.Queryable<T>(this).DefaultIfEmpty(DefaultValue);
 }
 
 //#endregion

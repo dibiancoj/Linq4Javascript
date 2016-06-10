@@ -2861,5 +2861,57 @@ test('JLinq.GroupJoin.ChainTest.WithOuterQuery.1', function () {
     }
 });
 //#endregion
+//#region Group Join
+test('JLinq.DefaultIfEmpty.Test.1', function () {
+    //grab the query
+    var QueryToRun = UnitTestFramework._Array.Where(function (x) { return x.Id === 1 || x.Id === 2; }).DefaultIfEmpty(UnitTestFramework._DefaultIfEmpty);
+    //result to array
+    var QueryToRunResults = QueryToRun.ToArray();
+    //****To-UnitTestFramework._Array Test****
+    equal(QueryToRunResults.length, 2);
+    equal(QueryToRunResults[0].Id, 1);
+    equal(QueryToRunResults[0].Txt, '1');
+    equal(QueryToRunResults[1].Id, 2);
+    equal(QueryToRunResults[1].Txt, '2');
+    //****Lazy Execution Test****
+    var CurrentResult;
+    var ItemCount = 0;
+    //loop through the results 1 record at a time. this will never materialize an array
+    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== ToracTechnologies.JLinq.IteratorStatus.Completed) {
+        if (ItemCount === 0) {
+            equal(CurrentResult.CurrentItem.Id, 1);
+            equal(CurrentResult.CurrentItem.Txt, '1');
+        }
+        if (ItemCount === 1) {
+            equal(CurrentResult.CurrentItem.Id, 2);
+            equal(CurrentResult.CurrentItem.Txt, '2');
+        }
+        ItemCount++;
+    }
+    equal(ItemCount, 2);
+});
+test('JLinq.DefaultIfEmpty.NoResultTest.Test.1', function () {
+    //grab the query
+    var QueryToRun = UnitTestFramework._Array.Where(function (x) { return x.Id === -1; }).DefaultIfEmpty(UnitTestFramework._DefaultIfEmpty);
+    //result to array
+    var QueryToRunResults = QueryToRun.ToArray();
+    //****To-UnitTestFramework._Array Test****
+    equal(QueryToRunResults[0].Id, -9999);
+    equal(QueryToRunResults[0].Txt, '-9999');
+    equal(QueryToRunResults.length, 1);
+    //****Lazy Execution Test****
+    var CurrentResult;
+    var ItemCount = 0;
+    //loop through the results 1 record at a time. this will never materialize an array
+    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== ToracTechnologies.JLinq.IteratorStatus.Completed) {
+        if (ItemCount === 0) {
+            equal(CurrentResult.CurrentItem.Id, -9999);
+            equal(CurrentResult.CurrentItem.Txt, '-9999');
+        }
+        ItemCount++;
+    }
+    equal(ItemCount, 1);
+});
+//#endregion
 //#endregion 
 //# sourceMappingURL=UnitTestsRegular.js.map

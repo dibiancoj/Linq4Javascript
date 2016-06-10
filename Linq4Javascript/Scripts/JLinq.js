@@ -363,6 +363,10 @@ var ToracTechnologies;
                 }
                 return new GroupJoinIterator(this, ConvertToIterator, InnerKeySelector, OuterKeySelector, JoinSelector);
             };
+            //returns the default value of T if no items exists. If T is a class it will return null. If T is a number it will return 0. bool will return false, etc.
+            Iterator.prototype.DefaultIfEmpty = function (DefaultValue) {
+                return new DefaultIfEmptyIterator(this, DefaultValue);
+            };
             //#endregion
             //#region Public Non Linq Iterator Functionality Methods
             //materializes the expression to an array
@@ -742,6 +746,67 @@ var ToracTechnologies;
         JLinq.Queryable = Queryable;
         //#endregion
         //#region Linq Functionality Classes
+        //Class is used to implement the Where Method Iterator
+        var DefaultIfEmptyIterator = (function (_super) {
+            __extends(DefaultIfEmptyIterator, _super);
+            //#region Constructor
+            function DefaultIfEmptyIterator(PreviousLambdaExpression, DefaultElementIfEmpty) {
+                //because we inherit from Iterator we need to call the base class
+                _super.call(this);
+                this.HasFirstItem = null;
+                //set the queryable source
+                this.PreviousExpression = PreviousLambdaExpression;
+                //set the default element if the collection before is empty
+                this.DefaultElementWhenEmpty = DefaultElementIfEmpty;
+                //throw this into a variable so we can debug this thing when we go from CollectionSource To CollectionSource and check the type
+                this.TypeOfObject = "DefaultIfEmptyIterator";
+            }
+            //#endregion
+            //#region Methods
+            DefaultIfEmptyIterator.prototype.ResetIterator = function () {
+                this.HasFirstItem = null;
+            };
+            DefaultIfEmptyIterator.prototype.Next = function () {
+                //holds the next available item
+                var NextItem;
+                //just keep looping as we recurse through the CollectionSource which contains all the calls down the tree
+                while (true) {
+                    //if we have already set it to false we are done
+                    if (this.HasFirstItem != null && !this.HasFirstItem) {
+                        return new IteratorResult(null, IteratorStatus.Completed);
+                    }
+                    //grab the next level and then the next guy for that level
+                    NextItem = this.PreviousExpression.Next();
+                    //if its null or we want to grab this guy because he meets the criteria then jump out of the loop
+                    //if it doesnt match the filter then we just keep going in the loop
+                    if (NextItem.CurrentStatus === IteratorStatus.Completed && !this.HasFirstItem) {
+                        //flip the flag to false so when we come back we know we are done
+                        this.HasFirstItem = false;
+                        //otherwise return what they passed in
+                        return new IteratorResult(this.DefaultElementWhenEmpty, IteratorStatus.Running);
+                    }
+                    else if (NextItem.CurrentStatus === IteratorStatus.Completed) {
+                        //we found this guy so return it...after we return this method we will jump a level to the next level down the tree
+                        return NextItem;
+                    }
+                    else if (this.HasFirstItem == null) {
+                        //set that we have an item
+                        this.HasFirstItem = true;
+                        //return the item now
+                        return NextItem;
+                    }
+                    else {
+                        //has items...so just return it
+                        return NextItem;
+                    }
+                }
+            };
+            DefaultIfEmptyIterator.prototype.AsyncSerializedFunc = function () {
+                throw 'DefaultIfEmpty Method Not Supported In Async Mode';
+            };
+            return DefaultIfEmptyIterator;
+        }(Iterator));
+        JLinq.DefaultIfEmptyIterator = DefaultIfEmptyIterator;
         //Class is used to implement the join method iterator. Used to essentially build a database join type iterator
         var JoinIterator = (function (_super) {
             __extends(JoinIterator, _super);
@@ -799,13 +864,6 @@ var ToracTechnologies;
             };
             JoinIterator.prototype.AsyncSerializedFunc = function () {
                 throw 'Join Method Not Supported In Async Mode';
-                //return [
-                //    new KeyValuePair('OuterJoinArray', JSON.stringify(this.OuterJoinArray)),
-                //    new KeyValuePair('InnerKeyFuncSelector', super.SerializeMethod(this.InnerKeyFuncSelector)),
-                //    new KeyValuePair('OuterKeyFuncSelector', super.SerializeMethod(this.OuterKeyFuncSelector)),
-                //    new KeyValuePair('JoinFuncSelector', super.SerializeMethod(this.JoinFuncSelector))
-                //    //new KeyValuePair('Matches', super.SerializeMethod(this.Matches))
-                //];
             };
             return JoinIterator;
         }(Iterator));
@@ -862,14 +920,7 @@ var ToracTechnologies;
                 }
             };
             GroupJoinIterator.prototype.AsyncSerializedFunc = function () {
-                throw 'Join Method Not Supported In Async Mode';
-                //return [
-                //    new KeyValuePair('OuterJoinArray', JSON.stringify(this.OuterJoinArray)),
-                //    new KeyValuePair('InnerKeyFuncSelector', super.SerializeMethod(this.InnerKeyFuncSelector)),
-                //    new KeyValuePair('OuterKeyFuncSelector', super.SerializeMethod(this.OuterKeyFuncSelector)),
-                //    new KeyValuePair('JoinFuncSelector', super.SerializeMethod(this.JoinFuncSelector))
-                //    //new KeyValuePair('Matches', super.SerializeMethod(this.Matches))
-                //];
+                throw 'GroupJoin Method Not Supported In Async Mode';
             };
             return GroupJoinIterator;
         }(Iterator));
@@ -2753,6 +2804,9 @@ Array.prototype.Join = function (OuterJoinArray, InnerKeySelector, OuterKeySelec
 };
 Array.prototype.GroupJoin = function (OuterJoinArray, InnerKeySelector, OuterKeySelector, JoinSelector) {
     return new ToracTechnologies.JLinq.Queryable(this).GroupJoin(OuterJoinArray, InnerKeySelector, OuterKeySelector, JoinSelector);
+};
+Array.prototype.DefaultIfEmpty = function (DefaultValue) {
+    return new ToracTechnologies.JLinq.Queryable(this).DefaultIfEmpty(DefaultValue);
 };
 //#endregion
 //#endregion 

@@ -58,6 +58,16 @@ var UnitTestFramework;
     UnitTestFramework._FirstIndexDate = Object.freeze(new Date('12/1/1980'));
     //holds the build _Array so we don't have to keep building it each method
     UnitTestFramework._Array = Object.freeze(BuildArray(UnitTestFramework._DefaultItemsToBuild));
+    //holds the DefaultIfEmpty object if the result is null
+    UnitTestFramework._DefaultIfEmpty = Object.freeze({
+        Id: -9999,
+        Txt: '-9999',
+        IsActive: false,
+        GroupByKey: '',
+        GroupByKey2: '',
+        CreatedDate: UnitTestFramework._DateOfTest,
+        lst: null
+    });
     //sort order array
     UnitTestFramework._SortOrderArray = Object.freeze(BuildSortOrderArray());
     function BuildBuildTeams() {

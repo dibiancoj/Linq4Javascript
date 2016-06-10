@@ -21,6 +21,23 @@ namespace Linq4Javascript.Controllers
 
             //var groupby = Team.BuildTeamsLazy().GroupBy(x => x.SportId).ToArray();
 
+            //var z = new List<int> { };
+
+            //var zz = z.DefaultIfEmpty();
+
+            //var lst = new List<Team>();
+
+            //if (true == true)
+            //{
+            //    lst.Add(new Team { TeamId = 100, SportId = 100 });
+            //    lst.Add(new Team { TeamId = 200, SportId = 200 });
+            //}
+
+            //foreach (var t in lst.DefaultIfEmpty(new Team { SportId = 0, TeamDescription = "N/A", TeamId = 0 }))
+            //{
+            //    string s = t.SportId.ToString();
+            //}
+
             return View();
         }
 

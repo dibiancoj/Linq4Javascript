@@ -3788,7 +3788,7 @@ test('JLinq.Join.ChainTest.WithOuterArray.1', function () {
     var JoinSelector: (Inner: UnitTestFramework.ITeam, Outer: UnitTestFramework.ISport) => UnitTestFramework.IJoinResult = function (team, sport) { return { TeamDescription: team.TeamDescription, SportDescription: sport.SportDescription }; };
 
     //go build the base query
-    var QueryToRun = UnitTestFramework.BuildBuildTeams().Where(x => x.SportId === 1).Join<UnitTestFramework.ITeam, UnitTestFramework.ISport, number, UnitTestFramework.IJoinResult>(OuterJoinData, x => x.SportId, y => y.SportId, JoinSelector);
+    var QueryToRun = UnitTestFramework.BuildBuildTeams().Where(x => x.SportId === 1).Join<UnitTestFramework.ISport, number, UnitTestFramework.IJoinResult>(OuterJoinData, x => x.SportId, y => y.SportId, JoinSelector);
 
     //result to array
     var ResultOfQuery = QueryToRun.ToArray();
@@ -3893,7 +3893,7 @@ test('JLinq.Join.ChainTest.WithOuterQuery.1', function () {
     var JoinSelector: (Inner: UnitTestFramework.ITeam, Outer: UnitTestFramework.ISport) => UnitTestFramework.IJoinResult = function (team, sport) { return { TeamDescription: team.TeamDescription, SportDescription: sport.SportDescription }; };
 
     //go build the base query
-    var QueryToRun = UnitTestFramework.BuildBuildTeams().Where(x => x.SportId === 1 || x.SportId === 2).Join<UnitTestFramework.ITeam, UnitTestFramework.ISport, number, UnitTestFramework.IJoinResult>(OuterJoinData.Where(x => x.SportId === 1 || x.SportId === 3), x => x.SportId, y => y.SportId, JoinSelector);
+    var QueryToRun = UnitTestFramework.BuildBuildTeams().Where(x => x.SportId === 1 || x.SportId === 2).Join<UnitTestFramework.ISport, number, UnitTestFramework.IJoinResult>(OuterJoinData.Where(x => x.SportId === 1 || x.SportId === 3), x => x.SportId, y => y.SportId, JoinSelector);
 
     //result to array
     var ResultOfQuery = QueryToRun.ToArray();
@@ -4010,7 +4010,7 @@ test('JLinq.GroupJoin.ChainTest.WithOuterArray.1', function () {
     var JoinSelector: (Inner: UnitTestFramework.ISport, Outer: UnitTestFramework.ITeam[]) => UnitTestFramework.IJoinResult = function (sport, teams) { return { SportDescription: sport.SportDescription, TeamDescription: teams.length + ' Teams' }; };
 
     //go build the base query
-    var QueryToRun = UnitTestFramework.BuildSports().Where(x => x.SportId === 1 || x.SportId === 2).GroupJoin<UnitTestFramework.ISport, UnitTestFramework.ITeam, number, UnitTestFramework.IJoinResult>(UnitTestFramework.BuildBuildTeams(), x => x.SportId, y => y.SportId, JoinSelector);
+    var QueryToRun = UnitTestFramework.BuildSports().Where(x => x.SportId === 1 || x.SportId === 2).GroupJoin<UnitTestFramework.ITeam, number, UnitTestFramework.IJoinResult>(UnitTestFramework.BuildBuildTeams(), x => x.SportId, y => y.SportId, JoinSelector);
 
     //result to array
     var ResultOfQuery = QueryToRun.ToArray();
@@ -4122,7 +4122,7 @@ test('JLinq.GroupJoin.ChainTest.WithOuterQuery.1', function () {
     var JoinSelector: (Inner: UnitTestFramework.ISport, Outer: UnitTestFramework.ITeam[]) => UnitTestFramework.IJoinResult = function (sport, teams) { return { SportDescription: sport.SportDescription, TeamDescription: teams.length + ' Teams' }; };
 
     //go build the base query
-    var QueryToRun = UnitTestFramework.BuildSports().Where(x => x.SportId === 1 || x.SportId === 2).GroupJoin<UnitTestFramework.ISport, UnitTestFramework.ITeam, number, UnitTestFramework.IJoinResult>(UnitTestFramework.BuildBuildTeams().Where(x => x.SportId === 1), x => x.SportId, y => y.SportId, JoinSelector);
+    var QueryToRun = UnitTestFramework.BuildSports().Where(x => x.SportId === 1 || x.SportId === 2).GroupJoin<UnitTestFramework.ITeam, number, UnitTestFramework.IJoinResult>(UnitTestFramework.BuildBuildTeams().Where(x => x.SportId === 1), x => x.SportId, y => y.SportId, JoinSelector);
 
     //result to array
     var ResultOfQuery = QueryToRun.ToArray();
@@ -4161,6 +4161,79 @@ test('JLinq.GroupJoin.ChainTest.WithOuterQuery.1', function () {
 
         ItemCount++;
     }
+});
+
+//#endregion
+
+//#region Group Join
+
+test('JLinq.DefaultIfEmpty.Test.1', function () {
+
+    //grab the query
+    var QueryToRun = UnitTestFramework._Array.Where(x => x.Id === 1 || x.Id === 2).DefaultIfEmpty(UnitTestFramework._DefaultIfEmpty);
+
+    //result to array
+    var QueryToRunResults = QueryToRun.ToArray();
+
+    //****To-UnitTestFramework._Array Test****
+    equal(QueryToRunResults.length, 2);
+
+    equal(QueryToRunResults[0].Id, 1);
+    equal(QueryToRunResults[0].Txt, '1');
+
+    equal(QueryToRunResults[1].Id, 2);
+    equal(QueryToRunResults[1].Txt, '2');
+
+    //****Lazy Execution Test****
+    var CurrentResult: ToracTechnologies.JLinq.IteratorResult<UnitTestFramework.ITestObject>;
+    var ItemCount = 0;
+
+    //loop through the results 1 record at a time. this will never materialize an array
+    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== ToracTechnologies.JLinq.IteratorStatus.Completed) {
+        if (ItemCount === 0) {
+            equal(CurrentResult.CurrentItem.Id, 1);
+            equal(CurrentResult.CurrentItem.Txt, '1');
+        }
+
+        if (ItemCount === 1) {
+            equal(CurrentResult.CurrentItem.Id, 2);
+            equal(CurrentResult.CurrentItem.Txt, '2');
+        }
+
+        ItemCount++;
+    }
+
+    equal(ItemCount, 2);
+});
+
+test('JLinq.DefaultIfEmpty.NoResultTest.Test.1', function () {
+
+    //grab the query
+    var QueryToRun = UnitTestFramework._Array.Where(x => x.Id === -1).DefaultIfEmpty(UnitTestFramework._DefaultIfEmpty);
+
+    //result to array
+    var QueryToRunResults = QueryToRun.ToArray();
+
+    //****To-UnitTestFramework._Array Test****
+    equal(QueryToRunResults[0].Id, -9999);
+    equal(QueryToRunResults[0].Txt, '-9999');
+    equal(QueryToRunResults.length, 1);
+
+    //****Lazy Execution Test****
+    var CurrentResult: ToracTechnologies.JLinq.IteratorResult<UnitTestFramework.ITestObject>;
+    var ItemCount = 0;
+
+    //loop through the results 1 record at a time. this will never materialize an array
+    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== ToracTechnologies.JLinq.IteratorStatus.Completed) {
+        if (ItemCount === 0) {
+            equal(CurrentResult.CurrentItem.Id, -9999);
+            equal(CurrentResult.CurrentItem.Txt, '-9999');
+        }
+
+        ItemCount++;
+    }
+
+    equal(ItemCount, 1);
 });
 
 //#endregion

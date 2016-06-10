@@ -92,6 +92,17 @@ module UnitTestFramework {
     //holds the build _Array so we don't have to keep building it each method
     export var _Array: Array<ITestObject> = Object.freeze(BuildArray(_DefaultItemsToBuild));
 
+    //holds the DefaultIfEmpty object if the result is null
+    export var _DefaultIfEmpty: ITestObject = Object.freeze({
+        Id: -9999,
+        Txt: '-9999',
+        IsActive: false,
+        GroupByKey: '',
+        GroupByKey2: '',
+        CreatedDate: _DateOfTest,
+        lst: null
+    });
+
     //sort order array
     export var _SortOrderArray: Array<IObject> = Object.freeze(BuildSortOrderArray());
 
