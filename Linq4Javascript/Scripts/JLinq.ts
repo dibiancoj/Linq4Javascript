@@ -489,6 +489,23 @@ module ToracTechnologies {
                 return new JoinIterator<T, TOuterArrayType, TSelectorDataType, TJoinResult>(<any>this, ConvertToIterator, InnerKeySelector, OuterKeySelector, JoinSelector);
             }
 
+            //join 2 recordsets where the property selector matches on both collections. The outer table returns the collection in the result selector
+            public GroupJoin<T, TOuterArrayType, TSelectorDataType, TJoinResult>(OuterJoinArray: TOuterArrayType[] | Iterator<TOuterArrayType>, InnerKeySelector: (InnerRecord: T) => TSelectorDataType, OuterKeySelector: (OuterRecord: TOuterArrayType) => TSelectorDataType, JoinSelector: (InnerRecord: T, OuterRecord: TOuterArrayType[]) => TJoinResult): GroupJoinIterator<T, TOuterArrayType, TSelectorDataType, TJoinResult> {
+
+                //iterator to convert into
+                var ConvertToIterator: Iterator<TOuterArrayType>;
+
+                //if this is not a iterator...convert it\
+                if (this.IsIterator(OuterJoinArray)) {
+                    ConvertToIterator = <any>OuterJoinArray;
+                }
+                else {
+                    ConvertToIterator = new Queryable<TOuterArrayType>(<any>OuterJoinArray);
+                }
+
+                return new GroupJoinIterator<T, TOuterArrayType, TSelectorDataType, TJoinResult>(<any>this, ConvertToIterator, InnerKeySelector, OuterKeySelector, JoinSelector);
+            }
+
             //#endregion
 
             //#region Public Non Linq Iterator Functionality Methods
@@ -1263,6 +1280,107 @@ module ToracTechnologies {
                                 this.Matches.push(this.JoinFuncSelector(NextItem.CurrentItem, CurrentItem));
                             }
                         }
+                    }
+                }
+            }
+
+            public AsyncSerializedFunc(): Array<KeyValuePair<string, string>> {
+                throw 'Join Method Not Supported In Async Mode';
+                //return [
+                //    new KeyValuePair('OuterJoinArray', JSON.stringify(this.OuterJoinArray)),
+                //    new KeyValuePair('InnerKeyFuncSelector', super.SerializeMethod(this.InnerKeyFuncSelector)),
+                //    new KeyValuePair('OuterKeyFuncSelector', super.SerializeMethod(this.OuterKeyFuncSelector)),
+                //    new KeyValuePair('JoinFuncSelector', super.SerializeMethod(this.JoinFuncSelector))
+                //    //new KeyValuePair('Matches', super.SerializeMethod(this.Matches))
+                //];
+            }
+
+            //#endregion
+
+        }
+
+        //Class is used to implement the group join method iterator.
+        export class GroupJoinIterator<T, TOuterArrayType, TSelectorDataType, TJoinResult> extends Iterator<TJoinResult>
+            implements IChainable<T, TJoinResult> {
+
+            //#region Constructor
+
+            constructor(PreviousLambdaExpression: IChainable<T, T>,
+                OuterJoinArray: Iterator<TOuterArrayType>,
+                InnerKeySelector: (InnerRecord: T) => TSelectorDataType,
+                OuterKeySelector: (OuterRecord: TOuterArrayType) => TSelectorDataType,
+                JoinSelector: (InnerRecord: T, OuterRecord: TOuterArrayType[]) => TJoinResult) {
+
+                //because we inherit from Iterator we need to call the base class
+                super();
+
+                //set the queryable source
+                this.PreviousExpression = PreviousLambdaExpression;
+
+                //i believe pushing the outer to an array is more efficient since this will be used loop after loop. This way after there is a where with a group by...we won't have to run that each time. Its going to be tough to say which one is more efficient
+                this.OuterJoinArray = OuterJoinArray.ToArray();
+                this.InnerKeyFuncSelector = InnerKeySelector;
+                this.OuterKeyFuncSelector = OuterKeySelector;
+                this.JoinFuncSelector = JoinSelector;
+
+                //throw this into a variable so we can debug this thing when we go from CollectionSource To CollectionSource and check the type
+                this.TypeOfObject = "GroupJoinIterator";
+            }
+
+            //#endregion
+
+            //#region Properties
+
+            private OuterJoinArray: TOuterArrayType[];
+            private InnerKeyFuncSelector: (InnerRecord: T) => TSelectorDataType;
+            private OuterKeyFuncSelector: (OuterRecord: TOuterArrayType) => TSelectorDataType;
+            private JoinFuncSelector: (InnerRecord: T, OuterRecord: TOuterArrayType[]) => TJoinResult;
+
+            //#endregion
+
+            //#region Methods
+
+            public ResetIterator() {
+            }
+
+            public Next(): IteratorResult<TJoinResult> {
+
+                //holds the next available item
+                var NextItem: IteratorResult<T>;
+
+                //just keep looping as we recurse through the CollectionSource which contains all the calls down the tree
+                while (true) {
+
+                    //grab the next level and then the next guy for that level
+                    NextItem = this.PreviousExpression.Next();
+
+                    //are we done with the inner data set?
+                    if (NextItem.CurrentStatus === IteratorStatus.Completed) {
+
+                        //just return the item so we can be done
+                        return new IteratorResult<TJoinResult>(null, IteratorStatus.Completed);
+                    }
+                    else {
+
+                        //hold the matches
+                        var Matches = new Array<TOuterArrayType>();
+
+                        //loop through all the outers and if we have a match then we need to return it
+                        for (var i = 0; i < this.OuterJoinArray.length; i++) {
+
+                            //throw the current item into a variable
+                            var CurrentItem = this.OuterJoinArray[i];
+
+                            //do we have a match if we try to match the properties?
+                            if (this.InnerKeyFuncSelector(NextItem.CurrentItem) == this.OuterKeyFuncSelector(CurrentItem)) {
+
+                                //we have a match...add it to the array
+                                Matches.push(CurrentItem);
+                            }
+                        }
+
+                        //go return this item
+                        return new IteratorResult<TJoinResult>(this.JoinFuncSelector(NextItem.CurrentItem, Matches), IteratorStatus.Running);
                     }
                 }
             }
@@ -3986,6 +4104,7 @@ interface Array<T> {
     ElementAtDefault(Index: number): T;
 
     Join<T, TOuterArrayType, TSelectorDataType, TResultDataType>(OuterJoinArray: TOuterArrayType[] | ToracTechnologies.JLinq.Iterator<TOuterArrayType>, InnerKeySelector: (InnerRecord: T) => TSelectorDataType, OuterKeySelector: (OuterRecord: TOuterArrayType) => TSelectorDataType, JoinSelector: (InnerRecord: T, OuterRecord: TOuterArrayType) => TResultDataType): ToracTechnologies.JLinq.JoinIterator<T, TOuterArrayType, TSelectorDataType, TResultDataType>;
+    GroupJoin<T, TOuterArrayType, TSelectorDataType, TResultDataType>(OuterJoinArray: TOuterArrayType[] | ToracTechnologies.JLinq.Iterator<TOuterArrayType>, InnerKeySelector: (InnerRecord: T) => TSelectorDataType, OuterKeySelector: (OuterRecord: TOuterArrayType) => TSelectorDataType, JoinSelector: (InnerRecord: T, OuterRecord: TOuterArrayType[]) => TResultDataType): ToracTechnologies.JLinq.GroupJoinIterator<T, TOuterArrayType, TSelectorDataType, TResultDataType>;
 }
 
 //#endregion
@@ -4146,6 +4265,10 @@ Array.prototype.ElementAtDefault = function <T>(Index: number): T {
 
 Array.prototype.Join = function <TInnerArrayType, TOuterArrayType, TSelectorDataType, TResultDataType>(OuterJoinArray: TOuterArrayType[] | ToracTechnologies.JLinq.Iterator<TOuterArrayType>, InnerKeySelector: (InnerRecord: TInnerArrayType) => TSelectorDataType, OuterKeySelector: (OuterRecord: TOuterArrayType) => TSelectorDataType, JoinSelector: (InnerRecord: TInnerArrayType, OuterRecord: TOuterArrayType) => TResultDataType): ToracTechnologies.JLinq.JoinIterator<TInnerArrayType, TOuterArrayType, TSelectorDataType, TResultDataType> {
     return new ToracTechnologies.JLinq.Queryable<TInnerArrayType>(this).Join(OuterJoinArray, InnerKeySelector, OuterKeySelector, JoinSelector);
+}
+
+Array.prototype.GroupJoin = function <TInnerArrayType, TOuterArrayType, TSelectorDataType, TResultDataType>(OuterJoinArray: TOuterArrayType[] | ToracTechnologies.JLinq.Iterator<TOuterArrayType>, InnerKeySelector: (InnerRecord: TInnerArrayType) => TSelectorDataType, OuterKeySelector: (OuterRecord: TOuterArrayType) => TSelectorDataType, JoinSelector: (InnerRecord: TInnerArrayType, OuterRecord: TOuterArrayType[]) => TResultDataType): ToracTechnologies.JLinq.GroupJoinIterator<TInnerArrayType, TOuterArrayType, TSelectorDataType, TResultDataType> {
+    return new ToracTechnologies.JLinq.Queryable<TInnerArrayType>(this).GroupJoin(OuterJoinArray, InnerKeySelector, OuterKeySelector, JoinSelector);
 }
 
 //#endregion

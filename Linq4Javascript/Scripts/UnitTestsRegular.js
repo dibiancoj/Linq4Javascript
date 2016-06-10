@@ -2588,7 +2588,7 @@ test('JLinq.Join.ChainTest.WithOuterArray.1', function () {
     //selector to join. seperating so its readable
     var JoinSelector = function (team, sport) { return { TeamDescription: team.TeamDescription, SportDescription: sport.SportDescription }; };
     //go build the base query
-    var QueryToRun = UnitTestFramework.BuildBuildTeams().Where(function (x) { return x.SportId == 1; }).Join(OuterJoinData, function (x) { return x.SportId; }, function (y) { return y.SportId; }, JoinSelector);
+    var QueryToRun = UnitTestFramework.BuildBuildTeams().Where(function (x) { return x.SportId === 1; }).Join(OuterJoinData, function (x) { return x.SportId; }, function (y) { return y.SportId; }, JoinSelector);
     //result to array
     var ResultOfQuery = QueryToRun.ToArray();
     //make sure we have 2 items that match
@@ -2624,7 +2624,7 @@ test('JLinq.Join.Test.WithOuterQuery.1', function () {
     //selector to join. seperating so its readable
     var JoinSelector = function (team, sport) { return { TeamDescription: team.TeamDescription, SportDescription: sport.SportDescription }; };
     //go build the base query
-    var QueryToRun = UnitTestFramework.BuildBuildTeams().Join(OuterJoinData.Where(function (x) { return x.SportId == 1; }), function (x) { return x.SportId; }, function (y) { return y.SportId; }, JoinSelector);
+    var QueryToRun = UnitTestFramework.BuildBuildTeams().Join(OuterJoinData.Where(function (x) { return x.SportId === 1; }), function (x) { return x.SportId; }, function (y) { return y.SportId; }, JoinSelector);
     //result to array
     var ResultOfQuery = QueryToRun.ToArray();
     //make sure we have 2 items that match
@@ -2664,7 +2664,7 @@ test('JLinq.Join.ChainTest.WithOuterQuery.1', function () {
     //selector to join. seperating so its readable
     var JoinSelector = function (team, sport) { return { TeamDescription: team.TeamDescription, SportDescription: sport.SportDescription }; };
     //go build the base query
-    var QueryToRun = UnitTestFramework.BuildBuildTeams().Where(function (x) { return x.SportId == 1 || x.SportId == 2; }).Join(OuterJoinData.Where(function (x) { return x.SportId == 1 || x.SportId == 3; }), function (x) { return x.SportId; }, function (y) { return y.SportId; }, JoinSelector);
+    var QueryToRun = UnitTestFramework.BuildBuildTeams().Where(function (x) { return x.SportId === 1 || x.SportId === 2; }).Join(OuterJoinData.Where(function (x) { return x.SportId === 1 || x.SportId === 3; }), function (x) { return x.SportId; }, function (y) { return y.SportId; }, JoinSelector);
     //result to array
     var ResultOfQuery = QueryToRun.ToArray();
     //make sure we have 2 items that match
@@ -2687,6 +2687,172 @@ test('JLinq.Join.ChainTest.WithOuterQuery.1', function () {
         else if (ItemCount === 1) {
             equal(CurrentResult.CurrentItem.SportDescription, 'Baseball');
             equal(CurrentResult.CurrentItem.TeamDescription, 'Yankees');
+        }
+        else {
+            throw 'Should Not Be A Record Here';
+        }
+        ItemCount++;
+    }
+});
+//#endregion
+//#region Group Join
+test('JLinq.GroupJoin.Test.WithOuterArray.1', function () {
+    //selector to join. seperating so its readable
+    var JoinSelector = function (sport, teams) { return { SportDescription: sport.SportDescription, TeamDescription: teams.length + ' Teams' }; };
+    //go build the base query
+    var QueryToRun = UnitTestFramework.BuildSports().GroupJoin(UnitTestFramework.BuildBuildTeams(), function (x) { return x.SportId; }, function (y) { return y.SportId; }, JoinSelector);
+    //result to array
+    var ResultOfQuery = QueryToRun.ToArray();
+    //make sure we have 4 items that match
+    equal(ResultOfQuery.length, 4);
+    //test baseball
+    equal(ResultOfQuery[0].SportDescription, 'Baseball');
+    equal(ResultOfQuery[0].TeamDescription, '2 Teams');
+    //test hockey
+    equal(ResultOfQuery[1].SportDescription, 'Hockey');
+    equal(ResultOfQuery[1].TeamDescription, '1 Teams');
+    //test basketball
+    equal(ResultOfQuery[2].SportDescription, 'Basketball');
+    equal(ResultOfQuery[2].TeamDescription, '1 Teams');
+    //test paintball
+    equal(ResultOfQuery[3].SportDescription, 'Paintball');
+    equal(ResultOfQuery[3].TeamDescription, '0 Teams');
+    //****Lazy Execution Test****
+    var CurrentResult;
+    var ItemCount = 0;
+    //loop through the results 1 record at a time. this will never materialize an array
+    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== ToracTechnologies.JLinq.IteratorStatus.Completed) {
+        if (ItemCount === 0) {
+            equal(CurrentResult.CurrentItem.SportDescription, 'Baseball');
+            equal(CurrentResult.CurrentItem.TeamDescription, '2 Teams');
+        }
+        else if (ItemCount === 1) {
+            equal(CurrentResult.CurrentItem.SportDescription, 'Hockey');
+            equal(CurrentResult.CurrentItem.TeamDescription, '1 Teams');
+        }
+        else if (ItemCount === 2) {
+            equal(CurrentResult.CurrentItem.SportDescription, 'Basketball');
+            equal(CurrentResult.CurrentItem.TeamDescription, '1 Teams');
+        }
+        else if (ItemCount === 3) {
+            equal(CurrentResult.CurrentItem.SportDescription, 'Paintball');
+            equal(CurrentResult.CurrentItem.TeamDescription, '0 Teams');
+        }
+        else {
+            throw 'Should Not Be A Record Here';
+        }
+        ItemCount++;
+    }
+});
+test('JLinq.GroupJoin.ChainTest.WithOuterArray.1', function () {
+    //selector to join. seperating so its readable
+    var JoinSelector = function (sport, teams) { return { SportDescription: sport.SportDescription, TeamDescription: teams.length + ' Teams' }; };
+    //go build the base query
+    var QueryToRun = UnitTestFramework.BuildSports().Where(function (x) { return x.SportId === 1 || x.SportId === 2; }).GroupJoin(UnitTestFramework.BuildBuildTeams(), function (x) { return x.SportId; }, function (y) { return y.SportId; }, JoinSelector);
+    //result to array
+    var ResultOfQuery = QueryToRun.ToArray();
+    //make sure we have 2 items that match
+    equal(ResultOfQuery.length, 2);
+    //test baseball
+    equal(ResultOfQuery[0].SportDescription, 'Baseball');
+    equal(ResultOfQuery[0].TeamDescription, '2 Teams');
+    //test hockey
+    equal(ResultOfQuery[1].SportDescription, 'Hockey');
+    equal(ResultOfQuery[1].TeamDescription, '1 Teams');
+    //****Lazy Execution Test****
+    var CurrentResult;
+    var ItemCount = 0;
+    //loop through the results 1 record at a time. this will never materialize an array
+    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== ToracTechnologies.JLinq.IteratorStatus.Completed) {
+        if (ItemCount === 0) {
+            equal(CurrentResult.CurrentItem.SportDescription, 'Baseball');
+            equal(CurrentResult.CurrentItem.TeamDescription, '2 Teams');
+        }
+        else if (ItemCount === 1) {
+            equal(CurrentResult.CurrentItem.SportDescription, 'Hockey');
+            equal(CurrentResult.CurrentItem.TeamDescription, '1 Teams');
+        }
+        else {
+            throw 'Should Not Be A Record Here';
+        }
+        ItemCount++;
+    }
+});
+test('JLinq.GroupJoin.Test.WithOuterQuery.1', function () {
+    //selector to join. seperating so its readable
+    var JoinSelector = function (sport, teams) { return { SportDescription: sport.SportDescription, TeamDescription: teams.length + ' Teams' }; };
+    //go build the base query
+    var QueryToRun = UnitTestFramework.BuildSports().GroupJoin(UnitTestFramework.BuildBuildTeams().Where(function (x) { return x.SportId === 1; }), function (x) { return x.SportId; }, function (y) { return y.SportId; }, JoinSelector);
+    //result to array
+    var ResultOfQuery = QueryToRun.ToArray();
+    //make sure we have 2 items that match
+    equal(ResultOfQuery.length, 4);
+    //test baseball
+    equal(ResultOfQuery[0].SportDescription, 'Baseball');
+    equal(ResultOfQuery[0].TeamDescription, '2 Teams');
+    //test hockey
+    equal(ResultOfQuery[1].SportDescription, 'Hockey');
+    equal(ResultOfQuery[1].TeamDescription, '0 Teams');
+    //test basketball
+    equal(ResultOfQuery[2].SportDescription, 'Basketball');
+    equal(ResultOfQuery[2].TeamDescription, '0 Teams');
+    //test paintball
+    equal(ResultOfQuery[3].SportDescription, 'Paintball');
+    equal(ResultOfQuery[3].TeamDescription, '0 Teams');
+    //****Lazy Execution Test****
+    var CurrentResult;
+    var ItemCount = 0;
+    //loop through the results 1 record at a time. this will never materialize an array
+    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== ToracTechnologies.JLinq.IteratorStatus.Completed) {
+        if (ItemCount === 0) {
+            equal(CurrentResult.CurrentItem.SportDescription, 'Baseball');
+            equal(CurrentResult.CurrentItem.TeamDescription, '2 Teams');
+        }
+        else if (ItemCount === 1) {
+            equal(CurrentResult.CurrentItem.SportDescription, 'Hockey');
+            equal(CurrentResult.CurrentItem.TeamDescription, '0 Teams');
+        }
+        else if (ItemCount === 2) {
+            equal(CurrentResult.CurrentItem.SportDescription, 'Basketball');
+            equal(CurrentResult.CurrentItem.TeamDescription, '0 Teams');
+        }
+        else if (ItemCount === 3) {
+            equal(CurrentResult.CurrentItem.SportDescription, 'Paintball');
+            equal(CurrentResult.CurrentItem.TeamDescription, '0 Teams');
+        }
+        else {
+            throw 'Should Not Be A Record Here';
+        }
+        ItemCount++;
+    }
+});
+test('JLinq.GroupJoin.ChainTest.WithOuterQuery.1', function () {
+    //selector to join. seperating so its readable
+    var JoinSelector = function (sport, teams) { return { SportDescription: sport.SportDescription, TeamDescription: teams.length + ' Teams' }; };
+    //go build the base query
+    var QueryToRun = UnitTestFramework.BuildSports().Where(function (x) { return x.SportId === 1 || x.SportId === 2; }).GroupJoin(UnitTestFramework.BuildBuildTeams().Where(function (x) { return x.SportId === 1; }), function (x) { return x.SportId; }, function (y) { return y.SportId; }, JoinSelector);
+    //result to array
+    var ResultOfQuery = QueryToRun.ToArray();
+    //make sure we have 2 items that match
+    equal(ResultOfQuery.length, 2);
+    //test baseball
+    equal(ResultOfQuery[0].SportDescription, 'Baseball');
+    equal(ResultOfQuery[0].TeamDescription, '2 Teams');
+    //test hockey
+    equal(ResultOfQuery[1].SportDescription, 'Hockey');
+    equal(ResultOfQuery[1].TeamDescription, '0 Teams');
+    //****Lazy Execution Test****
+    var CurrentResult;
+    var ItemCount = 0;
+    //loop through the results 1 record at a time. this will never materialize an array
+    while ((CurrentResult = QueryToRun.Next()).CurrentStatus !== ToracTechnologies.JLinq.IteratorStatus.Completed) {
+        if (ItemCount === 0) {
+            equal(CurrentResult.CurrentItem.SportDescription, 'Baseball');
+            equal(CurrentResult.CurrentItem.TeamDescription, '2 Teams');
+        }
+        else if (ItemCount === 1) {
+            equal(CurrentResult.CurrentItem.SportDescription, 'Hockey');
+            equal(CurrentResult.CurrentItem.TeamDescription, '0 Teams');
         }
         else {
             throw 'Should Not Be A Record Here';

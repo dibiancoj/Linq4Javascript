@@ -350,6 +350,19 @@ var ToracTechnologies;
                 }
                 return new JoinIterator(this, ConvertToIterator, InnerKeySelector, OuterKeySelector, JoinSelector);
             };
+            //join 2 recordsets where the property selector matches on both collections. The outer table returns the collection in the result selector
+            Iterator.prototype.GroupJoin = function (OuterJoinArray, InnerKeySelector, OuterKeySelector, JoinSelector) {
+                //iterator to convert into
+                var ConvertToIterator;
+                //if this is not a iterator...convert it\
+                if (this.IsIterator(OuterJoinArray)) {
+                    ConvertToIterator = OuterJoinArray;
+                }
+                else {
+                    ConvertToIterator = new Queryable(OuterJoinArray);
+                }
+                return new GroupJoinIterator(this, ConvertToIterator, InnerKeySelector, OuterKeySelector, JoinSelector);
+            };
             //#endregion
             //#region Public Non Linq Iterator Functionality Methods
             //materializes the expression to an array
@@ -797,6 +810,70 @@ var ToracTechnologies;
             return JoinIterator;
         }(Iterator));
         JLinq.JoinIterator = JoinIterator;
+        //Class is used to implement the group join method iterator.
+        var GroupJoinIterator = (function (_super) {
+            __extends(GroupJoinIterator, _super);
+            //#region Constructor
+            function GroupJoinIterator(PreviousLambdaExpression, OuterJoinArray, InnerKeySelector, OuterKeySelector, JoinSelector) {
+                //because we inherit from Iterator we need to call the base class
+                _super.call(this);
+                //set the queryable source
+                this.PreviousExpression = PreviousLambdaExpression;
+                //i believe pushing the outer to an array is more efficient since this will be used loop after loop. This way after there is a where with a group by...we won't have to run that each time. Its going to be tough to say which one is more efficient
+                this.OuterJoinArray = OuterJoinArray.ToArray();
+                this.InnerKeyFuncSelector = InnerKeySelector;
+                this.OuterKeyFuncSelector = OuterKeySelector;
+                this.JoinFuncSelector = JoinSelector;
+                //throw this into a variable so we can debug this thing when we go from CollectionSource To CollectionSource and check the type
+                this.TypeOfObject = "GroupJoinIterator";
+            }
+            //#endregion
+            //#region Methods
+            GroupJoinIterator.prototype.ResetIterator = function () {
+            };
+            GroupJoinIterator.prototype.Next = function () {
+                //holds the next available item
+                var NextItem;
+                //just keep looping as we recurse through the CollectionSource which contains all the calls down the tree
+                while (true) {
+                    //grab the next level and then the next guy for that level
+                    NextItem = this.PreviousExpression.Next();
+                    //are we done with the inner data set?
+                    if (NextItem.CurrentStatus === IteratorStatus.Completed) {
+                        //just return the item so we can be done
+                        return new IteratorResult(null, IteratorStatus.Completed);
+                    }
+                    else {
+                        //hold the matches
+                        var Matches = new Array();
+                        //loop through all the outers and if we have a match then we need to return it
+                        for (var i = 0; i < this.OuterJoinArray.length; i++) {
+                            //throw the current item into a variable
+                            var CurrentItem = this.OuterJoinArray[i];
+                            //do we have a match if we try to match the properties?
+                            if (this.InnerKeyFuncSelector(NextItem.CurrentItem) == this.OuterKeyFuncSelector(CurrentItem)) {
+                                //we have a match...add it to the array
+                                Matches.push(CurrentItem);
+                            }
+                        }
+                        //go return this item
+                        return new IteratorResult(this.JoinFuncSelector(NextItem.CurrentItem, Matches), IteratorStatus.Running);
+                    }
+                }
+            };
+            GroupJoinIterator.prototype.AsyncSerializedFunc = function () {
+                throw 'Join Method Not Supported In Async Mode';
+                //return [
+                //    new KeyValuePair('OuterJoinArray', JSON.stringify(this.OuterJoinArray)),
+                //    new KeyValuePair('InnerKeyFuncSelector', super.SerializeMethod(this.InnerKeyFuncSelector)),
+                //    new KeyValuePair('OuterKeyFuncSelector', super.SerializeMethod(this.OuterKeyFuncSelector)),
+                //    new KeyValuePair('JoinFuncSelector', super.SerializeMethod(this.JoinFuncSelector))
+                //    //new KeyValuePair('Matches', super.SerializeMethod(this.Matches))
+                //];
+            };
+            return GroupJoinIterator;
+        }(Iterator));
+        JLinq.GroupJoinIterator = GroupJoinIterator;
         //Class is used to implement the Where Method Iterator
         var WhereIterator = (function (_super) {
             __extends(WhereIterator, _super);
@@ -2673,6 +2750,9 @@ Array.prototype.ElementAtDefault = function (Index) {
 };
 Array.prototype.Join = function (OuterJoinArray, InnerKeySelector, OuterKeySelector, JoinSelector) {
     return new ToracTechnologies.JLinq.Queryable(this).Join(OuterJoinArray, InnerKeySelector, OuterKeySelector, JoinSelector);
+};
+Array.prototype.GroupJoin = function (OuterJoinArray, InnerKeySelector, OuterKeySelector, JoinSelector) {
+    return new ToracTechnologies.JLinq.Queryable(this).GroupJoin(OuterJoinArray, InnerKeySelector, OuterKeySelector, JoinSelector);
 };
 //#endregion
 //#endregion 
