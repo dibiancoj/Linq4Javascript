@@ -145,3 +145,4 @@
 
 3.0.4 - 6/10/2016
 		-Added GroupJoin
+		-Updated to qunit 1.23.1
