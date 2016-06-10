@@ -81,4 +81,3 @@ var UnitTestFramework;
     }
     UnitTestFramework.BuildSports = BuildSports;
 })(UnitTestFramework || (UnitTestFramework = {}));
-//# sourceMappingURL=unittestframework.js.map

@@ -142,3 +142,6 @@
 3.0.3 - 6/8/2016
 		-Added Join(). This is where you combine the record set that match on the property selected. For the outer collection you can pass in an array or collection
 		-Also removed ConcatQuery and UnionQuery. You now can just use concat and union.
+
+3.0.4 - 6/10/2016
+		-Added GroupJoin

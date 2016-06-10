@@ -1,7 +1,7 @@
 //********************************Torac Technologies***************************************
 //Description: Linq Style Methods In Javascript To Manipulate Collections                 *
 //Release Date: 10/17/2013                                                                *
-//Current Version: 3.0.3                                                                  *
+//Current Version: 3.0.4                                                                  *
 //Release History In JLinqChangeLog.txt                                                   *
 //*****************************************************************************************
 var __extends = (this && this.__extends) || function (d, b) {
@@ -2756,4 +2756,3 @@ Array.prototype.GroupJoin = function (OuterJoinArray, InnerKeySelector, OuterKey
 };
 //#endregion
 //#endregion 
-//# sourceMappingURL=JLinq.js.map

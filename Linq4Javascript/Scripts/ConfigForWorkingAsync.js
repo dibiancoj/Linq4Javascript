@@ -33,4 +33,3 @@ function DisplayResults(Results) {
     html += '</ul>';
     document.getElementById('Results').innerHTML = html;
 }
-//# sourceMappingURL=ConfigForWorkingAsync.js.map
