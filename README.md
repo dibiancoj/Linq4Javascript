@@ -1,6 +1,8 @@
 #### Project Description
 JLinq.ts(.js) is an implementation of .Net's Linq To Objects. It is built using iterators for complete lazy evaluation to reduce memory and improve performance.
 
+[![Build Status](https://travis-ci.org/dibiancoj/Linq4Javascript.svg?branch=master)](https://travis-ci.org/dibiancoj/Linq4Javascript)
+
 ##### Why I Built This Library
 I wanted to learn TypeScript along with building a linq library which had method names and syntax much like the .Net version. I love underscore but I always had to lookup the method name I was looking for.
 
