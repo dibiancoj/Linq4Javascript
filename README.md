@@ -18,7 +18,7 @@ I wanted to learn TypeScript along with building a linq library which had method
            
            
 
- * For Node.js just use a require statement. This will allow access to the extension methods off of the array. Every array will have access to the methods of Linq4Javascript. JLinq is the file name where the Linq4Javascript code is in. If you change the file name then update this. The ./ is set because it is in the root folder of the project.
+* For Node.js just use a require statement. This will allow access to the extension methods off of the array. Every array will have access to the methods of Linq4Javascript. JLinq is the file name where the Linq4Javascript code is in. If you change the file name then update this. The ./ is set because it is in the root folder of the project.
  
           var linq = require('./JLinq'); 
 
