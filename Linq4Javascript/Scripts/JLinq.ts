@@ -241,8 +241,7 @@ module ToracTechnologies {
                 //if this is not a iterator...convert it\
                 if (this.IsIterator(ArrayOrIteratorToCombine)) {
                     ConvertToIterator = <any>ArrayOrIteratorToCombine;
-                }
-                else {
+                } else {
                     ConvertToIterator = new Queryable<T>(<any>ArrayOrIteratorToCombine);
                 }
 
@@ -259,8 +258,7 @@ module ToracTechnologies {
                 //if this is not a iterator...convert it\
                 if (this.IsIterator(ArrayOrIteratorToCombine)) {
                     ConvertToIterator = <any>ArrayOrIteratorToCombine;
-                }
-                else {
+                } else {
                     ConvertToIterator = new Queryable<T>(<any>ArrayOrIteratorToCombine);
                 }
 
@@ -455,7 +453,7 @@ module ToracTechnologies {
                 while ((CurrentRecord = this.Next()).CurrentStatus !== ToracTechnologies.JLinq.IteratorStatus.Completed) {
 
                     //index we are looking for?
-                    if (Tally == Index) {
+                    if (Tally === Index) {
 
                         //reset the iterator before we return
                         this.ResetQuery();
@@ -486,8 +484,7 @@ module ToracTechnologies {
                 //if this is not a iterator...convert it\
                 if (this.IsIterator(OuterJoinArray)) {
                     ConvertToIterator = <any>OuterJoinArray;
-                }
-                else {
+                } else {
                     ConvertToIterator = new Queryable<TOuterArrayType>(<any>OuterJoinArray);
                 }
 
@@ -503,8 +500,7 @@ module ToracTechnologies {
                 //if this is not a iterator...convert it\
                 if (this.IsIterator(OuterJoinArray)) {
                     ConvertToIterator = <any>OuterJoinArray;
-                }
-                else {
+                } else {
                     ConvertToIterator = new Queryable<TOuterArrayType>(<any>OuterJoinArray);
                 }
 
@@ -933,7 +929,7 @@ module ToracTechnologies {
             BuildHashSet(HashSetDataSource: Iterator<TValue>);
 
             //gets the count of items in the hashset
-            Count(): number
+            Count(): number;
 
         }
 
@@ -1262,21 +1258,18 @@ module ToracTechnologies {
 
                         //otherwise return what they passed in
                         return new IteratorResult<T>(this.DefaultElementWhenEmpty, IteratorStatus.Running);
-                    }
-                    else if (NextItem.CurrentStatus === IteratorStatus.Completed) {
+                    } else if (NextItem.CurrentStatus === IteratorStatus.Completed) {
 
                         //we found this guy so return it...after we return this method we will jump a level to the next level down the tree
                         return NextItem;
-                    }
-                    else if (this.HasFirstItem == null) {
+                    } else if (this.HasFirstItem == null) {
 
                         //set that we have an item
                         this.HasFirstItem = true;
 
                         //return the item now
                         return NextItem;
-                    }
-                    else {
+                    } else {
                         //has items...so just return it
                         return NextItem;
                     }
@@ -1364,8 +1357,7 @@ module ToracTechnologies {
 
                         //just return the item so we can be done
                         return new IteratorResult<TJoinResult>(null, IteratorStatus.Completed);
-                    }
-                    else {
+                    } else {
 
                         //loop through all the outers and if we have a match then we need to return it
                         for (var i = 0; i < this.OuterJoinArray.length; i++) {
@@ -1452,8 +1444,7 @@ module ToracTechnologies {
 
                         //just return the item so we can be done
                         return new IteratorResult<TJoinResult>(null, IteratorStatus.Completed);
-                    }
-                    else {
+                    } else {
 
                         //hold the matches
                         var Matches = new Array<TOuterArrayType>();
@@ -2632,7 +2623,7 @@ module ToracTechnologies {
             public AsyncSerializedFunc(): Array<KeyValuePair<string, string>> {
 
                 //if we have a query, then we need to serialize all the parameters in the tree
-                if (this.TypeOfObject == 'ConcatQueryIterator') {
+                if (this.TypeOfObject === 'ConcatQueryIterator') {
 
                     //we dont have any parameters to serialize, but the query needs to be recursed and walked through to serialize the functions
                     Iterator.SerializeAsyncFuncToStringTree(this.ConcatThisQuery);
@@ -2719,8 +2710,7 @@ module ToracTechnologies {
 
                                 //we are done, just return the item
                                 return NextItem;
-                            }
-                            else if (this.HashSetStore.Add(NextItem.CurrentItem)) {
+                            } else if (this.HashSetStore.Add(NextItem.CurrentItem)) {
 
                                 //this isn't in the hashset yet, so return it. (once we are done with the first iterator we will start the second)
                                 return NextItem;
@@ -2733,7 +2723,7 @@ module ToracTechnologies {
             public AsyncSerializedFunc(): Array<KeyValuePair<string, string>> {
 
                 //if we have a query, then we need to serialize all the parameters in the tree
-                if (this.TypeOfObject == 'UnionQueryIterator') {
+                if (this.TypeOfObject === 'UnionQueryIterator') {
 
                     //we dont have any parameters to serialize, but the query needs to be recursed and walked through to serialize the functions
                     Iterator.SerializeAsyncFuncToStringTree(this.UnionThisQuery);
@@ -2873,8 +2863,7 @@ module ToracTechnologies {
 
                         //if we get here we have no more records...just pass back the lowest number
                         return new IteratorResult(this.CurrentLowestNumber, IteratorStatus.Completed);
-                    }
-                    else if (this.CurrentLowestNumber === null || NextItem.CurrentItem < this.CurrentLowestNumber) {
+                    } else if (this.CurrentLowestNumber === null || NextItem.CurrentItem < this.CurrentLowestNumber) {
                         //is the current lowest number not set yet? Or is the set current lowest number not lower then the next item..
 
                         //set the variable to the new lowest number
@@ -2943,8 +2932,7 @@ module ToracTechnologies {
 
                         //if we get here we have no more records...just pass back the largest number
                         return new IteratorResult(this.CurrentLargestNumber, IteratorStatus.Completed);
-                    }
-                    else if (this.CurrentLargestNumber === null || NextItem.CurrentItem > this.CurrentLargestNumber) {
+                    } else if (this.CurrentLargestNumber === null || NextItem.CurrentItem > this.CurrentLargestNumber) {
                         //is the current largest number not set yet...or is this number greater then the largest number which is set
 
                         //set the variable to the new largest number
@@ -3176,8 +3164,7 @@ module ToracTechnologies {
 
                         //we don't have this key in the dictionary, we need to add it
                         DictionaryOfGroupings.Add(NextItemKey, [NextItem.CurrentItem]);
-                    }
-                    else {
+                    } else {
 
                         //we have this key, so we just need to add it to the dictionary
                         FoundKeyItemInCollection.push(NextItem.CurrentItem);
@@ -3287,7 +3274,7 @@ module ToracTechnologies {
                 }
 
                 return [new KeyValuePair('SortPropertySelector', super.SerializeMethod(this.SortPropertySelector)),
-                    new KeyValuePair('ThenBySortPropertySelectors', JSON.stringify(CompactedThenBySettings))];
+                new KeyValuePair('ThenBySortPropertySelectors', JSON.stringify(CompactedThenBySettings))];
             }
 
             //#endregion
@@ -3753,8 +3740,7 @@ module ToracTechnologies {
                 //is this just a regular date key?
                 if (this.TypeOfTKey === 'date') {
                     return <any>KeyValue;
-                }
-                else {
+                } else {
 
                     //throw the dictionary into a variable so we have access to it in the 
 
@@ -3908,13 +3894,12 @@ module ToracTechnologies {
                 var Node = FlatTree[j];
 
                 //is this a queryable?
-                if (Node.TypeOfObject == 'Queryable') {
+                if (Node.TypeOfObject === 'Queryable') {
 
                     //set this queryable
                     Queryable = new ToracTechnologies.JLinq.Queryable((<ToracTechnologies.JLinq.Queryable<any>>Node).CollectionSource);
                     break;
-                }
-                else if (Node.PreviousExpression != null && Node.PreviousExpression.TypeOfObject == 'Queryable') {
+                } else if (Node.PreviousExpression != null && Node.PreviousExpression.TypeOfObject === 'Queryable') {
 
                     //set this queryable
                     Queryable = new ToracTechnologies.JLinq.Queryable((<ToracTechnologies.JLinq.Queryable<any>>Node.PreviousExpression).CollectionSource);
@@ -3954,35 +3939,35 @@ module ToracTechnologies {
             }
 
             if (CurrentLevelOfTree.TypeOfObject === 'WhereIterator') {
-                return Queryable.Where(ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(x => x.Key == 'WhereClausePredicate').Value));
+                return Queryable.Where(ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(x => x.Key === 'WhereClausePredicate').Value));
             }
 
             if (CurrentLevelOfTree.TypeOfObject === 'First') {
-                return Queryable.First(ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(x => x.Key == 'WhereClausePredicate').Value));
+                return Queryable.First(ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(x => x.Key === 'WhereClausePredicate').Value));
             }
 
             if (CurrentLevelOfTree.TypeOfObject === 'FirstOrDefaultIterator') {
-                return Queryable.FirstOrDefault(ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(x => x.Key == 'WhereClausePredicate').Value));
+                return Queryable.FirstOrDefault(ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(x => x.Key === 'WhereClausePredicate').Value));
             }
 
             if (CurrentLevelOfTree.TypeOfObject === 'SingleIterator') {
-                return Queryable.Single(ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(x => x.Key == 'WhereClausePredicate').Value));
+                return Queryable.Single(ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(x => x.Key === 'WhereClausePredicate').Value));
             }
 
             if (CurrentLevelOfTree.TypeOfObject === 'SingleOrDefaultIterator') {
-                return Queryable.Single(ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(x => x.Key == 'WhereClausePredicate').Value));
+                return Queryable.Single(ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(x => x.Key === 'WhereClausePredicate').Value));
             }
 
             if (CurrentLevelOfTree.TypeOfObject === 'SelectIterator') {
-                return Queryable.Select(ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(x => x.Key == 'SelectPredicate').Value));
+                return Queryable.Select(ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(x => x.Key === 'SelectPredicate').Value));
             }
 
             if (CurrentLevelOfTree.TypeOfObject === 'SelectManyIterator') {
-                return Queryable.SelectMany(ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(x => x.Key == 'CollectionPropertySelector').Value));
+                return Queryable.SelectMany(ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(x => x.Key === 'CollectionPropertySelector').Value));
             }
 
             if (CurrentLevelOfTree.TypeOfObject === 'DistinctIterator') {
-                return Queryable.Distinct(ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(x => x.Key == 'PropertySelector').Value));
+                return Queryable.Distinct(ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(x => x.Key === 'PropertySelector').Value));
             }
 
             if (CurrentLevelOfTree.TypeOfObject === 'TakeIterator') {
@@ -3990,7 +3975,7 @@ module ToracTechnologies {
             }
 
             if (CurrentLevelOfTree.TypeOfObject === 'TakeWhileIterator') {
-                return Queryable.TakeWhile(ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(x => x.Key == 'PredicateToTakeWhile').Value));
+                return Queryable.TakeWhile(ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(x => x.Key === 'PredicateToTakeWhile').Value));
             }
 
             if (CurrentLevelOfTree.TypeOfObject === 'SkipIterator') {
@@ -3998,27 +3983,27 @@ module ToracTechnologies {
             }
 
             if (CurrentLevelOfTree.TypeOfObject === 'SkipWhileIterator') {
-                return Queryable.SkipWhile(ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(x => x.Key == 'PredicateSkipUntil').Value));
+                return Queryable.SkipWhile(ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(x => x.Key === 'PredicateSkipUntil').Value));
             }
 
             if (CurrentLevelOfTree.TypeOfObject === 'AggregateIterator') {
-                return Queryable.Aggregate(ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(x => x.Key == 'PredicateAggregate').Value));
+                return Queryable.Aggregate(ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(x => x.Key === 'PredicateAggregate').Value));
             }
 
             if (CurrentLevelOfTree.TypeOfObject === 'AllIterator') {
-                return Queryable.All(ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(x => x.Key == 'WhereClausePredicate').Value));
+                return Queryable.All(ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(x => x.Key === 'WhereClausePredicate').Value));
             }
 
             if (CurrentLevelOfTree.TypeOfObject === 'AnyIterator') {
-                return Queryable.Any(ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(x => x.Key == 'WhereClausePredicate').Value));
+                return Queryable.Any(ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(x => x.Key === 'WhereClausePredicate').Value));
             }
 
             if (CurrentLevelOfTree.TypeOfObject === 'LastIterator') {
-                return Queryable.Last(ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(x => x.Key == 'WhereClausePredicate').Value));
+                return Queryable.Last(ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(x => x.Key === 'WhereClausePredicate').Value));
             }
 
             if (CurrentLevelOfTree.TypeOfObject === 'CountIterator') {
-                return Queryable.Count(ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(x => x.Key == 'WhereClausePredicate').Value));
+                return Queryable.Count(ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(x => x.Key === 'WhereClausePredicate').Value));
             }
 
             if (CurrentLevelOfTree.TypeOfObject === 'MinIterator') {
@@ -4038,7 +4023,7 @@ module ToracTechnologies {
             }
 
             if (CurrentLevelOfTree.TypeOfObject === 'GroupIterator') {
-                return Queryable.GroupBy(ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(x => x.Key == 'GroupBySelector').Value));
+                return Queryable.GroupBy(ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(x => x.Key === 'GroupBySelector').Value));
             }
 
             if (CurrentLevelOfTree.TypeOfObject === 'OrderByIterator') {
@@ -4050,7 +4035,7 @@ module ToracTechnologies {
                 var CastedOrderBy = (<ToracTechnologies.JLinq.OrderByIterator<any>>CurrentLevelOfTree);
 
                 //loop through the then by settings (if we have some)
-                var ThenBySettings = CastedOrderBy.AsyncSerialized.FirstOrDefault(x => x.Key == 'ThenBySortPropertySelectors');
+                var ThenBySettings = CastedOrderBy.AsyncSerialized.FirstOrDefault(x => x.Key === 'ThenBySortPropertySelectors');
 
                 //do we have any settings to serialize back? (for the then by settings)?
                 if (ThenBySettings != null) {
@@ -4071,7 +4056,7 @@ module ToracTechnologies {
                 }
 
                 //return a new order by iterator
-                return new OrderByIterator(Queryable, CastedOrderBy.SortDirection, ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(x => x.Key == 'SortPropertySelector').Value), ThenByToSet);
+                return new OrderByIterator(Queryable, CastedOrderBy.SortDirection, ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(x => x.Key === 'SortPropertySelector').Value), ThenByToSet);
             }
 
             if (CurrentLevelOfTree.TypeOfObject === 'JoinIterator') {
@@ -4201,7 +4186,7 @@ interface Array<T> {
 
 Array.prototype.AsQueryable = function <T>(): ToracTechnologies.JLinq.Queryable<T> {
     return new ToracTechnologies.JLinq.Queryable<T>(this);
-}
+};
 
 Array.prototype.Where = function <T>(WhereClauseSelector: (ItemToTest: T) => boolean): ToracTechnologies.JLinq.WhereIterator<T> {
     return new ToracTechnologies.JLinq.Queryable<T>(this).Where(WhereClauseSelector);
@@ -4353,15 +4338,15 @@ Array.prototype.ElementAtDefault = function <T>(Index: number): T {
 
 Array.prototype.Join = function <TInnerArrayType, TOuterArrayType, TSelectorDataType, TResultDataType>(OuterJoinArray: TOuterArrayType[] | ToracTechnologies.JLinq.Iterator<TOuterArrayType>, InnerKeySelector: (InnerRecord: TInnerArrayType) => TSelectorDataType, OuterKeySelector: (OuterRecord: TOuterArrayType) => TSelectorDataType, JoinSelector: (InnerRecord: TInnerArrayType, OuterRecord: TOuterArrayType) => TResultDataType): ToracTechnologies.JLinq.JoinIterator<TInnerArrayType, TOuterArrayType, TSelectorDataType, TResultDataType> {
     return new ToracTechnologies.JLinq.Queryable<TInnerArrayType>(this).Join(OuterJoinArray, InnerKeySelector, OuterKeySelector, JoinSelector);
-}
+};
 
 Array.prototype.GroupJoin = function <TInnerArrayType, TOuterArrayType, TSelectorDataType, TResultDataType>(OuterJoinArray: TOuterArrayType[] | ToracTechnologies.JLinq.Iterator<TOuterArrayType>, InnerKeySelector: (InnerRecord: TInnerArrayType) => TSelectorDataType, OuterKeySelector: (OuterRecord: TOuterArrayType) => TSelectorDataType, JoinSelector: (InnerRecord: TInnerArrayType, OuterRecord: TOuterArrayType[]) => TResultDataType): ToracTechnologies.JLinq.GroupJoinIterator<TInnerArrayType, TOuterArrayType, TSelectorDataType, TResultDataType> {
     return new ToracTechnologies.JLinq.Queryable<TInnerArrayType>(this).GroupJoin(OuterJoinArray, InnerKeySelector, OuterKeySelector, JoinSelector);
-}
+};
 
 Array.prototype.DefaultIfEmpty = function <T>(DefaultValue: T): ToracTechnologies.JLinq.DefaultIfEmptyIterator<T> {
     return new ToracTechnologies.JLinq.Queryable<T>(this).DefaultIfEmpty(DefaultValue);
-}
+};
 
 //#endregion
 
