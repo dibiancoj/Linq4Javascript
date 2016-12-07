@@ -155,6 +155,6 @@ C:\Workspace\Linq4Javascript\Linq4Javascript\bin\System.Web.WebPages.xml
 C:\Workspace\Linq4Javascript\Linq4Javascript\bin\System.Web.WebPages.Deployment.xml
 C:\Workspace\Linq4Javascript\Linq4Javascript\bin\System.Web.WebPages.Razor.xml
 C:\Workspace\Linq4Javascript\Linq4Javascript\bin\Antlr3.Runtime.pdb
+C:\Workspace\Linq4Javascript\Linq4Javascript\obj\Debug\Linq4Javascript.csprojResolveAssemblyReference.cache
 C:\Workspace\Linq4Javascript\Linq4Javascript\obj\Debug\Linq4Javascript.dll
 C:\Workspace\Linq4Javascript\Linq4Javascript\obj\Debug\Linq4Javascript.pdb
-C:\Workspace\Linq4Javascript\Linq4Javascript\obj\Debug\Linq4Javascript.csprojResolveAssemblyReference.cache

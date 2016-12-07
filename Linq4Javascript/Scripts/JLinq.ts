@@ -928,7 +928,7 @@ module ToracTechnologies {
             BuildHashSet(HashSetDataSource: Iterator<TValue>);
 
             //gets the count of items in the hashset
-            Count(): number
+            Count(): number;
 
         }
 
@@ -4196,7 +4196,7 @@ interface Array<T> {
 
 Array.prototype.AsQueryable = function <T>(): ToracTechnologies.JLinq.Queryable<T> {
     return new ToracTechnologies.JLinq.Queryable<T>(this);
-}
+};
 
 Array.prototype.Where = function <T>(WhereClauseSelector: (ItemToTest: T) => boolean): ToracTechnologies.JLinq.WhereIterator<T> {
     return new ToracTechnologies.JLinq.Queryable<T>(this).Where(WhereClauseSelector);
@@ -4348,15 +4348,15 @@ Array.prototype.ElementAtDefault = function <T>(Index: number): T {
 
 Array.prototype.Join = function <TInnerArrayType, TOuterArrayType, TSelectorDataType, TResultDataType>(OuterJoinArray: TOuterArrayType[] | ToracTechnologies.JLinq.Iterator<TOuterArrayType>, InnerKeySelector: (InnerRecord: TInnerArrayType) => TSelectorDataType, OuterKeySelector: (OuterRecord: TOuterArrayType) => TSelectorDataType, JoinSelector: (InnerRecord: TInnerArrayType, OuterRecord: TOuterArrayType) => TResultDataType): ToracTechnologies.JLinq.JoinIterator<TInnerArrayType, TOuterArrayType, TSelectorDataType, TResultDataType> {
     return new ToracTechnologies.JLinq.Queryable<TInnerArrayType>(this).Join(OuterJoinArray, InnerKeySelector, OuterKeySelector, JoinSelector);
-}
+};
 
 Array.prototype.GroupJoin = function <TInnerArrayType, TOuterArrayType, TSelectorDataType, TResultDataType>(OuterJoinArray: TOuterArrayType[] | ToracTechnologies.JLinq.Iterator<TOuterArrayType>, InnerKeySelector: (InnerRecord: TInnerArrayType) => TSelectorDataType, OuterKeySelector: (OuterRecord: TOuterArrayType) => TSelectorDataType, JoinSelector: (InnerRecord: TInnerArrayType, OuterRecord: TOuterArrayType[]) => TResultDataType): ToracTechnologies.JLinq.GroupJoinIterator<TInnerArrayType, TOuterArrayType, TSelectorDataType, TResultDataType> {
     return new ToracTechnologies.JLinq.Queryable<TInnerArrayType>(this).GroupJoin(OuterJoinArray, InnerKeySelector, OuterKeySelector, JoinSelector);
-}
+};
 
 Array.prototype.DefaultIfEmpty = function <T>(DefaultValue: T): ToracTechnologies.JLinq.DefaultIfEmptyIterator<T> {
     return new ToracTechnologies.JLinq.Queryable<T>(this).DefaultIfEmpty(DefaultValue);
-}
+};
 
 //#endregion
 
