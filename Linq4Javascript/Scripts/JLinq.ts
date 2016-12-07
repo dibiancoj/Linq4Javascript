@@ -614,7 +614,7 @@ module ToracTechnologies {
                     }, false);
 
                     //we need to go grab all the methods and push them to a string so we can rebuild it in the web worker. ie. Where => convert the Where method the dev passes in.
-                    WorkerToRun.postMessage(JSON.stringify(Iterator.SerializeAsyncFuncToStringTree(this)));
+                    WorkerToRun.postMessage({ Parameters: JSON.stringify(Iterator.SerializeAsyncFuncToStringTree(this)) });
 
                 } else {
                     // No Web Worker support.. just return the data
@@ -670,18 +670,18 @@ module ToracTechnologies {
 
                     //let's build the function text now
                     var FunctionScript: string = "self.addEventListener('message', function(e) { \n" +
-
-                        //let's import the jlinq library
-                        " importScripts('" + JLinqJsUrlPath + "') \n" +
+                       
+                    //let's import the jlinq library
+                    " importScripts('" + JLinqJsUrlPath + "') \n" +
 
                         //let's go parse the json which is the query
-                        " var Query = JSON.parse(e.data); \n" +
+                        " var Query = JSON.parse(e.data.Parameters); \n" +
 
                         //let's rebuild the tree
                         " var TreeRebuilt = ToracTechnologies.JLinq.RebuildTree(Query); \n" +
 
                         //go build up the results and pass back the array
-                        " self.postMessage(TreeRebuilt.ToArray(), null, null); }, false);";
+                        " self.postMessage(TreeRebuilt.ToArray()); }, false);";
 
                     //go set the blob...
                     this.WebWorkerBlobToCache = new Blob([FunctionScript]);
@@ -3274,7 +3274,7 @@ module ToracTechnologies {
                 }
 
                 return [new KeyValuePair('SortPropertySelector', super.SerializeMethod(this.SortPropertySelector)),
-                new KeyValuePair('ThenBySortPropertySelectors', JSON.stringify(CompactedThenBySettings))];
+                    new KeyValuePair('ThenBySortPropertySelectors', JSON.stringify(CompactedThenBySettings))];
             }
 
             //#endregion
