@@ -7,6 +7,11 @@
 
 //* Change Log Is In It's Own Text File. I want to keep the js file as small as possible
 
+//for node.js configuration
+//For Node.js just use a require statement.This will allow access to the extension methods off of the array.Every array will have access to the methods of Linq4Javascript.JLinq is the file name where the Linq4Javascript code is in. If you change the file name then update this.The./ is set because it is in the root folder of the project.
+//var linq = require('./JLinq');
+//end of node.js configuration
+
 /*Example of how to call this
   var queryable = array.Where(function (x) { return x.id > 1; }).Where(function (x) { return x.id == 2 || x.id == 3; }).Take(1);
 
@@ -236,8 +241,7 @@ module ToracTechnologies {
                 //if this is not a iterator...convert it\
                 if (this.IsIterator(ArrayOrIteratorToCombine)) {
                     ConvertToIterator = <any>ArrayOrIteratorToCombine;
-                }
-                else {
+                } else {
                     ConvertToIterator = new Queryable<T>(<any>ArrayOrIteratorToCombine);
                 }
 
@@ -254,8 +258,7 @@ module ToracTechnologies {
                 //if this is not a iterator...convert it\
                 if (this.IsIterator(ArrayOrIteratorToCombine)) {
                     ConvertToIterator = <any>ArrayOrIteratorToCombine;
-                }
-                else {
+                } else {
                     ConvertToIterator = new Queryable<T>(<any>ArrayOrIteratorToCombine);
                 }
 
@@ -481,8 +484,7 @@ module ToracTechnologies {
                 //if this is not a iterator...convert it\
                 if (this.IsIterator(OuterJoinArray)) {
                     ConvertToIterator = <any>OuterJoinArray;
-                }
-                else {
+                } else {
                     ConvertToIterator = new Queryable<TOuterArrayType>(<any>OuterJoinArray);
                 }
 
@@ -498,8 +500,7 @@ module ToracTechnologies {
                 //if this is not a iterator...convert it\
                 if (this.IsIterator(OuterJoinArray)) {
                     ConvertToIterator = <any>OuterJoinArray;
-                }
-                else {
+                } else {
                     ConvertToIterator = new Queryable<TOuterArrayType>(<any>OuterJoinArray);
                 }
 
@@ -1257,21 +1258,18 @@ module ToracTechnologies {
 
                         //otherwise return what they passed in
                         return new IteratorResult<T>(this.DefaultElementWhenEmpty, IteratorStatus.Running);
-                    }
-                    else if (NextItem.CurrentStatus === IteratorStatus.Completed) {
+                    } else if (NextItem.CurrentStatus === IteratorStatus.Completed) {
 
                         //we found this guy so return it...after we return this method we will jump a level to the next level down the tree
                         return NextItem;
-                    }
-                    else if (this.HasFirstItem == null) {
+                    } else if (this.HasFirstItem == null) {
 
                         //set that we have an item
                         this.HasFirstItem = true;
 
                         //return the item now
                         return NextItem;
-                    }
-                    else {
+                    } else {
                         //has items...so just return it
                         return NextItem;
                     }
@@ -1359,8 +1357,7 @@ module ToracTechnologies {
 
                         //just return the item so we can be done
                         return new IteratorResult<TJoinResult>(null, IteratorStatus.Completed);
-                    }
-                    else {
+                    } else {
 
                         //loop through all the outers and if we have a match then we need to return it
                         for (var i = 0; i < this.OuterJoinArray.length; i++) {
@@ -1447,8 +1444,7 @@ module ToracTechnologies {
 
                         //just return the item so we can be done
                         return new IteratorResult<TJoinResult>(null, IteratorStatus.Completed);
-                    }
-                    else {
+                    } else {
 
                         //hold the matches
                         var Matches = new Array<TOuterArrayType>();
@@ -2627,7 +2623,7 @@ module ToracTechnologies {
             public AsyncSerializedFunc(): Array<KeyValuePair<string, string>> {
 
                 //if we have a query, then we need to serialize all the parameters in the tree
-                if (this.TypeOfObject == 'ConcatQueryIterator') {
+                if (this.TypeOfObject === 'ConcatQueryIterator') {
 
                     //we dont have any parameters to serialize, but the query needs to be recursed and walked through to serialize the functions
                     Iterator.SerializeAsyncFuncToStringTree(this.ConcatThisQuery);
@@ -2714,8 +2710,7 @@ module ToracTechnologies {
 
                                 //we are done, just return the item
                                 return NextItem;
-                            }
-                            else if (this.HashSetStore.Add(NextItem.CurrentItem)) {
+                            } else if (this.HashSetStore.Add(NextItem.CurrentItem)) {
 
                                 //this isn't in the hashset yet, so return it. (once we are done with the first iterator we will start the second)
                                 return NextItem;
@@ -2868,8 +2863,7 @@ module ToracTechnologies {
 
                         //if we get here we have no more records...just pass back the lowest number
                         return new IteratorResult(this.CurrentLowestNumber, IteratorStatus.Completed);
-                    }
-                    else if (this.CurrentLowestNumber === null || NextItem.CurrentItem < this.CurrentLowestNumber) {
+                    } else if (this.CurrentLowestNumber === null || NextItem.CurrentItem < this.CurrentLowestNumber) {
                         //is the current lowest number not set yet? Or is the set current lowest number not lower then the next item..
 
                         //set the variable to the new lowest number
@@ -2938,8 +2932,7 @@ module ToracTechnologies {
 
                         //if we get here we have no more records...just pass back the largest number
                         return new IteratorResult(this.CurrentLargestNumber, IteratorStatus.Completed);
-                    }
-                    else if (this.CurrentLargestNumber === null || NextItem.CurrentItem > this.CurrentLargestNumber) {
+                    } else if (this.CurrentLargestNumber === null || NextItem.CurrentItem > this.CurrentLargestNumber) {
                         //is the current largest number not set yet...or is this number greater then the largest number which is set
 
                         //set the variable to the new largest number
@@ -3171,8 +3164,7 @@ module ToracTechnologies {
 
                         //we don't have this key in the dictionary, we need to add it
                         DictionaryOfGroupings.Add(NextItemKey, [NextItem.CurrentItem]);
-                    }
-                    else {
+                    } else {
 
                         //we have this key, so we just need to add it to the dictionary
                         FoundKeyItemInCollection.push(NextItem.CurrentItem);
@@ -3282,7 +3274,7 @@ module ToracTechnologies {
                 }
 
                 return [new KeyValuePair('SortPropertySelector', super.SerializeMethod(this.SortPropertySelector)),
-                    new KeyValuePair('ThenBySortPropertySelectors', JSON.stringify(CompactedThenBySettings))];
+                new KeyValuePair('ThenBySortPropertySelectors', JSON.stringify(CompactedThenBySettings))];
             }
 
             //#endregion
@@ -3748,8 +3740,7 @@ module ToracTechnologies {
                 //is this just a regular date key?
                 if (this.TypeOfTKey === 'date') {
                     return <any>KeyValue;
-                }
-                else {
+                } else {
 
                     //throw the dictionary into a variable so we have access to it in the 
 
@@ -3908,8 +3899,7 @@ module ToracTechnologies {
                     //set this queryable
                     Queryable = new ToracTechnologies.JLinq.Queryable((<ToracTechnologies.JLinq.Queryable<any>>Node).CollectionSource);
                     break;
-                }
-                else if (Node.PreviousExpression != null && Node.PreviousExpression.TypeOfObject === 'Queryable') {
+                } else if (Node.PreviousExpression != null && Node.PreviousExpression.TypeOfObject === 'Queryable') {
 
                     //set this queryable
                     Queryable = new ToracTechnologies.JLinq.Queryable((<ToracTechnologies.JLinq.Queryable<any>>Node.PreviousExpression).CollectionSource);

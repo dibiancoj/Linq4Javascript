@@ -10,6 +10,10 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 //* Change Log Is In It's Own Text File. I want to keep the js file as small as possible
+//for node.js configuration
+//For Node.js just use a require statement.This will allow access to the extension methods off of the array.Every array will have access to the methods of Linq4Javascript.JLinq is the file name where the Linq4Javascript code is in. If you change the file name then update this.The./ is set because it is in the root folder of the project.
+//var linq = require('./JLinq');
+//end of node.js configuration
 /*Example of how to call this
   var queryable = array.Where(function (x) { return x.id > 1; }).Where(function (x) { return x.id == 2 || x.id == 3; }).Take(1);
 
@@ -1654,7 +1658,7 @@ var ToracTechnologies;
             };
             ConcatIterator.prototype.AsyncSerializedFunc = function () {
                 //if we have a query, then we need to serialize all the parameters in the tree
-                if (this.TypeOfObject == 'ConcatQueryIterator') {
+                if (this.TypeOfObject === 'ConcatQueryIterator') {
                     //we dont have any parameters to serialize, but the query needs to be recursed and walked through to serialize the functions
                     Iterator.SerializeAsyncFuncToStringTree(this.ConcatThisQuery);
                 }
