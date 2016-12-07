@@ -450,7 +450,7 @@ module ToracTechnologies {
                 while ((CurrentRecord = this.Next()).CurrentStatus !== ToracTechnologies.JLinq.IteratorStatus.Completed) {
 
                     //index we are looking for?
-                    if (Tally == Index) {
+                    if (Tally === Index) {
 
                         //reset the iterator before we return
                         this.ResetQuery();
@@ -625,11 +625,11 @@ module ToracTechnologies {
             public abstract Next(): IteratorResult<T>;
 
             //this is an abstract method (this should be considered private)
-            public abstract ResetIterator();
+            public abstract ResetIterator(): void;
 
             //if you traverse the results (not calling ToArray()). we need to reset all the variables if you want to run the query again. this will do it
             //ToArray() automatically resets this
-            public ResetQuery() {
+            public ResetQuery(): void {
 
                 //go reset the iterator
                 ResetIterator(this);
@@ -643,7 +643,7 @@ module ToracTechnologies {
             public abstract AsyncSerializedFunc(): Array<KeyValuePair<string, string>>;
 
             //serializes a method to a string. So pass in x => x.Id;...will return the function in a string (serialized function)
-            public SerializeMethod(MethodToSerialize: any) {
+            public SerializeMethod(MethodToSerialize: any): string {
 
                 //if we don't have any methods, then just return a blank string
                 if (MethodToSerialize == null) {
@@ -668,7 +668,7 @@ module ToracTechnologies {
                 if (Iterator.WebWorkerBlobToCache == null) {
 
                     //let's build the function text now
-                    var FunctionScript = "self.addEventListener('message', function(e) { \n" +
+                    var FunctionScript: string = "self.addEventListener('message', function(e) { \n" +
 
                         //let's import the jlinq library
                         " importScripts('" + JLinqJsUrlPath + "') \n" +
@@ -791,7 +791,7 @@ module ToracTechnologies {
             }
 
             //make a function from a string
-            public static StringToCompiledMethod(MethodCode: string) {
+            public static StringToCompiledMethod(MethodCode: string): any {
 
                 if (MethodCode == null || MethodCode.length === 0) {
                     return null;
@@ -818,7 +818,7 @@ module ToracTechnologies {
         //#region Iterator Re-Setting
 
         //reset's the chain of expressions so we can iterate through it again if we need too
-        function ResetIterator(Expression: IChainable<any, any>) {
+        function ResetIterator(Expression: IChainable<any, any>): void {
 
             //reset this iterator
             Expression.ResetIterator();
@@ -860,7 +860,7 @@ module ToracTechnologies {
             //CollectionSource: any;
             TypeOfObject: string;
             PreviousExpression: IChainable<any, T>;
-            ResetIterator();
+            ResetIterator(): void;
             AsyncSerializedFunc(): Array<KeyValuePair<string, string>>;
 
             //holds the methods we need to serialize when we run async
@@ -881,13 +881,13 @@ module ToracTechnologies {
         export interface IDictionary<TKey, TValue> {
 
             //builds a dictionary from a Iterator / Collection
-            BuildDictionary(DictionaryDataSource: Iterator<TValue>, KeySelector: (KeyPropertySelector: TValue) => TKey);
+            BuildDictionary(DictionaryDataSource: Iterator<TValue>, KeySelector: (KeyPropertySelector: TValue) => TKey): void;
 
             //tries to find the key in the dictionary
             ContainsKey(Key: TKey): boolean;
 
             //add an item to the dictionary
-            Add(Key: TKey, Value: TValue);
+            Add(Key: TKey, Value: TValue): void;
 
             //get a dictionary item
             GetItem(Key: TKey): TValue;
@@ -899,7 +899,7 @@ module ToracTechnologies {
             Values(): Array<TValue>;
 
             //removes an item by key
-            Remove(Key: TKey);
+            Remove(Key: TKey): void;
 
             //gets the count of items in the dictionary
             Count(): number;
@@ -922,10 +922,10 @@ module ToracTechnologies {
             Values(): Array<TValue>;
 
             //removes an item
-            Remove(KeyToRemove: TValue);
+            Remove(KeyToRemove: TValue): void;
 
             //Builds a hashset from a Iterator, so if we have an iterator we don't need to materialize that AND a hashset and a key selector
-            BuildHashSet(HashSetDataSource: Iterator<TValue>);
+            BuildHashSet(HashSetDataSource: Iterator<TValue>): void;
 
             //gets the count of items in the hashset
             Count(): number;
@@ -1022,7 +1022,7 @@ module ToracTechnologies {
 
             //#region Constructor
 
-            constructor(EachItemCallBack: (TCallBackResult) => any, CollectionResultExecution: () => any) {
+            constructor(EachItemCallBack: (x: TCallBackResult) => any, CollectionResultExecution: () => any) {
 
                 //set the callback method. For each item which is found it will call the call back so the calling function can grab it
                 this.ForEachItemCallBack = EachItemCallBack;
@@ -1036,7 +1036,7 @@ module ToracTechnologies {
             //#region Properties
 
             //holds the callback to be made for each item
-            public ForEachItemCallBack: (TCallBackResult) => any;
+            public ForEachItemCallBack: (x: TCallBackResult) => any;
 
             //holds the method that will create the results.
             public ExecuteResults: () => void;
@@ -1163,7 +1163,7 @@ module ToracTechnologies {
 
             //#region Methods
 
-            public ResetIterator() {
+            public ResetIterator(): void {
                 //reset the index
                 this.Index = 0;
             }
@@ -1228,7 +1228,7 @@ module ToracTechnologies {
 
             //#region Methods
 
-            public ResetIterator() {
+            public ResetIterator(): void {
                 this.HasFirstItem = null;
             }
 
@@ -1333,7 +1333,7 @@ module ToracTechnologies {
 
             //#region Methods
 
-            public ResetIterator() {
+            public ResetIterator(): void {
                 //reset the match array
                 this.Matches = new Array<TJoinResult>();
             }
@@ -1428,7 +1428,7 @@ module ToracTechnologies {
 
             //#region Methods
 
-            public ResetIterator() {
+            public ResetIterator(): void {
             }
 
             public Next(): IteratorResult<TJoinResult> {
@@ -1460,7 +1460,7 @@ module ToracTechnologies {
                             var CurrentItem = this.OuterJoinArray[i];
 
                             //do we have a match if we try to match the properties?
-                            if (this.InnerKeyFuncSelector(NextItem.CurrentItem) == this.OuterKeyFuncSelector(CurrentItem)) {
+                            if (this.InnerKeyFuncSelector(NextItem.CurrentItem) === this.OuterKeyFuncSelector(CurrentItem)) {
 
                                 //we have a match...add it to the array
                                 Matches.push(CurrentItem);
@@ -1512,7 +1512,7 @@ module ToracTechnologies {
 
             //#region Methods
 
-            public ResetIterator() {
+            public ResetIterator(): void {
                 //nothing to reset
             }
 
@@ -1580,7 +1580,7 @@ module ToracTechnologies {
 
             //#region Methods
 
-            public ResetIterator() {
+            public ResetIterator(): void {
                 //nothing to reset
             }
 
@@ -1648,7 +1648,7 @@ module ToracTechnologies {
 
             //#region Methods
 
-            public ResetIterator() {
+            public ResetIterator(): void {
                 //nothing to reset
             }
 
@@ -1729,7 +1729,7 @@ module ToracTechnologies {
 
             //#region Methods
 
-            public ResetIterator() {
+            public ResetIterator(): void {
                 //nothing to reset
             }
 
@@ -1814,7 +1814,7 @@ module ToracTechnologies {
 
             //#region Methods
 
-            public ResetIterator() {
+            public ResetIterator(): void {
 
                 //we are going to reset the array holder which tells us this collection needs to be returned. when this is set to null, we go to the next collection and go through that guy
                 this.CollectionItemsToReturn = null;
@@ -1913,7 +1913,7 @@ module ToracTechnologies {
 
             //#region Methods
 
-            public ResetIterator() {
+            public ResetIterator(): void {
 
                 //reset the lookup
                 this.DistinctLookup = new HashSet<TPropertyType>();
@@ -1992,7 +1992,7 @@ module ToracTechnologies {
 
             //#region Methods
 
-            public ResetIterator() {
+            public ResetIterator(): void {
 
                 //reset how many we have returned
                 this.HowManyHaveWeReturned = 0;
@@ -2074,7 +2074,7 @@ module ToracTechnologies {
 
             //#region Methods
 
-            public ResetIterator() {
+            public ResetIterator(): void {
             }
 
             public Next(): IteratorResult<T> {
@@ -2143,7 +2143,7 @@ module ToracTechnologies {
 
             //#region Methods
 
-            public ResetIterator() {
+            public ResetIterator(): void {
 
                 //reset how many we have skipped
                 this.HowManyHaveWeSkipped = 0;
@@ -2217,7 +2217,7 @@ module ToracTechnologies {
 
             //#region Methods
 
-            public ResetIterator() {
+            public ResetIterator(): void {
 
                 //reset the met false condition property
                 this.ReturnRestOfElements = false;
@@ -2294,7 +2294,7 @@ module ToracTechnologies {
 
             //#region Methods
 
-            public ResetIterator() {
+            public ResetIterator(): void {
                 //nothing to reset
             }
 
@@ -2371,7 +2371,7 @@ module ToracTechnologies {
 
             //#region Methods
 
-            public ResetIterator() {
+            public ResetIterator(): void {
                 //nothing to reset
             }
 
@@ -2445,7 +2445,7 @@ module ToracTechnologies {
 
             //#region Methods
 
-            public ResetIterator() {
+            public ResetIterator(): void {
                 //nothing to reset
             }
 
@@ -2519,7 +2519,7 @@ module ToracTechnologies {
 
             //#region Methods
 
-            public ResetIterator() {
+            public ResetIterator(): void {
                 //reset the last item found
                 this.LastItemFound = null;
             }
@@ -2591,7 +2591,7 @@ module ToracTechnologies {
 
             //#region Methods
 
-            public ResetIterator() {
+            public ResetIterator(): void {
                 //reset the other iterator
                 this.ConcatThisQuery.ResetQuery();
             }
@@ -2675,7 +2675,7 @@ module ToracTechnologies {
 
             //#region Methods
 
-            public ResetIterator() {
+            public ResetIterator(): void {
 
                 //reset the other iterator
                 this.UnionThisQuery.ResetQuery();
@@ -2728,7 +2728,7 @@ module ToracTechnologies {
             public AsyncSerializedFunc(): Array<KeyValuePair<string, string>> {
 
                 //if we have a query, then we need to serialize all the parameters in the tree
-                if (this.TypeOfObject == 'UnionQueryIterator') {
+                if (this.TypeOfObject === 'UnionQueryIterator') {
 
                     //we dont have any parameters to serialize, but the query needs to be recursed and walked through to serialize the functions
                     Iterator.SerializeAsyncFuncToStringTree(this.UnionThisQuery);
@@ -2776,7 +2776,7 @@ module ToracTechnologies {
 
             //#region Methods
 
-            public ResetIterator() {
+            public ResetIterator(): void {
                 //nothing to reset
             }
 
@@ -2847,7 +2847,7 @@ module ToracTechnologies {
 
             //#region Methods
 
-            public ResetIterator() {
+            public ResetIterator(): void {
                 //set the current lowest number back to the init phase
                 this.CurrentLowestNumber = null;
             }
@@ -2917,7 +2917,7 @@ module ToracTechnologies {
 
             //#region Methods
 
-            public ResetIterator() {
+            public ResetIterator(): void {
                 //set the current largest number back to the init phase
                 this.CurrentLargestNumber = null;
             }
@@ -2987,7 +2987,7 @@ module ToracTechnologies {
 
             //#region Methods
 
-            public ResetIterator() {
+            public ResetIterator(): void {
                 //set the current tally back to 0
                 this.CurrentSumTally = 0;
             }
@@ -3061,7 +3061,7 @@ module ToracTechnologies {
 
             //#region Methods
 
-            public ResetIterator() {
+            public ResetIterator(): void {
                 //set the current tally's back to 0
                 this.CurrentSumTally = 0;
                 this.CurrentItemCountTally = 0;
@@ -3135,7 +3135,7 @@ module ToracTechnologies {
 
             //#region Methods
 
-            public ResetIterator() {
+            public ResetIterator(): void {
                 //reset the igrouping tally
             }
 
@@ -3240,7 +3240,7 @@ module ToracTechnologies {
 
             //#region IChainable Methods
 
-            public ResetIterator() {
+            public ResetIterator(): void {
 
                 //go reset the data source
                 this.DataSource = null;
@@ -3470,7 +3470,7 @@ module ToracTechnologies {
 
             //#region IChainable Methods
 
-            public ResetIterator() {
+            public ResetIterator(): void {
             }
 
             public Next(): IteratorResult<T> {
@@ -3507,7 +3507,7 @@ module ToracTechnologies {
 
             //#region Private Helper Methods
 
-            private BuildDependencyOnOrderBy(WorkingQuery: IChainable<T, T>, SortPropertySelector: (PropertyToSortOn: T) => any, WhichSortOrder: SortOrder) {
+            private BuildDependencyOnOrderBy(WorkingQuery: IChainable<T, T>, SortPropertySelector: (PropertyToSortOn: T) => any, WhichSortOrder: SortOrder): void {
 
                 //traverse down the tree until we find an "OrderByIterator"...and attach this call to the additional sort properties (this way we only sort everything once)
                 var FirstOrderByIterator: OrderByIterator<T> = <any>Iterator.ChainableTreeWalker(<any>WorkingQuery).FirstOrDefault(x => x.TypeOfObject === 'OrderByIterator');
@@ -3570,7 +3570,7 @@ module ToracTechnologies {
             }
 
             //add an item to the dictionary
-            public Add(Key: TKey, Value: TValue) {
+            public Add(Key: TKey, Value: TValue): void {
 
                 //if we don't have a type of key yet then add it
                 if (this.TypeOfTKey == null && Key != null) {
@@ -3654,13 +3654,13 @@ module ToracTechnologies {
             }
 
             //removes an item by key
-            public Remove(Key: TKey) {
+            public Remove(Key: TKey): void {
                 //delete this item
                 delete this.InternalDictionary[this.TKeyToInternalKey(Key)];
             }
 
             //Builds a dictionary from a Iterator, so if we have an iterator we don't need to materialize that AND a dictionary and a key selector
-            public BuildDictionary(DictionaryDataSource: Iterator<TValue>, KeySelector: (KeyPropertySelector: TValue) => TKey) {
+            public BuildDictionary(DictionaryDataSource: Iterator<TValue>, KeySelector: (KeyPropertySelector: TValue) => TKey): void {
 
                 //holds the data source which we will use to build the dictionary as we loop through iterator
                 var CurrentIteratorResult: IteratorResult<TValue>;
@@ -3846,14 +3846,14 @@ module ToracTechnologies {
             }
 
             //removes an item
-            public Remove(KeyToRemove: TValue) {
+            public Remove(KeyToRemove: TValue): void {
 
                 //go remove the item from the dictionary method
                 this.InternalHashSet.Remove(KeyToRemove);
             }
 
             //Builds a hashset from a Iterator, so if we have an iterator we don't need to materialize that AND a hashset and a key selector
-            public BuildHashSet(HashSetDataSource: Iterator<TValue>) {
+            public BuildHashSet(HashSetDataSource: Iterator<TValue>): void {
 
                 //go build the hashset (since this doesn't match the dictionary value, because we aren't deriving the key from the value, we will loop 1 by 1)
                 var CurrentIteratorResult: IteratorResult<TValue>;
@@ -3887,7 +3887,7 @@ module ToracTechnologies {
 
         //#region Async Tree Builders
 
-        export function RebuildTree(ParsedJsonQuery) {
+        export function RebuildTree(ParsedJsonQuery): Iterator<any> {
 
             //now we need to copy all the base methods for each level of the tree
             //flatten the tree
@@ -3903,13 +3903,13 @@ module ToracTechnologies {
                 var Node = FlatTree[j];
 
                 //is this a queryable?
-                if (Node.TypeOfObject == 'Queryable') {
+                if (Node.TypeOfObject === 'Queryable') {
 
                     //set this queryable
                     Queryable = new ToracTechnologies.JLinq.Queryable((<ToracTechnologies.JLinq.Queryable<any>>Node).CollectionSource);
                     break;
                 }
-                else if (Node.PreviousExpression != null && Node.PreviousExpression.TypeOfObject == 'Queryable') {
+                else if (Node.PreviousExpression != null && Node.PreviousExpression.TypeOfObject === 'Queryable') {
 
                     //set this queryable
                     Queryable = new ToracTechnologies.JLinq.Queryable((<ToracTechnologies.JLinq.Queryable<any>>Node.PreviousExpression).CollectionSource);
@@ -3941,7 +3941,7 @@ module ToracTechnologies {
             return Queryable;
         }
 
-        export function RebuildSingleTreeNode(CurrentLevelOfTree, Queryable: ToracTechnologies.JLinq.Iterator<any>): any {
+        export function RebuildSingleTreeNode(CurrentLevelOfTree: IChainable<any, any>, Queryable: ToracTechnologies.JLinq.Iterator<any>): any {
 
             //order by handles this guy
             if (CurrentLevelOfTree.TypeOfObject === 'OrderThenByIterator') {
@@ -3949,35 +3949,35 @@ module ToracTechnologies {
             }
 
             if (CurrentLevelOfTree.TypeOfObject === 'WhereIterator') {
-                return Queryable.Where(ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(x => x.Key == 'WhereClausePredicate').Value));
+                return Queryable.Where(ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(x => x.Key === 'WhereClausePredicate').Value));
             }
 
             if (CurrentLevelOfTree.TypeOfObject === 'First') {
-                return Queryable.First(ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(x => x.Key == 'WhereClausePredicate').Value));
+                return Queryable.First(ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(x => x.Key === 'WhereClausePredicate').Value));
             }
 
             if (CurrentLevelOfTree.TypeOfObject === 'FirstOrDefaultIterator') {
-                return Queryable.FirstOrDefault(ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(x => x.Key == 'WhereClausePredicate').Value));
+                return Queryable.FirstOrDefault(ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(x => x.Key === 'WhereClausePredicate').Value));
             }
 
             if (CurrentLevelOfTree.TypeOfObject === 'SingleIterator') {
-                return Queryable.Single(ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(x => x.Key == 'WhereClausePredicate').Value));
+                return Queryable.Single(ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(x => x.Key === 'WhereClausePredicate').Value));
             }
 
             if (CurrentLevelOfTree.TypeOfObject === 'SingleOrDefaultIterator') {
-                return Queryable.Single(ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(x => x.Key == 'WhereClausePredicate').Value));
+                return Queryable.Single(ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(x => x.Key === 'WhereClausePredicate').Value));
             }
 
             if (CurrentLevelOfTree.TypeOfObject === 'SelectIterator') {
-                return Queryable.Select(ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(x => x.Key == 'SelectPredicate').Value));
+                return Queryable.Select(ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(x => x.Key === 'SelectPredicate').Value));
             }
 
             if (CurrentLevelOfTree.TypeOfObject === 'SelectManyIterator') {
-                return Queryable.SelectMany(ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(x => x.Key == 'CollectionPropertySelector').Value));
+                return Queryable.SelectMany(ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(x => x.Key === 'CollectionPropertySelector').Value));
             }
 
             if (CurrentLevelOfTree.TypeOfObject === 'DistinctIterator') {
-                return Queryable.Distinct(ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(x => x.Key == 'PropertySelector').Value));
+                return Queryable.Distinct(ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(x => x.Key === 'PropertySelector').Value));
             }
 
             if (CurrentLevelOfTree.TypeOfObject === 'TakeIterator') {
@@ -3985,7 +3985,7 @@ module ToracTechnologies {
             }
 
             if (CurrentLevelOfTree.TypeOfObject === 'TakeWhileIterator') {
-                return Queryable.TakeWhile(ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(x => x.Key == 'PredicateToTakeWhile').Value));
+                return Queryable.TakeWhile(ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(x => x.Key === 'PredicateToTakeWhile').Value));
             }
 
             if (CurrentLevelOfTree.TypeOfObject === 'SkipIterator') {
@@ -3993,27 +3993,27 @@ module ToracTechnologies {
             }
 
             if (CurrentLevelOfTree.TypeOfObject === 'SkipWhileIterator') {
-                return Queryable.SkipWhile(ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(x => x.Key == 'PredicateSkipUntil').Value));
+                return Queryable.SkipWhile(ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(x => x.Key === 'PredicateSkipUntil').Value));
             }
 
             if (CurrentLevelOfTree.TypeOfObject === 'AggregateIterator') {
-                return Queryable.Aggregate(ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(x => x.Key == 'PredicateAggregate').Value));
+                return Queryable.Aggregate(ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(x => x.Key === 'PredicateAggregate').Value));
             }
 
             if (CurrentLevelOfTree.TypeOfObject === 'AllIterator') {
-                return Queryable.All(ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(x => x.Key == 'WhereClausePredicate').Value));
+                return Queryable.All(ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(x => x.Key === 'WhereClausePredicate').Value));
             }
 
             if (CurrentLevelOfTree.TypeOfObject === 'AnyIterator') {
-                return Queryable.Any(ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(x => x.Key == 'WhereClausePredicate').Value));
+                return Queryable.Any(ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(x => x.Key === 'WhereClausePredicate').Value));
             }
 
             if (CurrentLevelOfTree.TypeOfObject === 'LastIterator') {
-                return Queryable.Last(ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(x => x.Key == 'WhereClausePredicate').Value));
+                return Queryable.Last(ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(x => x.Key === 'WhereClausePredicate').Value));
             }
 
             if (CurrentLevelOfTree.TypeOfObject === 'CountIterator') {
-                return Queryable.Count(ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(x => x.Key == 'WhereClausePredicate').Value));
+                return Queryable.Count(ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(x => x.Key === 'WhereClausePredicate').Value));
             }
 
             if (CurrentLevelOfTree.TypeOfObject === 'MinIterator') {
@@ -4033,7 +4033,7 @@ module ToracTechnologies {
             }
 
             if (CurrentLevelOfTree.TypeOfObject === 'GroupIterator') {
-                return Queryable.GroupBy(ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(x => x.Key == 'GroupBySelector').Value));
+                return Queryable.GroupBy(ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(x => x.Key === 'GroupBySelector').Value));
             }
 
             if (CurrentLevelOfTree.TypeOfObject === 'OrderByIterator') {
@@ -4045,7 +4045,7 @@ module ToracTechnologies {
                 var CastedOrderBy = (<ToracTechnologies.JLinq.OrderByIterator<any>>CurrentLevelOfTree);
 
                 //loop through the then by settings (if we have some)
-                var ThenBySettings = CastedOrderBy.AsyncSerialized.FirstOrDefault(x => x.Key == 'ThenBySortPropertySelectors');
+                var ThenBySettings = CastedOrderBy.AsyncSerialized.FirstOrDefault(x => x.Key === 'ThenBySortPropertySelectors');
 
                 //do we have any settings to serialize back? (for the then by settings)?
                 if (ThenBySettings != null) {
@@ -4066,7 +4066,7 @@ module ToracTechnologies {
                 }
 
                 //return a new order by iterator
-                return new OrderByIterator(Queryable, CastedOrderBy.SortDirection, ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(x => x.Key == 'SortPropertySelector').Value), ThenByToSet);
+                return new OrderByIterator(Queryable, CastedOrderBy.SortDirection, ToracTechnologies.JLinq.Iterator.StringToCompiledMethod(CurrentLevelOfTree.AsyncSerialized.First(x => x.Key === 'SortPropertySelector').Value), ThenByToSet);
             }
 
             if (CurrentLevelOfTree.TypeOfObject === 'JoinIterator') {
