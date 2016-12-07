@@ -234,6 +234,7 @@
     <Content Include="Scripts\unittestframework.js.map" />
   </ItemGroup>
   <ItemGroup>
+    <None Include=".travis.yml" />
     <TypeScriptCompile Include="Scripts\ConfigForWorkingAsync.ts" />
     <TypeScriptCompile Include="Scripts\UnitTestsAsync.ts" />
     <TypeScriptCompile Include="Scripts\JLinq.ts" />
