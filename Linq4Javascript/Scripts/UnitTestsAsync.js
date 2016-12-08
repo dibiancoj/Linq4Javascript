@@ -23,7 +23,7 @@ asyncTest("JLinq.AsQueryable.Test.1", function () {
         start();
     };
     //grab only 2 items so it's easier to test
-    var shorterList = UnitTestFramework._Array.Where(function (x) { return x.Id == 1 || x.Id == 2; }).ToArray();
+    var shorterList = UnitTestFramework._MutableArrayTest.Where(function (x) { return x.Id == 1 || x.Id == 2; }).ToArray();
     //test as queryable
     var asQueryableResults = shorterList.AsQueryable();
     //go run the async operation
@@ -43,7 +43,7 @@ asyncTest("JLinq.AsQueryable.FallBack.Test.1", function () {
         start();
     };
     //grab only 2 items so it's easier to test
-    var shorterList = UnitTestFramework._Array.Where(function (x) { return x.Id == 1 || x.Id == 2; }).ToArray();
+    var shorterList = UnitTestFramework._MutableArrayTest.Where(function (x) { return x.Id == 1 || x.Id == 2; }).ToArray();
     //test as queryable
     var asQueryableResults = shorterList.AsQueryable();
     //go run the async operation
@@ -54,7 +54,7 @@ asyncTest("JLinq.AsQueryable.FallBack.Test.1", function () {
 asyncTest('JLinq.SelectMany.Test.1', function () {
     expect(7);
     var callBack = function (Result) {
-        //****To-UnitTestFramework._Array Test**** (we * 2 because we always set in our test...2 items per collection)
+        //****To-UnitTestFramework._MutableArrayTest Test**** (we * 2 because we always set in our test...2 items per collection)
         equal(Result.length, howManyItemsShouldWeHave);
         equal(Result[0], 2);
         equal(Result[1], 102);
@@ -67,16 +67,16 @@ asyncTest('JLinq.SelectMany.Test.1', function () {
         start();
     };
     //how many items we should have
-    var howManyItemsShouldWeHave = (UnitTestFramework._Array.length - 2) * 2;
+    var howManyItemsShouldWeHave = (UnitTestFramework._MutableArrayTest.length - 2) * 2;
     //let's go grab the query and throw it into a variable
-    var QueryToRun = UnitTestFramework._Array.SelectMany(function (x) { return x.lst; });
+    var QueryToRun = UnitTestFramework._MutableArrayTest.SelectMany(function (x) { return x.lst; });
     //go run the async operation
     QueryToRun.ToArrayAsync(callBack, ErrorCallBack('SelectMany.Test.1'), JLinqUrlPath);
 });
 asyncTest('JLinq.SelectMany.FallBack.Test.1', function () {
     expect(7);
     var callBack = function (Result) {
-        //****To-UnitTestFramework._Array Test**** (we * 2 because we always set in our test...2 items per collection)
+        //****To-UnitTestFramework._MutableArrayTest Test**** (we * 2 because we always set in our test...2 items per collection)
         equal(Result.length, howManyItemsShouldWeHave);
         equal(Result[0], 2);
         equal(Result[1], 102);
@@ -89,16 +89,16 @@ asyncTest('JLinq.SelectMany.FallBack.Test.1', function () {
         start();
     };
     //how many items we should have
-    var howManyItemsShouldWeHave = (UnitTestFramework._Array.length - 2) * 2;
+    var howManyItemsShouldWeHave = (UnitTestFramework._MutableArrayTest.length - 2) * 2;
     //let's go grab the query and throw it into a variable
-    var QueryToRun = UnitTestFramework._Array.SelectMany(function (x) { return x.lst; });
+    var QueryToRun = UnitTestFramework._MutableArrayTest.SelectMany(function (x) { return x.lst; });
     //go run the async operation
     QueryToRun.ToArrayAsync(callBack, ErrorCallBack('SelectMany.FallBack.Test.1'), JLinqUrlPath, false);
 });
 asyncTest('JLinq.SelectMany.Test.2', function () {
     expect(3);
     var callBack = function (Result) {
-        //****To-UnitTestFramework._Array Test**** (we * 2 because we always set in our test...2 items per collection)
+        //****To-UnitTestFramework._MutableArrayTest Test**** (we * 2 because we always set in our test...2 items per collection)
         equal(Result.length, 2);
         //check the actual values
         equal(Result[0], 4);
@@ -109,14 +109,14 @@ asyncTest('JLinq.SelectMany.Test.2', function () {
     };
     //this is a select many with a where before it
     //go build the query
-    var QueryToRun = UnitTestFramework._Array.Where(function (x) { return x.Id === 4; }).SelectMany(function (x) { return x.lst; });
+    var QueryToRun = UnitTestFramework._MutableArrayTest.Where(function (x) { return x.Id === 4; }).SelectMany(function (x) { return x.lst; });
     //go run the async operation
     QueryToRun.ToArrayAsync(callBack, ErrorCallBack('SelectMany.Test.2'), JLinqUrlPath);
 });
 asyncTest('JLinq.SelectMany.Test.3', function () {
     expect(3);
     var callBack = function (Result) {
-        //****To-UnitTestFramework._Array Test**** (we * 2 because we always set in our test...2 items per collection)
+        //****To-UnitTestFramework._MutableArrayTest Test**** (we * 2 because we always set in our test...2 items per collection)
         equal(Result.length, 2);
         equal(Result[0].mapId, 4);
         equal(Result[1].mapId, 104);
@@ -126,7 +126,7 @@ asyncTest('JLinq.SelectMany.Test.3', function () {
     };
     //this is a select many with a where before it and then a select after it
     //go build the query
-    var QueryToRun = UnitTestFramework._Array.Where(function (x) { return x.Id === 4; }).SelectMany(function (x) { return x.lst; }).Select(function (x) { return { mapId: x }; });
+    var QueryToRun = UnitTestFramework._MutableArrayTest.Where(function (x) { return x.Id === 4; }).SelectMany(function (x) { return x.lst; }).Select(function (x) { return { mapId: x }; });
     //go run the async operation
     QueryToRun.ToArrayAsync(callBack, ErrorCallBack('SelectMany.Test.3'), JLinqUrlPath);
 });
@@ -135,35 +135,35 @@ asyncTest('JLinq.SelectMany.Test.3', function () {
 asyncTest('JLinq.Where.Test.1', function () {
     expect(3);
     var callBack = function (Result) {
-        //****To-UnitTestFramework._Array Test****
+        //****To-UnitTestFramework._MutableArrayTest Test****
         equal(Result[0].Id, 1);
         equal(Result[0].Txt, '1');
         equal(Result.length, 1);
         start();
     };
     //go build the query
-    var QueryToRun = UnitTestFramework._Array.Where(function (x) { return x.Id === 1; });
+    var QueryToRun = UnitTestFramework._MutableArrayTest.Where(function (x) { return x.Id === 1; });
     //go run the async operation
     QueryToRun.ToArrayAsync(callBack, ErrorCallBack('Where.Test.1'), JLinqUrlPath);
 });
 asyncTest('JLinq.Where.FallBack.Test.1', function () {
     expect(3);
     var callBack = function (Result) {
-        //****To-UnitTestFramework._Array Test****
+        //****To-UnitTestFramework._MutableArrayTest Test****
         equal(Result[0].Id, 1);
         equal(Result[0].Txt, '1');
         equal(Result.length, 1);
         start();
     };
     //go build the query
-    var QueryToRun = UnitTestFramework._Array.Where(function (x) { return x.Id === 1; });
+    var QueryToRun = UnitTestFramework._MutableArrayTest.Where(function (x) { return x.Id === 1; });
     //go run the async operation
     QueryToRun.ToArrayAsync(callBack, ErrorCallBack('Where.FallBack.Test.1'), JLinqUrlPath, false);
 });
 asyncTest('JLinq.Where.Test.2', function () {
     expect(5);
     var callBack = function (Result) {
-        //****To-UnitTestFramework._Array Test****
+        //****To-UnitTestFramework._MutableArrayTest Test****
         equal(Result[0].Id, 1);
         equal(Result[0].Txt, '1');
         equal(Result[1].Id, 2);
@@ -172,7 +172,7 @@ asyncTest('JLinq.Where.Test.2', function () {
         start();
     };
     //go build the query
-    var QueryToRun = UnitTestFramework._Array.Where(function (x) { return x.Id === 1 || x.Id === 2; });
+    var QueryToRun = UnitTestFramework._MutableArrayTest.Where(function (x) { return x.Id === 1 || x.Id === 2; });
     //go run the async operation
     QueryToRun.ToArrayAsync(callBack, ErrorCallBack('Where.Test.2'), JLinqUrlPath);
 });
@@ -185,7 +185,7 @@ asyncTest('JLinq.Where.ChainTest.1', function () {
         start();
     };
     //go build the query
-    var QueryToRun = UnitTestFramework._Array.Where(function (x) { return x.Id === 1 || x.Id === 2; }).Take(1);
+    var QueryToRun = UnitTestFramework._MutableArrayTest.Where(function (x) { return x.Id === 1 || x.Id === 2; }).Take(1);
     //go run the async operation
     QueryToRun.ToArrayAsync(callBack, ErrorCallBack('Where.ChainTest.1'), JLinqUrlPath);
 });
@@ -200,7 +200,7 @@ asyncTest('JLinq.Where.ChainTest.2', function () {
         start();
     };
     //test the where clause when it's somewhere in the chain after the first call off of array
-    var QueryToRun = UnitTestFramework._Array.Take(5).Where(function (x) { return x.Id === 1 || x.Id === 2; });
+    var QueryToRun = UnitTestFramework._MutableArrayTest.Take(5).Where(function (x) { return x.Id === 1 || x.Id === 2; });
     //go run the async operation
     QueryToRun.ToArrayAsync(callBack, ErrorCallBack('Where.ChainTest.2'), JLinqUrlPath);
 });
@@ -210,7 +210,7 @@ asyncTest('JLinq.Where.ChainTest.2', function () {
 asyncTest('JLinq.Concat.TestOffOfQueryWithArray.1', function () {
     expect(7);
     var callBack = function (Result) {
-        //****To-UnitTestFramework._Array Test****
+        //****To-UnitTestFramework._MutableArrayTest Test****
         equal(Result[0].Id, 1);
         equal(Result[0].Txt, '1');
         equal(Result[1].Id, 0);
@@ -221,14 +221,14 @@ asyncTest('JLinq.Concat.TestOffOfQueryWithArray.1', function () {
         start();
     };
     //go build the query
-    var QueryToRun = UnitTestFramework._Array.Where(function (x) { return x.Id === 1; }).Concat(UnitTestFramework.BuildArray(2));
+    var QueryToRun = UnitTestFramework._MutableArrayTest.Where(function (x) { return x.Id === 1; }).Concat(UnitTestFramework.BuildArray(2));
     //go run the async operation
     QueryToRun.ToArrayAsync(callBack, ErrorCallBack('Concat.TestOffOfQueryWithArray.1'), JLinqUrlPath);
 });
 asyncTest('JLinq.Concat.FallBack.TestOffOfQueryWithArray.1', function () {
     expect(7);
     var callBack = function (Result) {
-        //****To-UnitTestFramework._Array Test****
+        //****To-UnitTestFramework._MutableArrayTest Test****
         equal(Result[0].Id, 1);
         equal(Result[0].Txt, '1');
         equal(Result[1].Id, 0);
@@ -239,7 +239,7 @@ asyncTest('JLinq.Concat.FallBack.TestOffOfQueryWithArray.1', function () {
         start();
     };
     //go build the query
-    var QueryToRun = UnitTestFramework._Array.Where(function (x) { return x.Id === 1; }).Concat(UnitTestFramework.BuildArray(2));
+    var QueryToRun = UnitTestFramework._MutableArrayTest.Where(function (x) { return x.Id === 1; }).Concat(UnitTestFramework.BuildArray(2));
     //go run the async operation
     QueryToRun.ToArrayAsync(callBack, ErrorCallBack('Concat.FallBack.TestOffOfQueryWithArray.1'), JLinqUrlPath, false);
 });
@@ -248,7 +248,7 @@ asyncTest('JLinq.Concat.FallBack.TestOffOfQueryWithArray.1', function () {
 asyncTest('JLinq.Concat.TestOffOfArrayWithArray.1', function () {
     expect(15);
     var callBack = function (Result) {
-        //****To-UnitTestFramework._Array Test****
+        //****To-UnitTestFramework._MutableArrayTest Test****
         for (var i = 0; i < Result.length; i++) {
             //since we are mergeing 2 arrays...when we get to the 2nd array (i>=5...then we subtract 5 to get back to 0)
             var IntTest = i >= 5 ? i - 5 : i;
@@ -259,14 +259,14 @@ asyncTest('JLinq.Concat.TestOffOfArrayWithArray.1', function () {
         start();
     };
     //go build the query
-    var QueryToRun = UnitTestFramework._Array.Concat(UnitTestFramework.BuildArray(2));
+    var QueryToRun = UnitTestFramework._MutableArrayTest.Concat(UnitTestFramework.BuildArray(2));
     //go run the async operation
     QueryToRun.ToArrayAsync(callBack, ErrorCallBack('Concat.TestOffOfArrayWithArray.1'), JLinqUrlPath);
 });
 asyncTest('JLinq.Concat.FallBack.TestOffOfArrayWithArray.1', function () {
     expect(15);
     var callBack = function (Result) {
-        //****To-UnitTestFramework._Array Test****
+        //****To-UnitTestFramework._MutableArrayTest Test****
         for (var i = 0; i < Result.length; i++) {
             //since we are mergeing 2 arrays...when we get to the 2nd array (i>=5...then we subtract 5 to get back to 0)
             var IntTest = i >= 5 ? i - 5 : i;
@@ -277,7 +277,7 @@ asyncTest('JLinq.Concat.FallBack.TestOffOfArrayWithArray.1', function () {
         start();
     };
     //go build the query
-    var QueryToRun = UnitTestFramework._Array.Concat(UnitTestFramework.BuildArray(2));
+    var QueryToRun = UnitTestFramework._MutableArrayTest.Concat(UnitTestFramework.BuildArray(2));
     //go run the async operation
     QueryToRun.ToArrayAsync(callBack, ErrorCallBack('Concat.FallBack.TestOffOfArrayWithArray.1'), JLinqUrlPath, false);
 });
@@ -288,7 +288,7 @@ asyncTest('JLinq.Concat.FallBack.TestOffOfArrayWithArray.1', function () {
 asyncTest('JLinq.Union.TestOffOfQueryWithArray.1', function () {
     expect(5);
     var callBack = function (Result) {
-        //****To-UnitTestFramework._Array Test****
+        //****To-UnitTestFramework._MutableArrayTest Test****
         equal(Result[0], 1);
         equal(Result[0], '1');
         equal(Result[1], 0);
@@ -297,14 +297,14 @@ asyncTest('JLinq.Union.TestOffOfQueryWithArray.1', function () {
         start();
     };
     //go build the query
-    var QueryToRun = UnitTestFramework._Array.Where(function (x) { return x.Id === 1; }).Select(function (x) { return x.Id; }).Union(UnitTestFramework.BuildArray(2).Select(function (x) { return x.Id; }).ToArray());
+    var QueryToRun = UnitTestFramework._MutableArrayTest.Where(function (x) { return x.Id === 1; }).Select(function (x) { return x.Id; }).Union(UnitTestFramework.BuildArray(2).Select(function (x) { return x.Id; }).ToArray());
     //go run the async operation
     QueryToRun.ToArrayAsync(callBack, ErrorCallBack('Union.TestOffOfQueryWithArray.1'), JLinqUrlPath);
 });
 asyncTest('JLinq.Union.FallBack.TestOffOfQueryWithArray.1', function () {
     expect(5);
     var callBack = function (Result) {
-        //****To-UnitTestFramework._Array Test****
+        //****To-UnitTestFramework._MutableArrayTest Test****
         equal(Result[0], 1);
         equal(Result[0], '1');
         equal(Result[1], 0);
@@ -313,7 +313,7 @@ asyncTest('JLinq.Union.FallBack.TestOffOfQueryWithArray.1', function () {
         start();
     };
     //go build the query
-    var QueryToRun = UnitTestFramework._Array.Where(function (x) { return x.Id === 1; }).Select(function (x) { return x.Id; }).Union(UnitTestFramework.BuildArray(2).Select(function (x) { return x.Id; }).ToArray());
+    var QueryToRun = UnitTestFramework._MutableArrayTest.Where(function (x) { return x.Id === 1; }).Select(function (x) { return x.Id; }).Union(UnitTestFramework.BuildArray(2).Select(function (x) { return x.Id; }).ToArray());
     //go run the async operation
     QueryToRun.ToArrayAsync(callBack, ErrorCallBack('Union.FallBack.TestOffOfQueryWithArray.1'), JLinqUrlPath, false);
 });
@@ -322,7 +322,7 @@ asyncTest('JLinq.Union.FallBack.TestOffOfQueryWithArray.1', function () {
 asyncTest('JLinq.Union.TestOffOfArrayWithArray.1', function () {
     expect(6);
     var callBack = function (Result) {
-        //****To-UnitTestFramework._Array Test****
+        //****To-UnitTestFramework._MutableArrayTest Test****
         for (var i = 0; i < Result.length; i++) {
             equal(Result[i], i);
         }
@@ -330,14 +330,14 @@ asyncTest('JLinq.Union.TestOffOfArrayWithArray.1', function () {
         start();
     };
     //go build the query
-    var QueryToRun = UnitTestFramework._Array.Select(function (x) { return x.Id; }).ToArray().Union(UnitTestFramework.BuildArray(2).Select(function (x) { return x.Id; }).ToArray());
+    var QueryToRun = UnitTestFramework._MutableArrayTest.Select(function (x) { return x.Id; }).ToArray().Union(UnitTestFramework.BuildArray(2).Select(function (x) { return x.Id; }).ToArray());
     //go run the async operation
     QueryToRun.ToArrayAsync(callBack, ErrorCallBack('Union.TestOffOfArrayWithArray.1'), JLinqUrlPath);
 });
 asyncTest('JLinq.Union.FallBack.TestOffOfArrayWithArray.1', function () {
     expect(6);
     var callBack = function (Result) {
-        //****To-UnitTestFramework._Array Test****
+        //****To-UnitTestFramework._MutableArrayTest Test****
         for (var i = 0; i < Result.length; i++) {
             equal(Result[i], i);
         }
@@ -345,7 +345,7 @@ asyncTest('JLinq.Union.FallBack.TestOffOfArrayWithArray.1', function () {
         start();
     };
     //go build the query
-    var QueryToRun = UnitTestFramework._Array.Select(function (x) { return x.Id; }).ToArray().Union(UnitTestFramework.BuildArray(2).Select(function (x) { return x.Id; }).ToArray());
+    var QueryToRun = UnitTestFramework._MutableArrayTest.Select(function (x) { return x.Id; }).ToArray().Union(UnitTestFramework.BuildArray(2).Select(function (x) { return x.Id; }).ToArray());
     //go run the async operation
     QueryToRun.ToArrayAsync(callBack, ErrorCallBack('Union.FallBack.TestOffOfArrayWithArray.1'), JLinqUrlPath, false);
 });
@@ -355,7 +355,7 @@ asyncTest('JLinq.Union.FallBack.TestOffOfArrayWithArray.1', function () {
 asyncTest('JLinq.Take.Test.1', function () {
     expect(5);
     var callBack = function (Result) {
-        //****To-UnitTestFramework._Array Test****
+        //****To-UnitTestFramework._MutableArrayTest Test****
         equal(Result.length, 2);
         equal(Result[0].Id, 0);
         equal(Result[0].Txt, '0');
@@ -364,7 +364,7 @@ asyncTest('JLinq.Take.Test.1', function () {
         start();
     };
     //go build the query
-    var QueryToRun = UnitTestFramework._Array.Take(2);
+    var QueryToRun = UnitTestFramework._MutableArrayTest.Take(2);
     //go run the async operation
     QueryToRun.ToArrayAsync(callBack, ErrorCallBack('Take.Test.1'), JLinqUrlPath);
 });
@@ -379,7 +379,7 @@ asyncTest('JLinq.Take.ChainTest.1', function () {
         start();
     };
     //go materialize the results into an array
-    var QueryToRun = UnitTestFramework._Array.Where(function (x) { return x.Id >= 2; }).Take(2);
+    var QueryToRun = UnitTestFramework._MutableArrayTest.Where(function (x) { return x.Id >= 2; }).Take(2);
     //go run the async operation
     QueryToRun.ToArrayAsync(callBack, ErrorCallBack('Take.ChainTest.1'), JLinqUrlPath);
 });
@@ -394,7 +394,7 @@ asyncTest('JLinq.Take.FallBack.ChainTest.1', function () {
         start();
     };
     //go materialize the results into an array
-    var QueryToRun = UnitTestFramework._Array.Where(function (x) { return x.Id >= 2; }).Take(2);
+    var QueryToRun = UnitTestFramework._MutableArrayTest.Where(function (x) { return x.Id >= 2; }).Take(2);
     //go run the async operation
     QueryToRun.ToArrayAsync(callBack, ErrorCallBack('Take.FallBack.ChainTest.1'), JLinqUrlPath, false);
 });
@@ -404,7 +404,7 @@ asyncTest('JLinq.TakeWhile.Test.1', function () {
     //Remember...will return all the elements before the test no longer passes. "Where" will return everything that meet the condition. TakeWhile will exit the routine wasn't it doesnt pass the expression
     expect(5);
     var callBack = function (Result) {
-        //****To-UnitTestFramework._Array Test****
+        //****To-UnitTestFramework._MutableArrayTest Test****
         equal(Result.length, 4);
         //check the results
         equal(Result[0], 3);
@@ -422,7 +422,7 @@ asyncTest('JLinq.TakeWhile.ChainTest.1', function () {
     //Remember...will return all the elements before the test no longer passes. "Where" will return everything that meet the condition. TakeWhile will exit the routine wasn't it doesnt pass the expression
     expect(5);
     var callBack = function (Result) {
-        //****To-UnitTestFramework._Array Test****
+        //****To-UnitTestFramework._MutableArrayTest Test****
         equal(Result.length, 4);
         //check the results
         equal(Result[0], 3);
@@ -440,7 +440,7 @@ asyncTest('JLinq.TakeWhile.FallBack.ChainTest.1', function () {
     //Remember...will return all the elements before the test no longer passes. "Where" will return everything that meet the condition. TakeWhile will exit the routine wasn't it doesnt pass the expression
     expect(5);
     var callBack = function (Result) {
-        //****To-UnitTestFramework._Array Test****
+        //****To-UnitTestFramework._MutableArrayTest Test****
         equal(Result.length, 4);
         //check the results
         equal(Result[0], 3);
@@ -459,7 +459,7 @@ asyncTest('JLinq.TakeWhile.FallBack.ChainTest.1', function () {
 asyncTest('JLinq.Skip.Test.1', function () {
     expect(9);
     var callBack = function (Result) {
-        //****To-UnitTestFramework._Array Test****
+        //****To-UnitTestFramework._MutableArrayTest Test****
         equal(Result.length, 4);
         equal(Result[0].Id, 1);
         equal(Result[0].Txt, '1');
@@ -472,7 +472,7 @@ asyncTest('JLinq.Skip.Test.1', function () {
         start();
     };
     //go build the query
-    var QueryToRun = UnitTestFramework._Array.Skip(1);
+    var QueryToRun = UnitTestFramework._MutableArrayTest.Skip(1);
     //go run the async operation
     QueryToRun.ToArrayAsync(callBack, ErrorCallBack('Skip.Test.1'), JLinqUrlPath);
 });
@@ -487,7 +487,7 @@ asyncTest('JLinq.Skip.ChainTest.1', function () {
         start();
     };
     //go materialize the results into an array
-    var QueryToRun = UnitTestFramework._Array.Where(function (x) { return x.Id >= 2; }).Skip(1);
+    var QueryToRun = UnitTestFramework._MutableArrayTest.Where(function (x) { return x.Id >= 2; }).Skip(1);
     //go run the async operation
     QueryToRun.ToArrayAsync(callBack, ErrorCallBack('Skip.ChainTest.1'), JLinqUrlPath);
 });
@@ -502,7 +502,7 @@ asyncTest('JLinq.Skip.FallBack.ChainTest.1', function () {
         start();
     };
     //go materialize the results into an array
-    var QueryToRun = UnitTestFramework._Array.Where(function (x) { return x.Id >= 2; }).Skip(1);
+    var QueryToRun = UnitTestFramework._MutableArrayTest.Where(function (x) { return x.Id >= 2; }).Skip(1);
     //go run the async operation
     QueryToRun.ToArrayAsync(callBack, ErrorCallBack('Skip.FallBack.ChainTest.1'), JLinqUrlPath, false);
 });
@@ -512,7 +512,7 @@ asyncTest('JLinq.SkipWhile.Test.1', function () {
     //Remember...after predicate is met, it will return everything after that
     expect(5);
     var callBack = function (Result) {
-        //****To-UnitTestFramework._Array Test****
+        //****To-UnitTestFramework._MutableArrayTest Test****
         equal(Result.length, 4);
         //check the results
         equal(Result[0], 1);
@@ -530,7 +530,7 @@ asyncTest('JLinq.SkipWhile.ChainTest.1', function () {
     //Remember...after predicate is met, it will return everything after that
     expect(5);
     var callBack = function (Result) {
-        //****To-UnitTestFramework._Array Test****
+        //****To-UnitTestFramework._MutableArrayTest Test****
         equal(Result.length, 4);
         //check the results
         equal(Result[0], 1);
@@ -548,7 +548,7 @@ asyncTest('JLinq.SkipWhile.FallBack.ChainTest.1', function () {
     //Remember...after predicate is met, it will return everything after that
     expect(5);
     var callBack = function (Result) {
-        //****To-UnitTestFramework._Array Test****
+        //****To-UnitTestFramework._MutableArrayTest Test****
         equal(Result.length, 4);
         //check the results
         equal(Result[0], 1);
@@ -582,7 +582,7 @@ asyncTest('JLinq.Paginate.Test.1', function () {
         start();
     };
     //go build the query make sure we have all the records
-    var QueryToRun = UnitTestFramework._Array.Paginate(1, 100);
+    var QueryToRun = UnitTestFramework._MutableArrayTest.Paginate(1, 100);
     //go run the async operation
     QueryToRun.ToArrayAsync(callBack, ErrorCallBack('Paginate.Test.1'), JLinqUrlPath);
 });
@@ -604,7 +604,7 @@ asyncTest('JLinq.Paginate.Test.1', function () {
     //how many records per page
     var howManyRecordsPerPage = 3;
     //go build the query make sure we have all the records
-    var QueryToRun = UnitTestFramework._Array.Paginate(1, howManyRecordsPerPage);
+    var QueryToRun = UnitTestFramework._MutableArrayTest.Paginate(1, howManyRecordsPerPage);
     //go run the async operation
     QueryToRun.ToArrayAsync(callBack, ErrorCallBack('Paginate.Test.2'), JLinqUrlPath);
 });
@@ -622,7 +622,7 @@ asyncTest('JLinq.Paginate.Test.3', function () {
     //how many records per page
     var howManyRecordsPerPage = 3;
     //go build the query make sure we have all the records
-    var QueryToRun = UnitTestFramework._Array.Paginate(2, howManyRecordsPerPage);
+    var QueryToRun = UnitTestFramework._MutableArrayTest.Paginate(2, howManyRecordsPerPage);
     //go run the async operation
     QueryToRun.ToArrayAsync(callBack, ErrorCallBack('Paginate.Test.3'), JLinqUrlPath);
 });
@@ -640,7 +640,7 @@ asyncTest('JLinq.Paginate.ChainTest.1', function () {
         start();
     };
     //go build the query make sure we have all the records
-    var QueryToRun = UnitTestFramework._Array.Where(function (x) { return x.Id > 1; }).Paginate(1, 100);
+    var QueryToRun = UnitTestFramework._MutableArrayTest.Where(function (x) { return x.Id > 1; }).Paginate(1, 100);
     //go run the async operation
     QueryToRun.ToArrayAsync(callBack, ErrorCallBack('Paginate.ChainTest.1'), JLinqUrlPath);
 });
@@ -658,7 +658,7 @@ asyncTest('JLinq.Paginate.FallBack.ChainTest.1', function () {
         start();
     };
     //go build the query make sure we have all the records
-    var QueryToRun = UnitTestFramework._Array.Where(function (x) { return x.Id > 1; }).Paginate(1, 100);
+    var QueryToRun = UnitTestFramework._MutableArrayTest.Where(function (x) { return x.Id > 1; }).Paginate(1, 100);
     //go run the async operation
     QueryToRun.ToArrayAsync(callBack, ErrorCallBack('Paginate.FallBack.ChainTest.1'), JLinqUrlPath, false);
 });
@@ -667,7 +667,7 @@ asyncTest('JLinq.Paginate.FallBack.ChainTest.1', function () {
 asyncTest('JLinq.Select.Test.1', function () {
     expect(5);
     var callBack = function (Result) {
-        //****To-UnitTestFramework._Array Test****
+        //****To-UnitTestFramework._MutableArrayTest Test****
         equal(1, Result[1].newId);
         equal(2, Result[1].newTxt);
         //make sure the old properties aren't there
@@ -677,14 +677,14 @@ asyncTest('JLinq.Select.Test.1', function () {
         start();
     };
     //go build the query
-    var QueryToRun = UnitTestFramework._Array.Select(function (x) { return { newId: x.Id, newTxt: x.Id + 1 }; });
+    var QueryToRun = UnitTestFramework._MutableArrayTest.Select(function (x) { return { newId: x.Id, newTxt: x.Id + 1 }; });
     //go run the async operation
     QueryToRun.ToArrayAsync(callBack, ErrorCallBack('Select.Test.1'), JLinqUrlPath);
 });
 asyncTest('JLinq.Select.ChainTest.1', function () {
     expect(4);
     var callBack = function (Result) {
-        //****To-UnitTestFramework._Array Test****
+        //****To-UnitTestFramework._MutableArrayTest Test****
         equal(3, Result.length);
         equal(2, Result[0]);
         equal(3, Result[1]);
@@ -692,14 +692,14 @@ asyncTest('JLinq.Select.ChainTest.1', function () {
         start();
     };
     //go build the query
-    var QueryToRun = UnitTestFramework._Array.Where(function (x) { return x.Id >= 2; }).Select(function (x) { return x.Id; });
+    var QueryToRun = UnitTestFramework._MutableArrayTest.Where(function (x) { return x.Id >= 2; }).Select(function (x) { return x.Id; });
     //go run the async operation
     QueryToRun.ToArrayAsync(callBack, ErrorCallBack('Select.ChainTest.1'), JLinqUrlPath);
 });
 asyncTest('JLinq.Select.FallBack.ChainTest.1', function () {
     expect(4);
     var callBack = function (Result) {
-        //****To-UnitTestFramework._Array Test****
+        //****To-UnitTestFramework._MutableArrayTest Test****
         equal(3, Result.length);
         equal(2, Result[0]);
         equal(3, Result[1]);
@@ -707,7 +707,7 @@ asyncTest('JLinq.Select.FallBack.ChainTest.1', function () {
         start();
     };
     //go build the query
-    var QueryToRun = UnitTestFramework._Array.Where(function (x) { return x.Id >= 2; }).Select(function (x) { return x.Id; });
+    var QueryToRun = UnitTestFramework._MutableArrayTest.Where(function (x) { return x.Id >= 2; }).Select(function (x) { return x.Id; });
     //go run the async operation
     QueryToRun.ToArrayAsync(callBack, ErrorCallBack('Select.FallBack.ChainTest.1'), JLinqUrlPath, false);
 });
@@ -716,7 +716,7 @@ asyncTest('JLinq.Select.FallBack.ChainTest.1', function () {
 asyncTest('JLinq.Distinct.Number.Test.1', function () {
     expect(2);
     var callBack = function (Result) {
-        //****To-UnitTestFramework._Array Test****
+        //****To-UnitTestFramework._MutableArrayTest Test****
         equal(Result.length, 5);
         equal(Result[0], 0);
         start();
@@ -734,7 +734,7 @@ asyncTest('JLinq.Distinct.Number.Test.1', function () {
 asyncTest('JLinq.Distinct.Number.FallBack.Test.1', function () {
     expect(2);
     var callBack = function (Result) {
-        //****To-UnitTestFramework._Array Test****
+        //****To-UnitTestFramework._MutableArrayTest Test****
         equal(Result.length, 5);
         equal(Result[0], 0);
         start();
@@ -752,7 +752,7 @@ asyncTest('JLinq.Distinct.Number.FallBack.Test.1', function () {
 asyncTest('JLinq.Distinct.Number.Test.2', function () {
     expect(2);
     var callBack = function (Result) {
-        //****To-UnitTestFramework._Array Test****
+        //****To-UnitTestFramework._MutableArrayTest Test****
         equal(Result.length, 5);
         equal(Result[0], 0);
         start();
@@ -770,7 +770,7 @@ asyncTest('JLinq.Distinct.Number.Test.2', function () {
 asyncTest('JLinq.Distinct.Date.Test.3', function () {
     expect(4);
     var callBack = function (Result) {
-        //****To-UnitTestFramework._Array Test****
+        //****To-UnitTestFramework._MutableArrayTest Test****
         equal(Result.length, 3);
         equal(JSON.stringify(Result[0]), JSON.stringify(UnitTestFramework._FirstIndexDate));
         equal(JSON.stringify(Result[1]), JSON.stringify(dtToAdd));
@@ -793,7 +793,7 @@ asyncTest('JLinq.Distinct.Date.Test.3', function () {
 asyncTest('JLinq.Distinct.Date.FallBack.Test.3', function () {
     expect(4);
     var callBack = function (Result) {
-        //****To-UnitTestFramework._Array Test****
+        //****To-UnitTestFramework._MutableArrayTest Test****
         equal(Result.length, 3);
         equal(JSON.stringify(Result[0]), JSON.stringify(UnitTestFramework._FirstIndexDate));
         equal(JSON.stringify(Result[1]), JSON.stringify(dtToAdd));
@@ -816,7 +816,7 @@ asyncTest('JLinq.Distinct.Date.FallBack.Test.3', function () {
 asyncTest('JLinq.Distinct.String.Test.1', function () {
     expect(4);
     var callBack = function (Result) {
-        //****To-UnitTestFramework._Array Test****
+        //****To-UnitTestFramework._MutableArrayTest Test****
         equal(Result.length, 6);
         equal(Result[0], 0);
         equal(Result[1], 1);
@@ -836,7 +836,7 @@ asyncTest('JLinq.Distinct.String.Test.1', function () {
 asyncTest('JLinq.Distinct.String.FallBack.Test.1', function () {
     expect(4);
     var callBack = function (Result) {
-        //****To-UnitTestFramework._Array Test****
+        //****To-UnitTestFramework._MutableArrayTest Test****
         equal(Result.length, 6);
         equal(Result[0], 0);
         equal(Result[1], 1);
@@ -856,7 +856,7 @@ asyncTest('JLinq.Distinct.String.FallBack.Test.1', function () {
 asyncTest('JLinq.Distinct.ChainTest.1', function () {
     expect(2);
     var callBack = function (Result) {
-        //****To-UnitTestFramework._Array Test****
+        //****To-UnitTestFramework._MutableArrayTest Test****
         equal(Result.length, 5);
         equal(Result[0], 0);
         start();
@@ -874,7 +874,7 @@ asyncTest('JLinq.Distinct.ChainTest.1', function () {
 asyncTest('JLinq.Distinct.FallBack.ChainTest.1', function () {
     expect(2);
     var callBack = function (Result) {
-        //****To-UnitTestFramework._Array Test****
+        //****To-UnitTestFramework._MutableArrayTest Test****
         equal(Result.length, 5);
         equal(Result[0], 0);
         start();
@@ -903,7 +903,7 @@ asyncTest('JLinq.OrderBy.Asc.Number.Test.1', function () {
         start();
     };
     //go build the query
-    var QueryToRun = UnitTestFramework._Array.OrderBy(function (x) { return x.Id; });
+    var QueryToRun = UnitTestFramework._MutableArrayTest.OrderBy(function (x) { return x.Id; });
     //go run the async operation
     QueryToRun.ToArrayAsync(callBack, ErrorCallBack('OrderBy.Asc.Number.Test.1'), JLinqUrlPath);
 });
@@ -918,7 +918,7 @@ asyncTest('JLinq.OrderBy.Asc.Number.ChainTest.1', function () {
         start();
     };
     //go materialize the results into the result
-    var QueryToRun = UnitTestFramework._Array.Select(function (x) { return x.Id; }).OrderBy(function (x) { return x; });
+    var QueryToRun = UnitTestFramework._MutableArrayTest.Select(function (x) { return x.Id; }).OrderBy(function (x) { return x; });
     //go run the async operation
     QueryToRun.ToArrayAsync(callBack, ErrorCallBack('OrderBy.Asc.Number.ChainTest.1'), JLinqUrlPath);
 });
@@ -937,7 +937,7 @@ asyncTest('JLinq.OrderBy.Desc.Number.Test.1', function () {
         start();
     };
     //go materialize the results into the result
-    var QueryToRun = UnitTestFramework._Array.OrderByDescending(function (x) { return x.Id; });
+    var QueryToRun = UnitTestFramework._MutableArrayTest.OrderByDescending(function (x) { return x.Id; });
     //go run the async operation
     QueryToRun.ToArrayAsync(callBack, ErrorCallBack('OrderBy.Desc.Number.Test.1'), JLinqUrlPath);
 });
@@ -956,7 +956,7 @@ asyncTest('JLinq.OrderBy.Desc.Number.ChainTest.1', function () {
         start();
     };
     //go materialize the results into the result
-    var QueryToRun = UnitTestFramework._Array.Select(function (x) { return x.Id; }).OrderByDescending(function (x) { return x; });
+    var QueryToRun = UnitTestFramework._MutableArrayTest.Select(function (x) { return x.Id; }).OrderByDescending(function (x) { return x; });
     //go run the async operation
     QueryToRun.ToArrayAsync(callBack, ErrorCallBack('OrderBy.Desc.Number.ChainTest.1'), JLinqUrlPath);
 });
@@ -975,7 +975,7 @@ asyncTest('JLinq.OrderBy.Desc.Number.FallBack.ChainTest.1', function () {
         start();
     };
     //go materialize the results into the result
-    var QueryToRun = UnitTestFramework._Array.Select(function (x) { return x.Id; }).OrderByDescending(function (x) { return x; });
+    var QueryToRun = UnitTestFramework._MutableArrayTest.Select(function (x) { return x.Id; }).OrderByDescending(function (x) { return x; });
     //go run the async operation
     QueryToRun.ToArrayAsync(callBack, ErrorCallBack('OrderBy.Desc.Number.FallBack.ChainTest.1'), JLinqUrlPath, false);
 });
@@ -1130,7 +1130,7 @@ asyncTest('JLinq.OrderBy.Asc.Boolean.Test.1', function () {
         start();
     };
     //go materialize the results into an array
-    var QueryToRun = UnitTestFramework._Array.OrderBy(function (x) { return x.IsActive; });
+    var QueryToRun = UnitTestFramework._MutableArrayTest.OrderBy(function (x) { return x.IsActive; });
     //go run the async operation
     QueryToRun.ToArrayAsync(callBack, ErrorCallBack('OrderBy.Asc.Boolean.Test.1'), JLinqUrlPath);
 });
@@ -1142,7 +1142,7 @@ asyncTest('JLinq.OrderBy.Asc.Boolean.FallBack.Test.1', function () {
         start();
     };
     //go materialize the results into an array
-    var QueryToRun = UnitTestFramework._Array.OrderBy(function (x) { return x.IsActive; });
+    var QueryToRun = UnitTestFramework._MutableArrayTest.OrderBy(function (x) { return x.IsActive; });
     //go run the async operation
     QueryToRun.ToArrayAsync(callBack, ErrorCallBack('OrderBy.Asc.Boolean.FallBack.Test.1'), JLinqUrlPath, false);
 });
@@ -1154,7 +1154,7 @@ asyncTest('JLinq.OrderBy.Asc.Boolean.ChainTest.1', function () {
         start();
     };
     //go materialize the results into an array
-    var QueryToRun = UnitTestFramework._Array.Select(function (x) { return x.IsActive; }).OrderBy(function (x) { return x; });
+    var QueryToRun = UnitTestFramework._MutableArrayTest.Select(function (x) { return x.IsActive; }).OrderBy(function (x) { return x; });
     //go run the async operation
     QueryToRun.ToArrayAsync(callBack, ErrorCallBack('OrderBy.Asc.Boolean.ChainTest.1'), JLinqUrlPath);
 });
@@ -1166,7 +1166,7 @@ asyncTest('JLinq.OrderBy.Desc.Boolean.Test.1', function () {
         start();
     };
     //go materialize the results into an array
-    var QueryToRun = UnitTestFramework._Array.OrderBy(function (x) { return x.IsActive; });
+    var QueryToRun = UnitTestFramework._MutableArrayTest.OrderBy(function (x) { return x.IsActive; });
     //go run the async operation
     QueryToRun.ToArrayAsync(callBack, ErrorCallBack('OrderBy.Desc.Boolean.Test.1'), JLinqUrlPath);
 });
@@ -1179,7 +1179,7 @@ asyncTest('JLinq.OrderBy.Asc.Date.Test.1', function () {
         start();
     };
     //go materialize the results into an array
-    var QueryToRun = UnitTestFramework._Array.OrderBy(function (x) { return x.CreatedDate; });
+    var QueryToRun = UnitTestFramework._MutableArrayTest.OrderBy(function (x) { return x.CreatedDate; });
     //go run the async operation
     QueryToRun.ToArrayAsync(callBack, ErrorCallBack('OrderBy.Asc.Date.Test.1'), JLinqUrlPath);
 });
@@ -1190,7 +1190,7 @@ asyncTest('JLinq.OrderBy.Asc.Date.FallBack.Test.1', function () {
         start();
     };
     //go materialize the results into an array
-    var QueryToRun = UnitTestFramework._Array.OrderBy(function (x) { return x.CreatedDate; });
+    var QueryToRun = UnitTestFramework._MutableArrayTest.OrderBy(function (x) { return x.CreatedDate; });
     //go run the async operation
     QueryToRun.ToArrayAsync(callBack, ErrorCallBack('OrderBy.Asc.Date.FallBack.Test.1'), JLinqUrlPath, false);
 });
@@ -1201,7 +1201,7 @@ asyncTest('JLinq.OrderBy.Asc.Date.ChainTest.1', function () {
         start();
     };
     //go materialize the results into an array
-    var QueryToRun = UnitTestFramework._Array.Select(function (x) { return x.CreatedDate; }).OrderBy(function (x) { return x; });
+    var QueryToRun = UnitTestFramework._MutableArrayTest.Select(function (x) { return x.CreatedDate; }).OrderBy(function (x) { return x; });
     //go run the async operation
     QueryToRun.ToArrayAsync(callBack, ErrorCallBack('OrderBy.Asc.Date.ChainTest.1'), JLinqUrlPath);
 });
@@ -1212,7 +1212,7 @@ asyncTest('JLinq.OrderBy.Desc.Date.Test.1', function () {
         start();
     };
     //go materialize the results into an array
-    var QueryToRun = UnitTestFramework._Array.OrderByDescending(function (x) { return x.CreatedDate; });
+    var QueryToRun = UnitTestFramework._MutableArrayTest.OrderByDescending(function (x) { return x.CreatedDate; });
     //go run the async operation
     QueryToRun.ToArrayAsync(callBack, ErrorCallBack('OrderBy.Desc.Date.Test.1'), JLinqUrlPath);
 });
@@ -1223,7 +1223,7 @@ asyncTest('JLinq.OrderBy.Desc.Date.ChainTest.1', function () {
         start();
     };
     //go materialize the results into an array
-    var QueryToRun = UnitTestFramework._Array.Select(function (x) { return x.CreatedDate; }).OrderByDescending(function (x) { return x; });
+    var QueryToRun = UnitTestFramework._MutableArrayTest.Select(function (x) { return x.CreatedDate; }).OrderByDescending(function (x) { return x; });
     //go run the async operation
     QueryToRun.ToArrayAsync(callBack, ErrorCallBack('OrderBy.Desc.Date.ChainTest.1'), JLinqUrlPath);
 });
@@ -1408,4 +1408,3 @@ asyncTest('JLinq.ThenBy.Desc.ChainTest.2', function () {
 });
 //#endregion
 //#endregion 
-//# sourceMappingURL=UnitTestsAsync.js.map

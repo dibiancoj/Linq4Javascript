@@ -30,6 +30,11 @@ namespace Linq4Javascript
                 "~/Scripts/UnitTestFramework.js",
                 "~/Scripts/UnitTestsRegular.js"));
 
+            bundles.Add(new ScriptBundle("~/bundles/Linq4JavscriptReadonlyArrayUnitTests").Include(
+               "~/Scripts/qunit.js",
+               "~/Scripts/UnitTestFramework.js",
+               "~/Scripts/UnitTestsImmutableArray.js"));
+
             bundles.Add(new StyleBundle("~/Content/css").Include("~/Content/bootstrap.css", "~/Content/site.css"));
 
             // Set EnableOptimizations to false for debugging. For more information,

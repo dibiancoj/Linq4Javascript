@@ -88,9 +88,12 @@ module UnitTestFramework {
 
     //holds the index == 1 date
     export var _FirstIndexDate = Object.freeze(new Date('12/1/1980'));
-
+ 
     //holds the build _Array so we don't have to keep building it each method
-    export var _Array: Array<ITestObject> = BuildArray(_DefaultItemsToBuild);
+    export var _MutableArrayTest: Array<ITestObject> = BuildArray(_DefaultItemsToBuild);
+
+    //holds a readonly array
+    export var _ReadonlyArrayTest: ReadonlyArray<ITestObject> = Object.freeze(BuildArray(_DefaultItemsToBuild));
 
     //holds the DefaultIfEmpty object if the result is null
     export var _DefaultIfEmpty: ITestObject = Object.freeze({

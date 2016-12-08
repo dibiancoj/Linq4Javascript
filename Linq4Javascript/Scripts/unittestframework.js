@@ -57,7 +57,9 @@ var UnitTestFramework;
     //holds the index == 1 date
     UnitTestFramework._FirstIndexDate = Object.freeze(new Date('12/1/1980'));
     //holds the build _Array so we don't have to keep building it each method
-    UnitTestFramework._Array = BuildArray(UnitTestFramework._DefaultItemsToBuild);
+    UnitTestFramework._MutableArrayTest = BuildArray(UnitTestFramework._DefaultItemsToBuild);
+    //holds a readonly array
+    UnitTestFramework._ReadonlyArrayTest = Object.freeze(BuildArray(UnitTestFramework._DefaultItemsToBuild));
     //holds the DefaultIfEmpty object if the result is null
     UnitTestFramework._DefaultIfEmpty = Object.freeze({
         Id: -9999,
@@ -92,4 +94,3 @@ var UnitTestFramework;
     UnitTestFramework.BuildSports = BuildSports;
     //#endregion
 })(UnitTestFramework || (UnitTestFramework = {}));
-//# sourceMappingURL=unittestframework.js.map

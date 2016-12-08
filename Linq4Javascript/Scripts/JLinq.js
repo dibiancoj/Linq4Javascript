@@ -1,7 +1,7 @@
 //********************************Torac Technologies***************************************
 //Description: Linq Style Methods In Javascript To Manipulate Collections                 *
 //Release Date: 10/17/2013                                                                *
-//Current Version: 3.0.4                                                                  *
+//Current Version: 3.0.5                                                                  *
 //Release History In JLinqChangeLog.txt                                                   *
 //*****************************************************************************************
 var __extends = (this && this.__extends) || function (d, b) {
@@ -2873,4 +2873,3 @@ Array.prototype.DefaultIfEmpty = function (DefaultValue) {
 };
 //#endregion
 //#endregion 
-//# sourceMappingURL=JLinq.js.map
