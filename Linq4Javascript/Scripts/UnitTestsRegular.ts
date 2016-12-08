@@ -3626,7 +3626,7 @@ test('JLinq.ElementAt.Test.1', function () {
     throws(function () {
 
         //go run the method that should blow up
-        UnitTestFramework._Array.ElementAt(5)
+        UnitTestFramework._Array.ElementAt(5);
     }, 'ArgumentOutOfRangeException. The size of the collection is less then the index specified. There are only ' + UnitTestFramework._Array.length + ' elements in the query.');
 });
 
@@ -3654,7 +3654,7 @@ test('JLinq.ElementAt.ChainTest.1', function () {
     throws(function () {
 
         //go run the method that should blow up
-        UnitTestFramework._Array.Where(x => x.Id > 1).ElementAt(5)
+        UnitTestFramework._Array.Where(x => x.Id > 1).ElementAt(5);
     }, 'ArgumentOutOfRangeException. The size of the collection is less then the index specified. There are only ' + BaseQuery.Count() + ' elements in the query.');
 });
 

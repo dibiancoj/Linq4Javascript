@@ -90,7 +90,7 @@ module UnitTestFramework {
     export var _FirstIndexDate = Object.freeze(new Date('12/1/1980'));
 
     //holds the build _Array so we don't have to keep building it each method
-    export var _Array: Array<ITestObject> = Object.freeze(BuildArray(_DefaultItemsToBuild));
+    export var _Array: Array<ITestObject> = BuildArray(_DefaultItemsToBuild);
 
     //holds the DefaultIfEmpty object if the result is null
     export var _DefaultIfEmpty: ITestObject = Object.freeze({
@@ -104,7 +104,7 @@ module UnitTestFramework {
     });
 
     //sort order array
-    export var _SortOrderArray: Array<IObject> = Object.freeze(BuildSortOrderArray());
+    export var _SortOrderArray: Array<IObject> = BuildSortOrderArray();
 
     //#endregion
 
@@ -130,7 +130,7 @@ module UnitTestFramework {
             { TeamId: 4, TeamDescription: "Knicks", SportId: 3 },
             { TeamId: 5, TeamDescription: "Jets", SportId: 4 },
             { TeamId: 6, TeamDescription: "Metro Starts", SportId: 9 },
-        ]
+        ];
     }
 
     export function BuildSports(): ISport[] {
@@ -139,7 +139,7 @@ module UnitTestFramework {
             { SportId: 2, SportDescription: "Hockey" },
             { SportId: 3, SportDescription: "Basketball" },
             { SportId: 10, SportDescription: "Paintball" },
-        ]
+        ];
     }
 
     //test object for the join test units. This is mainly for the resuld of the join

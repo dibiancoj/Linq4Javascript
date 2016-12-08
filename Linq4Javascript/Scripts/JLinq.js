@@ -573,12 +573,12 @@ var ToracTechnologies;
             Iterator.prototype.IsIterator = function (thingToCheck) {
                 return thingToCheck.ToArray !== undefined;
             };
-            //we are going to cache the jlinq blob
-            Iterator.WebWorkerBlobToCache = null;
-            //go check if async is available (this gets cached on first call to ArrayAsync)
-            Iterator.AsyncIsAvailable = null;
             return Iterator;
         }());
+        //we are going to cache the jlinq blob
+        Iterator.WebWorkerBlobToCache = null;
+        //go check if async is available (this gets cached on first call to ArrayAsync)
+        Iterator.AsyncIsAvailable = null;
         JLinq.Iterator = Iterator;
         //#endregion
         //#region Iterator Re-Setting
@@ -607,11 +607,11 @@ var ToracTechnologies;
         }
         //#endregion
         //#region Enums
+        var SortOrder;
         (function (SortOrder) {
             SortOrder[SortOrder["Ascending"] = 0] = "Ascending";
             SortOrder[SortOrder["Descending"] = 1] = "Descending";
-        })(JLinq.SortOrder || (JLinq.SortOrder = {}));
-        var SortOrder = JLinq.SortOrder;
+        })(SortOrder = JLinq.SortOrder || (JLinq.SortOrder = {}));
         //#endregion
         //#region Key Value Pair Object
         //key value pair
@@ -663,12 +663,12 @@ var ToracTechnologies;
         //#endregion
         //#region Iterator Result
         //holds the status of an iterator
+        var IteratorStatus;
         (function (IteratorStatus) {
             IteratorStatus[IteratorStatus["NotYetStarted"] = 0] = "NotYetStarted";
             IteratorStatus[IteratorStatus["Running"] = 1] = "Running";
             IteratorStatus[IteratorStatus["Completed"] = 2] = "Completed";
-        })(JLinq.IteratorStatus || (JLinq.IteratorStatus = {}));
-        var IteratorStatus = JLinq.IteratorStatus;
+        })(IteratorStatus = JLinq.IteratorStatus || (JLinq.IteratorStatus = {}));
         //holds the result of iterating through 1 element in an iterator
         var IteratorResult = (function () {
             //#region Constructor
@@ -713,16 +713,18 @@ var ToracTechnologies;
             __extends(Queryable, _super);
             //#region Constructor
             function Queryable(Collection) {
+                var _this = 
                 //because we inherit from Iterator we need to call the base class
-                _super.call(this);
+                _super.call(this) || this;
                 //throw the collection into a variable
-                this.CollectionSource = Collection;
+                _this.CollectionSource = Collection;
                 //we always loop backwards from the length to 0...so set the index to the array length
-                this.Index = 0;
+                _this.Index = 0;
                 //let's store the collection source so we have it without going to the array (is length a property or method on javascript array)
-                this.CollectionLength = this.CollectionSource.length;
+                _this.CollectionLength = _this.CollectionSource.length;
                 //throw this into a variable so we can debug this thing when we go from CollectionSource To CollectionSource and check the type
-                this.TypeOfObject = "Queryable";
+                _this.TypeOfObject = "Queryable";
+                return _this;
             }
             //#endregion
             //#region Methods
@@ -755,15 +757,17 @@ var ToracTechnologies;
             __extends(DefaultIfEmptyIterator, _super);
             //#region Constructor
             function DefaultIfEmptyIterator(PreviousLambdaExpression, DefaultElementIfEmpty) {
+                var _this = 
                 //because we inherit from Iterator we need to call the base class
-                _super.call(this);
-                this.HasFirstItem = null;
+                _super.call(this) || this;
+                _this.HasFirstItem = null;
                 //set the queryable source
-                this.PreviousExpression = PreviousLambdaExpression;
+                _this.PreviousExpression = PreviousLambdaExpression;
                 //set the default element if the collection before is empty
-                this.DefaultElementWhenEmpty = DefaultElementIfEmpty;
+                _this.DefaultElementWhenEmpty = DefaultElementIfEmpty;
                 //throw this into a variable so we can debug this thing when we go from CollectionSource To CollectionSource and check the type
-                this.TypeOfObject = "DefaultIfEmptyIterator";
+                _this.TypeOfObject = "DefaultIfEmptyIterator";
+                return _this;
             }
             //#endregion
             //#region Methods
@@ -816,19 +820,21 @@ var ToracTechnologies;
             __extends(JoinIterator, _super);
             //#region Constructor
             function JoinIterator(PreviousLambdaExpression, OuterJoinArray, InnerKeySelector, OuterKeySelector, JoinSelector) {
+                var _this = 
                 //because we inherit from Iterator we need to call the base class
-                _super.call(this);
+                _super.call(this) || this;
                 //set the queryable source
-                this.PreviousExpression = PreviousLambdaExpression;
+                _this.PreviousExpression = PreviousLambdaExpression;
                 //i believe pushing the outer to an array is more efficient since this will be used loop after loop. This way after there is a where with a group by...we won't have to run that each time. Its going to be tough to say which one is more efficient
-                this.OuterJoinArray = OuterJoinArray.ToArray();
-                this.InnerKeyFuncSelector = InnerKeySelector;
-                this.OuterKeyFuncSelector = OuterKeySelector;
-                this.JoinFuncSelector = JoinSelector;
+                _this.OuterJoinArray = OuterJoinArray.ToArray();
+                _this.InnerKeyFuncSelector = InnerKeySelector;
+                _this.OuterKeyFuncSelector = OuterKeySelector;
+                _this.JoinFuncSelector = JoinSelector;
                 //create a new array so we don't have to deal with a null array
-                this.Matches = new Array();
+                _this.Matches = new Array();
                 //throw this into a variable so we can debug this thing when we go from CollectionSource To CollectionSource and check the type
-                this.TypeOfObject = "JoinIterator";
+                _this.TypeOfObject = "JoinIterator";
+                return _this;
             }
             //#endregion
             //#region Methods
@@ -877,17 +883,19 @@ var ToracTechnologies;
             __extends(GroupJoinIterator, _super);
             //#region Constructor
             function GroupJoinIterator(PreviousLambdaExpression, OuterJoinArray, InnerKeySelector, OuterKeySelector, JoinSelector) {
+                var _this = 
                 //because we inherit from Iterator we need to call the base class
-                _super.call(this);
+                _super.call(this) || this;
                 //set the queryable source
-                this.PreviousExpression = PreviousLambdaExpression;
+                _this.PreviousExpression = PreviousLambdaExpression;
                 //i believe pushing the outer to an array is more efficient since this will be used loop after loop. This way after there is a where with a group by...we won't have to run that each time. Its going to be tough to say which one is more efficient
-                this.OuterJoinArray = OuterJoinArray.ToArray();
-                this.InnerKeyFuncSelector = InnerKeySelector;
-                this.OuterKeyFuncSelector = OuterKeySelector;
-                this.JoinFuncSelector = JoinSelector;
+                _this.OuterJoinArray = OuterJoinArray.ToArray();
+                _this.InnerKeyFuncSelector = InnerKeySelector;
+                _this.OuterKeyFuncSelector = OuterKeySelector;
+                _this.JoinFuncSelector = JoinSelector;
                 //throw this into a variable so we can debug this thing when we go from CollectionSource To CollectionSource and check the type
-                this.TypeOfObject = "GroupJoinIterator";
+                _this.TypeOfObject = "GroupJoinIterator";
+                return _this;
             }
             //#endregion
             //#region Methods
@@ -934,14 +942,16 @@ var ToracTechnologies;
             __extends(WhereIterator, _super);
             //#region Constructor
             function WhereIterator(PreviousLambdaExpression, WherePredicate) {
+                var _this = 
                 //because we inherit from Iterator we need to call the base class
-                _super.call(this);
+                _super.call(this) || this;
                 //set the queryable source
-                this.PreviousExpression = PreviousLambdaExpression;
+                _this.PreviousExpression = PreviousLambdaExpression;
                 //set the filter to run the where clause on
-                this.WhereClausePredicate = WherePredicate;
+                _this.WhereClausePredicate = WherePredicate;
                 //throw this into a variable so we can debug this thing when we go from CollectionSource To CollectionSource and check the type
-                this.TypeOfObject = "WhereIterator";
+                _this.TypeOfObject = "WhereIterator";
+                return _this;
             }
             //#endregion
             //#region Methods
@@ -974,16 +984,18 @@ var ToracTechnologies;
             __extends(FirstOrDefaultIterator, _super);
             //#region Constructor
             function FirstOrDefaultIterator(PreviousLambdaExpression, WhichTypeOfObject, WherePredicate) {
+                var _this = 
                 //because we inherit from Iterator we need to call the base class
-                _super.call(this);
+                _super.call(this) || this;
                 //set the queryable source
-                this.PreviousExpression = PreviousLambdaExpression;
+                _this.PreviousExpression = PreviousLambdaExpression;
                 //set the filter to run the where clause on
-                this.WhereClausePredicate = WherePredicate;
+                _this.WhereClausePredicate = WherePredicate;
                 //let's store if the where clause is null. This way we don't need to check it everytime we loop around. 
-                this.HasNullWhereClause = this.WhereClausePredicate == null;
+                _this.HasNullWhereClause = _this.WhereClausePredicate == null;
                 //throw this into a variable so we can debug this thing when we go from CollectionSource To CollectionSource and check the type
-                this.TypeOfObject = WhichTypeOfObject;
+                _this.TypeOfObject = WhichTypeOfObject;
+                return _this;
             }
             //#endregion
             //#region Methods
@@ -1016,16 +1028,18 @@ var ToracTechnologies;
             __extends(SingleOrDefaultIterator, _super);
             //#region Constructor
             function SingleOrDefaultIterator(PreviousLambdaExpression, WhichTypeOfObject, WherePredicate) {
+                var _this = 
                 //because we inherit from Iterator we need to call the base class
-                _super.call(this);
+                _super.call(this) || this;
                 //set the queryable source
-                this.PreviousExpression = PreviousLambdaExpression;
+                _this.PreviousExpression = PreviousLambdaExpression;
                 //set the filter to run the where clause on
-                this.WhereClausePredicate = WherePredicate;
+                _this.WhereClausePredicate = WherePredicate;
                 //let's store if the where clause is null. This way we don't need to check it everytime we loop around. 
-                this.HasNullWhereClause = this.WhereClausePredicate == null;
+                _this.HasNullWhereClause = _this.WhereClausePredicate == null;
                 //throw this into a variable so we can debug this thing when we go from CollectionSource To CollectionSource and check the type
-                this.TypeOfObject = WhichTypeOfObject;
+                _this.TypeOfObject = WhichTypeOfObject;
+                return _this;
             }
             //#endregion
             //#region Methods
@@ -1071,14 +1085,16 @@ var ToracTechnologies;
             __extends(SelectIterator, _super);
             //#region Constructor
             function SelectIterator(PreviousLambdaExpression, SelectCreatorPredicate) {
+                var _this = 
                 //because we inherit from Iterator we need to call the base class
-                _super.call(this);
+                _super.call(this) || this;
                 //set the queryable source
-                this.PreviousExpression = PreviousLambdaExpression;
+                _this.PreviousExpression = PreviousLambdaExpression;
                 //set the filter to run the where clause on
-                this.SelectPredicate = SelectCreatorPredicate;
+                _this.SelectPredicate = SelectCreatorPredicate;
                 //throw this into a variable so we can debug this thing when we go from CollectionSource To CollectionSource and check the type
-                this.TypeOfObject = "SelectIterator";
+                _this.TypeOfObject = "SelectIterator";
+                return _this;
             }
             //#endregion
             //#region Methods
@@ -1123,16 +1139,18 @@ var ToracTechnologies;
              */
             //#region Constructor
             function SelectManyIterator(PreviousLambdaExpression, CollectionPropertySelector) {
+                var _this = 
                 //because we inherit from Iterator we need to call the base class
-                _super.call(this);
+                _super.call(this) || this;
                 //set the queryable source
-                this.PreviousExpression = PreviousLambdaExpression;
+                _this.PreviousExpression = PreviousLambdaExpression;
                 //set the filter to grab the collection type
-                this.CollectionPropertySelector = CollectionPropertySelector;
+                _this.CollectionPropertySelector = CollectionPropertySelector;
                 //set the array holder to null
-                this.CollectionItemsToReturn = null;
+                _this.CollectionItemsToReturn = null;
                 //throw this into a variable so we can debug this thing when we go from CollectionSource To CollectionSource and check the type
-                this.TypeOfObject = "SelectManyIterator";
+                _this.TypeOfObject = "SelectManyIterator";
+                return _this;
             }
             //#endregion
             //#region Methods
@@ -1186,16 +1204,18 @@ var ToracTechnologies;
             __extends(DistinctIterator, _super);
             //#region Constructor
             function DistinctIterator(PreviousLambdaExpression, PropertySelector) {
+                var _this = 
                 //go init the base class
-                _super.call(this);
+                _super.call(this) || this;
                 //set the queryable source
-                this.PreviousExpression = PreviousLambdaExpression;
+                _this.PreviousExpression = PreviousLambdaExpression;
                 //set the filter to run the where clause on
-                this.PropertySelector = PropertySelector;
+                _this.PropertySelector = PropertySelector;
                 //init the distinct lookup to a blank object
-                this.DistinctLookup = new HashSet();
+                _this.DistinctLookup = new HashSet();
                 //throw this into a variable so we can debug this thing when we go from CollectionSource To CollectionSource and check the type
-                this.TypeOfObject = "DistinctIterator";
+                _this.TypeOfObject = "DistinctIterator";
+                return _this;
             }
             //#endregion
             //#region Methods
@@ -1235,16 +1255,18 @@ var ToracTechnologies;
             __extends(TakeIterator, _super);
             //#region Constructor
             function TakeIterator(PreviousLambdaExpression, HowManyToTake) {
+                var _this = 
                 //because we inherit from Iterator we need to call the base class
-                _super.call(this);
+                _super.call(this) || this;
                 //set the queryable source
-                this.PreviousExpression = PreviousLambdaExpression;
+                _this.PreviousExpression = PreviousLambdaExpression;
                 //set the number of items to take
-                this.HowManyToTake = HowManyToTake;
+                _this.HowManyToTake = HowManyToTake;
                 //let's initialize how many we have returned
-                this.HowManyHaveWeReturned = 0;
+                _this.HowManyHaveWeReturned = 0;
                 //throw this into a variable so we can debug this thing when we go from CollectionSource To CollectionSource and check the type
-                this.TypeOfObject = "TakeIterator";
+                _this.TypeOfObject = "TakeIterator";
+                return _this;
             }
             //#endregion
             //#region Methods
@@ -1291,14 +1313,16 @@ var ToracTechnologies;
             __extends(TakeWhileIterator, _super);
             //#region Constructor
             function TakeWhileIterator(PreviousLambdaExpression, TakeWhilePredicate) {
+                var _this = 
                 //because we inherit from Iterator we need to call the base class
-                _super.call(this);
+                _super.call(this) || this;
                 //set the queryable source
-                this.PreviousExpression = PreviousLambdaExpression;
+                _this.PreviousExpression = PreviousLambdaExpression;
                 //set the predicate to take while
-                this.PredicateToTakeWhile = TakeWhilePredicate;
+                _this.PredicateToTakeWhile = TakeWhilePredicate;
                 //throw this into a variable so we can debug this thing when we go from CollectionSource To CollectionSource and check the type
-                this.TypeOfObject = "TakeWhileIterator";
+                _this.TypeOfObject = "TakeWhileIterator";
+                return _this;
             }
             //#endregion
             //#region Methods
@@ -1331,16 +1355,18 @@ var ToracTechnologies;
             __extends(SkipIterator, _super);
             //#region Constructor
             function SkipIterator(PreviousLambdaExpression, HowManyToSkip) {
+                var _this = 
                 //because we inherit from Iterator we need to call the base class
-                _super.call(this);
+                _super.call(this) || this;
                 //set the queryable source
-                this.PreviousExpression = PreviousLambdaExpression;
+                _this.PreviousExpression = PreviousLambdaExpression;
                 //set the number of items to skip
-                this.HowManyToSkip = HowManyToSkip;
+                _this.HowManyToSkip = HowManyToSkip;
                 //let's initialize how many we have skipped
-                this.HowManyHaveWeSkipped = 0;
+                _this.HowManyHaveWeSkipped = 0;
                 //throw this into a variable so we can debug this thing when we go from CollectionSource To CollectionSource and check the type
-                this.TypeOfObject = "SkipIterator";
+                _this.TypeOfObject = "SkipIterator";
+                return _this;
             }
             //#endregion
             //#region Methods
@@ -1382,14 +1408,16 @@ var ToracTechnologies;
             __extends(SkipWhileIterator, _super);
             //#region Constructor
             function SkipWhileIterator(PreviousLambdaExpression, SkipUntilPredicate) {
+                var _this = 
                 //because we inherit from Iterator we need to call the base class
-                _super.call(this);
+                _super.call(this) || this;
                 //set the queryable source
-                this.PreviousExpression = PreviousLambdaExpression;
+                _this.PreviousExpression = PreviousLambdaExpression;
                 //set the predicate to skip until
-                this.PredicateSkipUntil = SkipUntilPredicate;
+                _this.PredicateSkipUntil = SkipUntilPredicate;
                 //throw this into a variable so we can debug this thing when we go from CollectionSource To CollectionSource and check the type
-                this.TypeOfObject = "SkipWhileIterator";
+                _this.TypeOfObject = "SkipWhileIterator";
+                return _this;
             }
             //#endregion
             //#region Methods
@@ -1430,14 +1458,16 @@ var ToracTechnologies;
             __extends(AggregateIterator, _super);
             //#region Constructor
             function AggregateIterator(PreviousLambdaExpression, AggregatePredicate) {
+                var _this = 
                 //because we inherit from Iterator we need to call the base class
-                _super.call(this);
+                _super.call(this) || this;
                 //set the queryable source
-                this.PreviousExpression = PreviousLambdaExpression;
+                _this.PreviousExpression = PreviousLambdaExpression;
                 //set the filter to run the running set clause
-                this.PredicateAggregate = AggregatePredicate;
+                _this.PredicateAggregate = AggregatePredicate;
                 //throw this into a variable so we can debug this thing when we go from CollectionSource To CollectionSource and check the type
-                this.TypeOfObject = "AggregateIterator";
+                _this.TypeOfObject = "AggregateIterator";
+                return _this;
             }
             //#endregion
             //#region Methods
@@ -1480,14 +1510,16 @@ var ToracTechnologies;
             __extends(AllIterator, _super);
             //#region Constructor
             function AllIterator(PreviousLambdaExpression, WherePredicate) {
+                var _this = 
                 //because we inherit from Iterator we need to call the base class
-                _super.call(this);
+                _super.call(this) || this;
                 //set the queryable source
-                this.PreviousExpression = PreviousLambdaExpression;
+                _this.PreviousExpression = PreviousLambdaExpression;
                 //set the filter to run the where clause on
-                this.WhereClausePredicate = WherePredicate;
+                _this.WhereClausePredicate = WherePredicate;
                 //throw this into a variable so we can debug this thing when we go from CollectionSource To CollectionSource and check the type
-                this.TypeOfObject = "AllIterator";
+                _this.TypeOfObject = "AllIterator";
+                return _this;
             }
             //#endregion
             //#region Methods
@@ -1525,16 +1557,18 @@ var ToracTechnologies;
             __extends(AnyIterator, _super);
             //#region Constructor
             function AnyIterator(PreviousLambdaExpression, WherePredicate) {
+                var _this = 
                 //because we inherit from Iterator we need to call the base class
-                _super.call(this);
+                _super.call(this) || this;
                 //set the queryable source
-                this.PreviousExpression = PreviousLambdaExpression;
+                _this.PreviousExpression = PreviousLambdaExpression;
                 //set the filter to run the where clause on
-                this.WhereClausePredicate = WherePredicate;
+                _this.WhereClausePredicate = WherePredicate;
                 //let's store if the where clause is null. This way we don't need to check it everytime we loop around. 
-                this.HasNullWhereClause = this.WhereClausePredicate == null;
+                _this.HasNullWhereClause = _this.WhereClausePredicate == null;
                 //throw this into a variable so we can debug this thing when we go from CollectionSource To CollectionSource and check the type
-                this.TypeOfObject = "AnyIterator";
+                _this.TypeOfObject = "AnyIterator";
+                return _this;
             }
             //#endregion
             //#region Methods
@@ -1572,16 +1606,18 @@ var ToracTechnologies;
             __extends(LastIterator, _super);
             //#region Constructor
             function LastIterator(PreviousLambdaExpression, WherePredicate) {
+                var _this = 
                 //because we inherit from Iterator we need to call the base class
-                _super.call(this);
+                _super.call(this) || this;
                 //set the queryable source
-                this.PreviousExpression = PreviousLambdaExpression;
+                _this.PreviousExpression = PreviousLambdaExpression;
                 //set the filter to run the where clause on
-                this.WhereClausePredicate = WherePredicate;
+                _this.WhereClausePredicate = WherePredicate;
                 //let's store if the where clause is null. This way we don't need to check it everytime we loop around. 
-                this.HasNullWhereClause = this.WhereClausePredicate == null;
+                _this.HasNullWhereClause = _this.WhereClausePredicate == null;
                 //throw this into a variable so we can debug this thing when we go from CollectionSource To CollectionSource and check the type
-                this.TypeOfObject = "LastIterator";
+                _this.TypeOfObject = "LastIterator";
+                return _this;
             }
             //#endregion
             //#region Methods
@@ -1620,14 +1656,16 @@ var ToracTechnologies;
             __extends(ConcatIterator, _super);
             //#region Constructor
             function ConcatIterator(PreviousLambdaExpression, WhichTypeOfObject, QueryToConcat) {
+                var _this = 
                 //because we inherit from Iterator we need to call the base class
-                _super.call(this);
+                _super.call(this) || this;
                 //set the queryable source
-                this.PreviousExpression = PreviousLambdaExpression;
+                _this.PreviousExpression = PreviousLambdaExpression;
                 //set query you want to concat together
-                this.ConcatThisQuery = QueryToConcat;
+                _this.ConcatThisQuery = QueryToConcat;
                 //throw this into a variable so we can debug this thing when we go from CollectionSource To CollectionSource and check the type
-                this.TypeOfObject = WhichTypeOfObject;
+                _this.TypeOfObject = WhichTypeOfObject;
+                return _this;
             }
             //#endregion
             //#region Methods
@@ -1672,16 +1710,18 @@ var ToracTechnologies;
             __extends(UnionIterator, _super);
             //#region Constructor
             function UnionIterator(PreviousLambdaExpression, WhichTypeOfObject, QueryToUnion) {
+                var _this = 
                 //because we inherit from Iterator we need to call the base class
-                _super.call(this);
+                _super.call(this) || this;
                 //set the queryable source
-                this.PreviousExpression = PreviousLambdaExpression;
+                _this.PreviousExpression = PreviousLambdaExpression;
                 //set query you want to union together
-                this.UnionThisQuery = QueryToUnion;
+                _this.UnionThisQuery = QueryToUnion;
                 //throw this into a variable so we can debug this thing when we go from CollectionSource To CollectionSource and check the type
-                this.TypeOfObject = WhichTypeOfObject;
+                _this.TypeOfObject = WhichTypeOfObject;
                 //create a new dictionary
-                this.HashSetStore = new HashSet();
+                _this.HashSetStore = new HashSet();
+                return _this;
             }
             //#endregion
             //#region Methods
@@ -1737,16 +1777,18 @@ var ToracTechnologies;
             __extends(CountIterator, _super);
             //#region Constructor
             function CountIterator(PreviousLambdaExpression, WherePredicate) {
+                var _this = 
                 //because we inherit from Iterator we need to call the base class
-                _super.call(this);
+                _super.call(this) || this;
                 //set the queryable source
-                this.PreviousExpression = PreviousLambdaExpression;
+                _this.PreviousExpression = PreviousLambdaExpression;
                 //set the filter to run the where clause on
-                this.WhereClausePredicate = WherePredicate;
+                _this.WhereClausePredicate = WherePredicate;
                 //let's store if the where clause is null. This way we don't need to check it everytime we loop around. 
-                this.HasNullWhereClause = this.WhereClausePredicate == null;
+                _this.HasNullWhereClause = _this.WhereClausePredicate == null;
                 //throw this into a variable so we can debug this thing when we go from CollectionSource To CollectionSource and check the type
-                this.TypeOfObject = "CountIterator";
+                _this.TypeOfObject = "CountIterator";
+                return _this;
             }
             //#endregion
             //#region Methods
@@ -1784,14 +1826,16 @@ var ToracTechnologies;
             __extends(MinIterator, _super);
             //#region Constructor
             function MinIterator(PreviousLambdaExpression) {
+                var _this = 
                 //go init the base class
-                _super.call(this);
+                _super.call(this) || this;
                 //set the queryable source
-                this.PreviousExpression = PreviousLambdaExpression;
+                _this.PreviousExpression = PreviousLambdaExpression;
                 //go init the current lowest number to null
-                this.CurrentLowestNumber = null;
+                _this.CurrentLowestNumber = null;
                 //throw this into a variable so we can debug this thing when we go from CollectionSource To CollectionSource and check the type
-                this.TypeOfObject = "MinIterator";
+                _this.TypeOfObject = "MinIterator";
+                return _this;
             }
             //#endregion
             //#region Methods
@@ -1829,14 +1873,16 @@ var ToracTechnologies;
             __extends(MaxIterator, _super);
             //#region Constructor
             function MaxIterator(PreviousLambdaExpression) {
+                var _this = 
                 //go init the base class
-                _super.call(this);
+                _super.call(this) || this;
                 //set the queryable source
-                this.PreviousExpression = PreviousLambdaExpression;
+                _this.PreviousExpression = PreviousLambdaExpression;
                 //init the current larget number to null
-                this.CurrentLargestNumber = null;
+                _this.CurrentLargestNumber = null;
                 //throw this into a variable so we can debug this thing when we go from CollectionSource To CollectionSource and check the type
-                this.TypeOfObject = "MaxIterator";
+                _this.TypeOfObject = "MaxIterator";
+                return _this;
             }
             //#endregion
             //#region Methods
@@ -1874,14 +1920,16 @@ var ToracTechnologies;
             __extends(SumIterator, _super);
             //#region Constructor
             function SumIterator(PreviousLambdaExpression) {
+                var _this = 
                 //go init the base class
-                _super.call(this);
+                _super.call(this) || this;
                 //set the queryable source
-                this.PreviousExpression = PreviousLambdaExpression;
+                _this.PreviousExpression = PreviousLambdaExpression;
                 //let's init the current sum tally
-                this.CurrentSumTally = 0;
+                _this.CurrentSumTally = 0;
                 //throw this into a variable so we can debug this thing when we go from CollectionSource To CollectionSource and check the type
-                this.TypeOfObject = "SumIterator";
+                _this.TypeOfObject = "SumIterator";
+                return _this;
             }
             //#endregion
             //#region Methods
@@ -1919,16 +1967,18 @@ var ToracTechnologies;
             __extends(AverageIterator, _super);
             //#region Constructor
             function AverageIterator(PreviousLambdaExpression) {
+                var _this = 
                 //go call the base class init
-                _super.call(this);
+                _super.call(this) || this;
                 //set the queryable source
-                this.PreviousExpression = PreviousLambdaExpression;
+                _this.PreviousExpression = PreviousLambdaExpression;
                 //let's reset the sum tally
-                this.CurrentSumTally = 0;
+                _this.CurrentSumTally = 0;
                 //reset the current count tally;
-                this.CurrentItemCountTally = 0;
+                _this.CurrentItemCountTally = 0;
                 //throw this into a variable so we can debug this thing when we go from CollectionSource To CollectionSource and check the type
-                this.TypeOfObject = "AverageIterator";
+                _this.TypeOfObject = "AverageIterator";
+                return _this;
             }
             //#endregion
             //#region Methods
@@ -1969,14 +2019,16 @@ var ToracTechnologies;
             __extends(GroupIterator, _super);
             //#region Constructor
             function GroupIterator(PreviousLambdaExpression, GroupBySelector) {
+                var _this = 
                 //call the super for the base class
-                _super.call(this);
+                _super.call(this) || this;
                 //set the queryable source
-                this.PreviousExpression = PreviousLambdaExpression;
+                _this.PreviousExpression = PreviousLambdaExpression;
                 //set the group by selector
-                this.GroupBySelector = GroupBySelector;
+                _this.GroupBySelector = GroupBySelector;
                 //throw this into a variable so we can debug this thing when we go from CollectionSource To CollectionSource and check the type
-                this.TypeOfObject = "GroupIterator";
+                _this.TypeOfObject = "GroupIterator";
+                return _this;
             }
             //#endregion
             //#region Methods
@@ -2023,20 +2075,22 @@ var ToracTechnologies;
             __extends(OrderByIterator, _super);
             //#region Constructor
             function OrderByIterator(PreviousLambdaExpression, DirectionToSort, PropertySortSelector, AdditionalSortPropertySelectors) {
+                var _this = 
                 //because we inherit from Iterator we need to call the base class
-                _super.call(this);
+                _super.call(this) || this;
                 //set the queryable source
-                this.PreviousExpression = PreviousLambdaExpression;
+                _this.PreviousExpression = PreviousLambdaExpression;
                 //set the sort order
-                this.SortDirection = DirectionToSort;
+                _this.SortDirection = DirectionToSort;
                 //set the initial property sort selector
-                this.SortPropertySelector = PropertySortSelector;
+                _this.SortPropertySelector = PropertySortSelector;
                 //set the "then by" items
-                this.ThenBySortPropertySelectors = AdditionalSortPropertySelectors;
+                _this.ThenBySortPropertySelectors = AdditionalSortPropertySelectors;
                 //set the flag that we need to build the data source
-                this.NeedToBuildDataSource = true;
+                _this.NeedToBuildDataSource = true;
                 //throw this into a variable so we can debug this thing when we go from CollectionSource To CollectionSource and check the type
-                this.TypeOfObject = "OrderByIterator";
+                _this.TypeOfObject = "OrderByIterator";
+                return _this;
             }
             //#endregion
             //#region Public Methods
@@ -2200,14 +2254,16 @@ var ToracTechnologies;
             __extends(OrderThenByIterator, _super);
             //#region Constructor
             function OrderThenByIterator(PreviousLambdaExpression, SortPropertySelector, WhichSortOrder) {
+                var _this = 
                 //because we inherit from Iterator we need to call the base class
-                _super.call(this);
+                _super.call(this) || this;
                 //set the queryable source
-                this.PreviousExpression = PreviousLambdaExpression;
+                _this.PreviousExpression = PreviousLambdaExpression;
                 //go build the dependancy on order by (so inject whatever we need in the "order by" branch
-                this.BuildDependencyOnOrderBy(PreviousLambdaExpression, SortPropertySelector, WhichSortOrder);
+                _this.BuildDependencyOnOrderBy(PreviousLambdaExpression, SortPropertySelector, WhichSortOrder);
                 //throw this into a variable so we can debug this thing when we go from CollectionSource To CollectionSource and check the type
-                this.TypeOfObject = "OrderThenByIterator";
+                _this.TypeOfObject = "OrderThenByIterator";
+                return _this;
             }
             //#endregion
             //#region Public Methods
@@ -2272,6 +2328,7 @@ var ToracTechnologies;
                 this.TypeOfTKey = null;
                 //when we have multi key objects, we need a way of grabbbing the date properties when we convert it back. So we store the date property names
                 this.DatePropertiesForMultiKey = null;
+                //#endregion
             }
             //#endregion
             //#region Public Methods
@@ -2459,6 +2516,7 @@ var ToracTechnologies;
                 //#region Properties
                 //holds the internal dictionary as a javascript object. (uses boolean as the value to keep the memory footprint as low as possible
                 this.InternalHashSet = new Dictionary();
+                //#endregion
             }
             //#endregion
             //#region Public Methods
@@ -2686,6 +2744,7 @@ var ToracTechnologies;
             throw 'Level Not Implemented: ' + CurrentLevelOfTree.TypeOfObject;
         }
         JLinq.RebuildSingleTreeNode = RebuildSingleTreeNode;
+        //#endregion
     })(JLinq = ToracTechnologies.JLinq || (ToracTechnologies.JLinq = {}));
 })(ToracTechnologies || (ToracTechnologies = {}));
 //#endregion
@@ -2814,3 +2873,4 @@ Array.prototype.DefaultIfEmpty = function (DefaultValue) {
 };
 //#endregion
 //#endregion 
+//# sourceMappingURL=JLinq.js.map
