@@ -1,7 +1,3 @@
-//#region Configuration
-/****** Notes ******/
-//Every object is going to be immutable. This way we can't accIdentally add items
-/*******************/
 var UnitTestFramework;
 (function (UnitTestFramework) {
     //method to build up the list of data
@@ -94,4 +90,3 @@ var UnitTestFramework;
     UnitTestFramework.BuildSports = BuildSports;
     //#endregion
 })(UnitTestFramework || (UnitTestFramework = {}));
-//# sourceMappingURL=unittestframework.js.map
