@@ -4123,8 +4123,9 @@ module ToracTechnologies {
 
 //#region Array Interface
 
-interface Array<T> {
-
+//interface so we don't have to duplicate code off of Array and ReadonlyArray
+interface ILinqExtensionMethods<T>
+{
     AsQueryable(): ToracTechnologies.JLinq.Queryable<T>;
 
     Where(WhereClauseSelector: (ItemToTest: T) => boolean): ToracTechnologies.JLinq.WhereIterator<T>;
@@ -4178,59 +4179,10 @@ interface Array<T> {
     DefaultIfEmpty<T>(DefaultValue: T): ToracTechnologies.JLinq.DefaultIfEmptyIterator<T>;
 }
 
-interface ReadonlyArray<T> {
+interface Array<T> extends ILinqExtensionMethods<T> {
+}
 
-    AsQueryable(): ToracTechnologies.JLinq.Queryable<T>;
-
-    Where(WhereClauseSelector: (ItemToTest: T) => boolean): ToracTechnologies.JLinq.WhereIterator<T>;
-
-    First(WhereClauseSelector?: (ItemToTest: T) => boolean): T;
-    FirstOrDefault(WhereClauseSelector?: (ItemToTest: T) => boolean): T;
-    Single(WhereClauseSelector?: (ItemToTest: T) => boolean): T;
-    SingleOrDefault(WhereClauseSelector?: (ItemToTest: T) => boolean): T;
-
-    Select<TNewObject>(Creator: (ItemToSelect: T) => TNewObject): ToracTechnologies.JLinq.SelectIterator<T, TNewObject>;
-    SelectMany<TCollectionType>(CollectionPropertySelector: (thisCollectionProperty: T) => Array<TCollectionType>): ToracTechnologies.JLinq.SelectManyIterator<T, TCollectionType>;
-    Distinct<TPropertyType>(PropertySelector: (ItemToTest: T) => TPropertyType): ToracTechnologies.JLinq.DistinctIterator<T, TPropertyType>;
-
-    Take(HowManyToTake: number): ToracTechnologies.JLinq.TakeIterator<T>;
-    TakeWhile(PredicateToTakeWhile: (ItemToTest: T) => boolean): ToracTechnologies.JLinq.TakeWhileIterator<T>;
-
-    Skip(HowManyToSkip: number): ToracTechnologies.JLinq.SkipIterator<T>;
-    SkipWhile(PredicateToSkipUntil: (ItemToTest: T) => boolean): ToracTechnologies.JLinq.SkipWhileIterator<T>;
-
-    Aggregate(AggregatePredicate: (WorkingT: T, NextT: T) => T): T;
-    All(WhereClauseSelector: (ItemToTest: T) => boolean): boolean;
-
-    Any(WhereClauseSelector?: (ItemToTest: T) => boolean): boolean;
-    Last(WhereClauseSelector?: (ItemToTest: T) => boolean): T;
-
-
-    Concat(ArrayToConcat: Array<T> | ToracTechnologies.JLinq.Iterator<T>): ToracTechnologies.JLinq.ConcatIterator<T>;
-    Union(ArrayToUnion: Array<T> | ToracTechnologies.JLinq.Iterator<T>): ToracTechnologies.JLinq.UnionIterator<T>;
-
-    Count(): number;
-    Count(WhereClauseSelector?: (ItemToTest: T) => boolean): number;
-    Min(): number;
-    Max(): number;
-    Sum(): number;
-    Average(): number;
-
-    GroupBy<TKey>(GroupBySelector: (ItemKeyToTest: T) => TKey): Array<ToracTechnologies.JLinq.IGrouping<TKey, T>>;
-    ToDictionary<TKey>(KeySelector: (PropertyToKeyOn: T) => TKey): ToracTechnologies.JLinq.IDictionary<TKey, T>;
-    ToHashSet(): ToracTechnologies.JLinq.IHashSet<T>;
-    Paginate(CurrentPageNumber: number, HowManyRecordsPerPage: number): ToracTechnologies.JLinq.TakeIterator<T>;
-
-    OrderBy<TSortPropertyType>(SortPropertySelector: (thisPropertyToSortOn: T) => TSortPropertyType): ToracTechnologies.JLinq.OrderByIterator<T>;
-    OrderByDescending<TSortPropertyType>(SortPropertySelector: (thisPropertyToSortOn: T) => TSortPropertyType): ToracTechnologies.JLinq.OrderByIterator<T>;
-
-    ElementAt(Index: number): T;
-    ElementAtDefault(Index: number): T;
-
-    Join<T, TOuterArrayType, TSelectorDataType, TResultDataType>(OuterJoinArray: TOuterArrayType[] | ToracTechnologies.JLinq.Iterator<TOuterArrayType>, InnerKeySelector: (InnerRecord: T) => TSelectorDataType, OuterKeySelector: (OuterRecord: TOuterArrayType) => TSelectorDataType, JoinSelector: (InnerRecord: T, OuterRecord: TOuterArrayType) => TResultDataType): ToracTechnologies.JLinq.JoinIterator<T, TOuterArrayType, TSelectorDataType, TResultDataType>;
-    GroupJoin<T, TOuterArrayType, TSelectorDataType, TResultDataType>(OuterJoinArray: TOuterArrayType[] | ToracTechnologies.JLinq.Iterator<TOuterArrayType>, InnerKeySelector: (InnerRecord: T) => TSelectorDataType, OuterKeySelector: (OuterRecord: TOuterArrayType) => TSelectorDataType, JoinSelector: (InnerRecord: T, OuterRecord: TOuterArrayType[]) => TResultDataType): ToracTechnologies.JLinq.GroupJoinIterator<T, TOuterArrayType, TSelectorDataType, TResultDataType>;
-
-    DefaultIfEmpty<T>(DefaultValue: T): ToracTechnologies.JLinq.DefaultIfEmptyIterator<T>;
+interface ReadonlyArray<T> extends ILinqExtensionMethods<T> {
 }
 
 //#endregion
