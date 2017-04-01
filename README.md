@@ -24,7 +24,7 @@ I wanted to learn TypeScript along with building a linq library which had method
 
 **Basic Example**
 
-    //declare my array that I will represent my data source  
+    //declare my array that will represent my data source  
     var _Array= [];    
 
     //let's throw some sample data into my array  
