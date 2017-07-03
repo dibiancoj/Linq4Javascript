@@ -1,11 +1,4 @@
-﻿//#region Configuration
-
-/****** Notes ******/
-//Every object is going to be immutable. This way we can't accIdentally add items
-
-/*******************/
-
-module UnitTestFramework {
+﻿module UnitTestFramework {
 
     //holds the interface with the object type that is in the list that we will be querying
     export interface ITestObject {
