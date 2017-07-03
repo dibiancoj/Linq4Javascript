@@ -11,6 +11,7 @@ function RunQuery() {
         var TimeToGoUntil = new Date().getTime() + (SecondsToWait * 1000);
         //keep looping until we get to the time
         while (new Date().getTime() <= TimeToGoUntil) {
+            //spin wait
         }
         //then finally return the real result
         return x.Id > 2;

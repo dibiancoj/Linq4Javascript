@@ -4,11 +4,16 @@
 //Current Version: 3.0.5                                                                  *
 //Release History In JLinqChangeLog.txt                                                   *
 //*****************************************************************************************
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 //* Change Log Is In It's Own Text File. I want to keep the js file as small as possible
 //for node.js configuration
 //For Node.js just use a require statement.This will allow access to the extension methods off of the array.Every array will have access to the methods of Linq4Javascript.JLinq is the file name where the Linq4Javascript code is in. If you change the file name then update this.The./ is set because it is in the root folder of the project.
@@ -1191,6 +1196,8 @@ var ToracTechnologies;
                         //we have sub collection items, so build up a queryable and re-use the queryable logic
                         this.CollectionItemsToReturn = new Queryable(SubCollectionToFlatten);
                     }
+                    //we will keep looping. otherwise we need to handle the sub collection down here or right after the while(true)
+                    //this way it will just loop around and we can handle it in 1 spot
                 }
             };
             SelectManyIterator.prototype.AsyncSerializedFunc = function () {
