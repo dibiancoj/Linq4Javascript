@@ -51,7 +51,7 @@ var ToracTechnologies;
     (function (JLinq) {
         //#region Iterator Class
         //Class is used to throw the methods on a common class that we can inherit from
-        var Iterator = (function () {
+        var Iterator = /** @class */ (function () {
             function Iterator() {
             }
             //#endregion
@@ -578,12 +578,12 @@ var ToracTechnologies;
             Iterator.prototype.IsIterator = function (thingToCheck) {
                 return thingToCheck.ToArray !== undefined;
             };
+            //we are going to cache the jlinq blob
+            Iterator.WebWorkerBlobToCache = null;
+            //go check if async is available (this gets cached on first call to ArrayAsync)
+            Iterator.AsyncIsAvailable = null;
             return Iterator;
         }());
-        //we are going to cache the jlinq blob
-        Iterator.WebWorkerBlobToCache = null;
-        //go check if async is available (this gets cached on first call to ArrayAsync)
-        Iterator.AsyncIsAvailable = null;
         JLinq.Iterator = Iterator;
         //#endregion
         //#region Iterator Re-Setting
@@ -620,7 +620,7 @@ var ToracTechnologies;
         //#endregion
         //#region Key Value Pair Object
         //key value pair
-        var KeyValuePair = (function () {
+        var KeyValuePair = /** @class */ (function () {
             //#region Constructor
             function KeyValuePair(KeyToSet, ValueToSet) {
                 //set the key
@@ -634,7 +634,7 @@ var ToracTechnologies;
         //#endregion
         //#region Callback Iterator
         //allows you to create a callback iterator using a callback function. Currently not used, because you tend to cache this and use closures, so it will be slower. Leaving it in here incase I ever need it
-        var CallbackIterator = (function () {
+        var CallbackIterator = /** @class */ (function () {
             //#region Documentation
             //Example Of How To Use This
             //var CurrentDictionary = this;
@@ -675,7 +675,7 @@ var ToracTechnologies;
             IteratorStatus[IteratorStatus["Completed"] = 2] = "Completed";
         })(IteratorStatus = JLinq.IteratorStatus || (JLinq.IteratorStatus = {}));
         //holds the result of iterating through 1 element in an iterator
-        var IteratorResult = (function () {
+        var IteratorResult = /** @class */ (function () {
             //#region Constructor
             function IteratorResult(CurrentItemToSet, IteratorRunningStatus) {
                 //set the return value
@@ -689,7 +689,7 @@ var ToracTechnologies;
         //#endregion
         //#region ElementAtHelperResult
         //result of the ElementAtHelper Method. Need multiple values to be returned from a method
-        var ElementAtHelperResult = (function () {
+        var ElementAtHelperResult = /** @class */ (function () {
             function ElementAtHelperResult() {
             }
             ElementAtHelperResult.ElementWasFound = function (ElementFoundItem) {
@@ -714,7 +714,7 @@ var ToracTechnologies;
         //#endregion
         //#region Queryable Class
         //Class used to turn a collection into something we can chain together with all the Iterator methods
-        var Queryable = (function (_super) {
+        var Queryable = /** @class */ (function (_super) {
             __extends(Queryable, _super);
             //#region Constructor
             function Queryable(Collection) {
@@ -758,7 +758,7 @@ var ToracTechnologies;
         //#endregion
         //#region Linq Functionality Classes
         //Class is used to implement the Where Method Iterator
-        var DefaultIfEmptyIterator = (function (_super) {
+        var DefaultIfEmptyIterator = /** @class */ (function (_super) {
             __extends(DefaultIfEmptyIterator, _super);
             //#region Constructor
             function DefaultIfEmptyIterator(PreviousLambdaExpression, DefaultElementIfEmpty) {
@@ -821,7 +821,7 @@ var ToracTechnologies;
         }(Iterator));
         JLinq.DefaultIfEmptyIterator = DefaultIfEmptyIterator;
         //Class is used to implement the join method iterator. Used to essentially build a database join type iterator
-        var JoinIterator = (function (_super) {
+        var JoinIterator = /** @class */ (function (_super) {
             __extends(JoinIterator, _super);
             //#region Constructor
             function JoinIterator(PreviousLambdaExpression, OuterJoinArray, InnerKeySelector, OuterKeySelector, JoinSelector) {
@@ -884,7 +884,7 @@ var ToracTechnologies;
         }(Iterator));
         JLinq.JoinIterator = JoinIterator;
         //Class is used to implement the group join method iterator.
-        var GroupJoinIterator = (function (_super) {
+        var GroupJoinIterator = /** @class */ (function (_super) {
             __extends(GroupJoinIterator, _super);
             //#region Constructor
             function GroupJoinIterator(PreviousLambdaExpression, OuterJoinArray, InnerKeySelector, OuterKeySelector, JoinSelector) {
@@ -943,7 +943,7 @@ var ToracTechnologies;
         }(Iterator));
         JLinq.GroupJoinIterator = GroupJoinIterator;
         //Class is used to implement the Where Method Iterator
-        var WhereIterator = (function (_super) {
+        var WhereIterator = /** @class */ (function (_super) {
             __extends(WhereIterator, _super);
             //#region Constructor
             function WhereIterator(PreviousLambdaExpression, WherePredicate) {
@@ -985,7 +985,7 @@ var ToracTechnologies;
         }(Iterator));
         JLinq.WhereIterator = WhereIterator;
         //Class is used to grab the first record which meets the predicate
-        var FirstOrDefaultIterator = (function (_super) {
+        var FirstOrDefaultIterator = /** @class */ (function (_super) {
             __extends(FirstOrDefaultIterator, _super);
             //#region Constructor
             function FirstOrDefaultIterator(PreviousLambdaExpression, WhichTypeOfObject, WherePredicate) {
@@ -1029,7 +1029,7 @@ var ToracTechnologies;
         }(Iterator));
         JLinq.FirstOrDefaultIterator = FirstOrDefaultIterator;
         //Class is used to grab a single record which meets the predicate. It will throw an error if we have more then 1 record that meets the criteria. Will return null if nothing is found
-        var SingleOrDefaultIterator = (function (_super) {
+        var SingleOrDefaultIterator = /** @class */ (function (_super) {
             __extends(SingleOrDefaultIterator, _super);
             //#region Constructor
             function SingleOrDefaultIterator(PreviousLambdaExpression, WhichTypeOfObject, WherePredicate) {
@@ -1086,7 +1086,7 @@ var ToracTechnologies;
         }(Iterator));
         JLinq.SingleOrDefaultIterator = SingleOrDefaultIterator;
         //Class is used to implement the Select Method Iterator
-        var SelectIterator = (function (_super) {
+        var SelectIterator = /** @class */ (function (_super) {
             __extends(SelectIterator, _super);
             //#region Constructor
             function SelectIterator(PreviousLambdaExpression, SelectCreatorPredicate) {
@@ -1129,7 +1129,7 @@ var ToracTechnologies;
         }(Iterator));
         JLinq.SelectIterator = SelectIterator;
         //Class is used to implement the Select Many Method Iterator
-        var SelectManyIterator = (function (_super) {
+        var SelectManyIterator = /** @class */ (function (_super) {
             __extends(SelectManyIterator, _super);
             /*Example:
              * Object1
@@ -1207,7 +1207,7 @@ var ToracTechnologies;
         }(Iterator));
         JLinq.SelectManyIterator = SelectManyIterator;
         //Class is used to return all the distinct values found
-        var DistinctIterator = (function (_super) {
+        var DistinctIterator = /** @class */ (function (_super) {
             __extends(DistinctIterator, _super);
             //#region Constructor
             function DistinctIterator(PreviousLambdaExpression, PropertySelector) {
@@ -1258,7 +1258,7 @@ var ToracTechnologies;
         }(Iterator));
         JLinq.DistinctIterator = DistinctIterator;
         //Class is used to implement the Take Method Iterator
-        var TakeIterator = (function (_super) {
+        var TakeIterator = /** @class */ (function (_super) {
             __extends(TakeIterator, _super);
             //#region Constructor
             function TakeIterator(PreviousLambdaExpression, HowManyToTake) {
@@ -1316,7 +1316,7 @@ var ToracTechnologies;
         }(Iterator));
         JLinq.TakeIterator = TakeIterator;
         //will return all the elements before the test no longer passes. "Where" will return everything that meet the condition. TakeWhile will exit the routine wasn't it doesnt pass the expression
-        var TakeWhileIterator = (function (_super) {
+        var TakeWhileIterator = /** @class */ (function (_super) {
             __extends(TakeWhileIterator, _super);
             //#region Constructor
             function TakeWhileIterator(PreviousLambdaExpression, TakeWhilePredicate) {
@@ -1358,7 +1358,7 @@ var ToracTechnologies;
         }(Iterator));
         JLinq.TakeWhileIterator = TakeWhileIterator;
         //Class is used to implement the Skip Method Iterator
-        var SkipIterator = (function (_super) {
+        var SkipIterator = /** @class */ (function (_super) {
             __extends(SkipIterator, _super);
             //#region Constructor
             function SkipIterator(PreviousLambdaExpression, HowManyToSkip) {
@@ -1411,7 +1411,7 @@ var ToracTechnologies;
         }(Iterator));
         JLinq.SkipIterator = SkipIterator;
         //will Bypasses elements in a sequence as long as a specified condition is true and then returns the remaining elements. "Where" will return everything that meet the condition. SkipWhile will find the first element where the condition is met, and return the rest of the elements
-        var SkipWhileIterator = (function (_super) {
+        var SkipWhileIterator = /** @class */ (function (_super) {
             __extends(SkipWhileIterator, _super);
             //#region Constructor
             function SkipWhileIterator(PreviousLambdaExpression, SkipUntilPredicate) {
@@ -1461,7 +1461,7 @@ var ToracTechnologies;
         }(Iterator));
         JLinq.SkipWhileIterator = SkipWhileIterator;
         //  //creates a running total "T" then passes it in for each element
-        var AggregateIterator = (function (_super) {
+        var AggregateIterator = /** @class */ (function (_super) {
             __extends(AggregateIterator, _super);
             //#region Constructor
             function AggregateIterator(PreviousLambdaExpression, AggregatePredicate) {
@@ -1513,7 +1513,7 @@ var ToracTechnologies;
         }(Iterator));
         JLinq.AggregateIterator = AggregateIterator;
         //Class is used to determine if all elements match the where predicate
-        var AllIterator = (function (_super) {
+        var AllIterator = /** @class */ (function (_super) {
             __extends(AllIterator, _super);
             //#region Constructor
             function AllIterator(PreviousLambdaExpression, WherePredicate) {
@@ -1560,7 +1560,7 @@ var ToracTechnologies;
         }(Iterator));
         JLinq.AllIterator = AllIterator;
         //Class is used to determine if there are any elements in the collection
-        var AnyIterator = (function (_super) {
+        var AnyIterator = /** @class */ (function (_super) {
             __extends(AnyIterator, _super);
             //#region Constructor
             function AnyIterator(PreviousLambdaExpression, WherePredicate) {
@@ -1609,7 +1609,7 @@ var ToracTechnologies;
         }(Iterator));
         JLinq.AnyIterator = AnyIterator;
         //Class is used to determine the last item in the collection
-        var LastIterator = (function (_super) {
+        var LastIterator = /** @class */ (function (_super) {
             __extends(LastIterator, _super);
             //#region Constructor
             function LastIterator(PreviousLambdaExpression, WherePredicate) {
@@ -1659,7 +1659,7 @@ var ToracTechnologies;
         }(Iterator));
         JLinq.LastIterator = LastIterator;
         //Class is used to implement concat between 2 iterator's
-        var ConcatIterator = (function (_super) {
+        var ConcatIterator = /** @class */ (function (_super) {
             __extends(ConcatIterator, _super);
             //#region Constructor
             function ConcatIterator(PreviousLambdaExpression, WhichTypeOfObject, QueryToConcat) {
@@ -1713,7 +1713,7 @@ var ToracTechnologies;
         }(Iterator));
         JLinq.ConcatIterator = ConcatIterator;
         //Class is used to implement the union's between 2 iterator's
-        var UnionIterator = (function (_super) {
+        var UnionIterator = /** @class */ (function (_super) {
             __extends(UnionIterator, _super);
             //#region Constructor
             function UnionIterator(PreviousLambdaExpression, WhichTypeOfObject, QueryToUnion) {
@@ -1780,7 +1780,7 @@ var ToracTechnologies;
         }(Iterator));
         JLinq.UnionIterator = UnionIterator;
         //Class is used to implement a count with a where predicate
-        var CountIterator = (function (_super) {
+        var CountIterator = /** @class */ (function (_super) {
             __extends(CountIterator, _super);
             //#region Constructor
             function CountIterator(PreviousLambdaExpression, WherePredicate) {
@@ -1829,7 +1829,7 @@ var ToracTechnologies;
         }(Iterator));
         JLinq.CountIterator = CountIterator;
         //Class is used to determine what the lowest value number is in data source
-        var MinIterator = (function (_super) {
+        var MinIterator = /** @class */ (function (_super) {
             __extends(MinIterator, _super);
             //#region Constructor
             function MinIterator(PreviousLambdaExpression) {
@@ -1876,7 +1876,7 @@ var ToracTechnologies;
         }(Iterator));
         JLinq.MinIterator = MinIterator;
         //Class is used to determine what the largest value number is in data source
-        var MaxIterator = (function (_super) {
+        var MaxIterator = /** @class */ (function (_super) {
             __extends(MaxIterator, _super);
             //#region Constructor
             function MaxIterator(PreviousLambdaExpression) {
@@ -1923,7 +1923,7 @@ var ToracTechnologies;
         }(Iterator));
         JLinq.MaxIterator = MaxIterator;
         //Class is used to calculate the sum of the data source
-        var SumIterator = (function (_super) {
+        var SumIterator = /** @class */ (function (_super) {
             __extends(SumIterator, _super);
             //#region Constructor
             function SumIterator(PreviousLambdaExpression) {
@@ -1970,7 +1970,7 @@ var ToracTechnologies;
         }(Iterator));
         JLinq.SumIterator = SumIterator;
         //Class is used to calculate the averge of the data source (this will skip over nulls and not use them in the formula)
-        var AverageIterator = (function (_super) {
+        var AverageIterator = /** @class */ (function (_super) {
             __extends(AverageIterator, _super);
             //#region Constructor
             function AverageIterator(PreviousLambdaExpression) {
@@ -2022,7 +2022,7 @@ var ToracTechnologies;
         }(Iterator));
         JLinq.AverageIterator = AverageIterator;
         //Class is used to group the data
-        var GroupIterator = (function (_super) {
+        var GroupIterator = /** @class */ (function (_super) {
             __extends(GroupIterator, _super);
             //#region Constructor
             function GroupIterator(PreviousLambdaExpression, GroupBySelector) {
@@ -2078,7 +2078,7 @@ var ToracTechnologies;
         }(Iterator));
         JLinq.GroupIterator = GroupIterator;
         //used to order a query
-        var OrderByIterator = (function (_super) {
+        var OrderByIterator = /** @class */ (function (_super) {
             __extends(OrderByIterator, _super);
             //#region Constructor
             function OrderByIterator(PreviousLambdaExpression, DirectionToSort, PropertySortSelector, AdditionalSortPropertySelectors) {
@@ -2257,7 +2257,7 @@ var ToracTechnologies;
             return OrderByIterator;
         }(Iterator));
         JLinq.OrderByIterator = OrderByIterator;
-        var OrderThenByIterator = (function (_super) {
+        var OrderThenByIterator = /** @class */ (function (_super) {
             __extends(OrderThenByIterator, _super);
             //#region Constructor
             function OrderThenByIterator(PreviousLambdaExpression, SortPropertySelector, WhichSortOrder) {
@@ -2326,7 +2326,7 @@ var ToracTechnologies;
         //#endregion
         //#region Dictionary Class
         //Dictionary class. Uses a javascript object internally. Supports multi-key objects with the following sample key selector { Key1: x.Prop1, Key2: x.Prop2};
-        var Dictionary = (function () {
+        var Dictionary = /** @class */ (function () {
             function Dictionary() {
                 //#region Properties
                 //holds the internal dictionary as a javascript object.
@@ -2518,7 +2518,7 @@ var ToracTechnologies;
         //#endregion
         //#region HashSet Class
         //HashSet Class. Uses a Dictionary internally. Supports multi-key objects with the following sample key selector { Key1: x.Prop1, Key2: x.Prop2};
-        var HashSet = (function () {
+        var HashSet = /** @class */ (function () {
             function HashSet() {
                 //#region Properties
                 //holds the internal dictionary as a javascript object. (uses boolean as the value to keep the memory footprint as low as possible
@@ -2880,3 +2880,4 @@ Array.prototype.DefaultIfEmpty = function (DefaultValue) {
 };
 //#endregion
 //#endregion 
+//# sourceMappingURL=JLinq.js.map

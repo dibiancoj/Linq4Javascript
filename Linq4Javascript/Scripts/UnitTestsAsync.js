@@ -1,5 +1,4 @@
-/// <reference path="qunit.d.ts"/>
-/// <reference path="unittestframework.ts" />
+//#region Framework Stuff
 function ErrorCallBack(MethodName) {
     return function (ErrorObject) {
         throw MethodName;
@@ -1408,3 +1407,4 @@ asyncTest('JLinq.ThenBy.Desc.ChainTest.2', function () {
 });
 //#endregion
 //#endregion 
+//# sourceMappingURL=UnitTestsAsync.js.map

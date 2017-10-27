@@ -1,5 +1,3 @@
-/// <reference path="qunit.d.ts"/>
-/// <reference path="unittestframework.ts" />
 //#region Unit Tests
 //#region AsQueryable
 test('JLinq.AsQueryable.Test.1', function () {
@@ -2914,3 +2912,4 @@ test('JLinq.DefaultIfEmpty.NoResultTest.Test.1', function () {
 });
 //#endregion
 //#endregion 
+//# sourceMappingURL=UnitTestsRegular.js.map

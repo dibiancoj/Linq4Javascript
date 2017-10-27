@@ -1,7 +1,4 @@
-﻿/// <reference path="qunit.d.ts"/>
-/// <reference path="unittestframework.ts" />
-
-//#region Unit Tests
+﻿//#region Unit Tests
 
 //#region AsQueryable
 

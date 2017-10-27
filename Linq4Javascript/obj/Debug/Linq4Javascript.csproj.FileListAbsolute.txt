@@ -158,3 +158,4 @@ C:\Workspace\Linq4Javascript\Linq4Javascript\bin\Antlr3.Runtime.pdb
 C:\Workspace\Linq4Javascript\Linq4Javascript\obj\Debug\Linq4Javascript.csprojResolveAssemblyReference.cache
 C:\Workspace\Linq4Javascript\Linq4Javascript\obj\Debug\Linq4Javascript.dll
 C:\Workspace\Linq4Javascript\Linq4Javascript\obj\Debug\Linq4Javascript.pdb
+C:\Workspace\Linq4Javascript\Linq4Javascript\obj\Debug\Linq4Javascript.csproj.CoreCompileInputs.cache

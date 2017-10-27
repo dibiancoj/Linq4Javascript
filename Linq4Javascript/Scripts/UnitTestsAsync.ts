@@ -1,7 +1,4 @@
-﻿/// <reference path="qunit.d.ts"/>
-/// <reference path="unittestframework.ts" />
-
-//#region Framework Stuff
+﻿//#region Framework Stuff
 
 //JLinqUrlPath is located in the _Layout.cshtml
 declare var JLinqUrlPath: string; //
