@@ -2227,6 +2227,13 @@ var ToracTechnologies;
                         return -1;
                     }
                 }
+                //string's need to be in lowercase because 'abc' is the same as 'ABC'
+                if (typeof FirstItemValue === 'string') {
+                    FirstItemValue = FirstItemValue.toLowerCase();
+                }
+                if (typeof SecondItemValue === 'string') {
+                    SecondItemValue = SecondItemValue.toLowerCase();
+                }
                 //is the first item greater than the second item?
                 if (FirstItemValue > SecondItemValue) {
                     //which way to return

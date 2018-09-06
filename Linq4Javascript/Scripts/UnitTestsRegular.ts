@@ -2993,6 +2993,20 @@ test('JLinq.OrderBy.Asc.String.Test.1', function () {
     }
 });
 
+test('JLinq.OrderBy.Asc.String.Test.CaseInsensitive', function () {
+
+    var MockData = ['aaa', 'bbb','BBBa', 'AAAb'];
+
+    //reset the query now
+    var Results = MockData.OrderBy(x => x).ToArray();
+
+    //go test the items
+    equal(Results[0], 'aaa');
+    equal(Results[1], 'AAAb');
+    equal(Results[2], 'bbb');
+    equal(Results[3], 'BBBa');
+});
+
 test('JLinq.OrderBy.Asc.String.Test.2', function () {
 
     //go build the query
@@ -3148,11 +3162,11 @@ test('JLinq.OrderBy.Desc.String.Test.2', function () {
 
     //go sort descending
     var QueryToRunResults = QueryToRun.ToArray();
-
+   
     //go test the values
     equal(QueryToRunResults[0].Txt, 'bcd');
-    equal(QueryToRunResults[1].Txt, 'abc');
-    equal(QueryToRunResults[2].Txt, 'ABC');
+    equal(QueryToRunResults[1].Txt, 'ABC');
+    equal(QueryToRunResults[2].Txt, 'abc');
 
     //****Lazy Execution Test****
     var CurrentResult: ToracTechnologies.JLinq.IteratorResult<UnitTestFramework.ITestObject>;
